@@ -2,6 +2,23 @@
 -- Stephen Leitnick
 -- Based off of Anaminus' Signal class: https://gist.github.com/Anaminus/afd813efc819bad8e560caea28942010
 
+--[[
+
+	event = Event.new()
+
+	event:Fire(...)
+	event:Wait()
+	event:Destroy()
+	event:DisconnectAll()
+	
+	connection = event:Connect(functionHandler)
+
+	connection:Disconnect()
+	connection:IsConnected()
+
+
+--]]
+
 local Promise = require(script.Parent.Promise)
 
 local Connection = {}
