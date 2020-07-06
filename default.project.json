@@ -1,0 +1,12 @@
+{
+	"name": "Knit",
+	"tree": {
+		"$className": "DataModel",
+		"ReplicatedStorage": {
+			"$className": "ReplicatedStorage",
+			"Knit": {
+				"$path": "src/Knit"
+			}
+		}
+	}
+}
