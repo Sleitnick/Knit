@@ -1,0 +1,34 @@
+site_name: Knit
+site_description: Documentation for Knit
+site_author: Stephen Leitnick
+site_url: https://sleitnick.github.io/Knit/
+
+nav:
+  - Home: index.md
+  - Getting Started: gettingstarted.md
+  - Services: services.md
+  - Controllers: controllers.md
+  - Execution Model: executionmodel.md
+
+theme:
+  logo: "img/logo_64.png"
+  favicon: "img/logo_32.png"
+  name: material
+  palette:
+    primary: blue
+    accent: blue
+  highlightjs: true
+  hljs_languages:
+    - lua
+
+extra:
+  social:
+    - icon: fontawesome/brands/github-alt
+      link: https://github.com/Sleitnick/Knit
+
+markdown_extensions:
+  - codehilite:
+      linenums: true
+  - admonition
+  - toc:
+      permalink: true
