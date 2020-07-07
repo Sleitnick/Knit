@@ -8,6 +8,7 @@ nav:
   - Getting Started: gettingstarted.md
   - Services: services.md
   - Controllers: controllers.md
+  - Util: util.md
   - Knit API: knitapi.md
   - Execution Model: executionmodel.md
 
