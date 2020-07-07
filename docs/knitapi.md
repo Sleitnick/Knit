@@ -3,7 +3,7 @@
 ### `Knit.Services: [Service]`
 [Server-side only]
 
-A table that contains all created services.
+A table that contains all created [services](#service).
 
 ```lua
 local allServices = Knit.Services
@@ -18,7 +18,7 @@ end
 ### `Knit.Controllers: [Controller]`
 [Client-side only]
 
-A table that contains all created controllers.
+A table that contains all created [controllers](#controller).
 
 ```lua
 local allControllers = Knit.Controllers
@@ -29,6 +29,23 @@ end
 
 !!! note
 	Within other controllers, this table should only be accessed during or after the `KnitInit` stage. While it is safe to reference other controllers at the `KnitInit` stage, it is _not_ safe to use them. Wait until the `KnitStart` stage to start using them (e.g. calling methods and events).
+
+
+### `Knit.Util: Folder`
+A folder containing utility modules used by Knit, but also accessible for developers to use.
+
+This folder contains the following modules:
+
+- Maid
+- Event
+- Promise
+- Thread
+
+They can be required like any other module:
+
+```lua
+local Event = require(Knit.Util.Event)
+```
 
 ### `Knit.Start()` -> `Promise`
 
@@ -61,7 +78,7 @@ local MyService = Knit.CreateService { Name = "MyService", Client = {} }
 ### `Knit.CreateController(controller: Table)` -> `Controller`
 [Client-side only]
 
-Creates a new controller. Returns the controller. Please see the [Controllers](controllers.md) documentation for more info.
+Creates a new [controller](#controller). Returns the controller. Please see the [Controllers](controllers.md) documentation for more info.
 
 The provided `controller` table must contain a unique `Name` property.
 
