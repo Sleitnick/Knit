@@ -1,6 +1,6 @@
 ## Services Defined
 
-Services are singleton objects that serve a specific purpose. For instance, a game might have a PointsService, which manages in-game points for the players.
+Services are singleton objects that serve a specific purpose on the server. For instance, a game might have a PointsService, which manages in-game points for the players.
 
 A game might have many services. They will serve as the backbone of a game.
 
@@ -8,7 +8,7 @@ For the sake of example, we will slowly develop PointsService to show how a serv
 
 ## Creating Services
 
-In it's simplest form, a service can be created like so:
+In its simplest form, a service can be created like so:
 
 ```lua
 local PointsService = Knit.CreateService { Name = "PointsService", Client = {} }
@@ -21,11 +21,11 @@ return PointsService
 
 The `Name` field is required. This name is how code outside of your service will find it. This name must be unique from all other services. It is best practice to name your variable the same as the service name (e.g. `local PointsService` matches `Name = "PointsService"`).
 
-The last line (`return PointsService`) assumes this code is written in a ModuleScript, which is best practice for containing services and controllers.
+The last line (`return PointsService`) assumes this code is written in a ModuleScript, which is best practice for containing services.
 
 ## Adding methods
 
-Services are just simple tables at the end of the day. As such, it is very easy to add methods to the service.
+Services are just simple tables at the end of the day. As such, it is very easy to add methods to services.
 
 ```lua
 function PointsService:AddPoints(player, amount)
@@ -39,7 +39,7 @@ end
 
 ## Adding properties
 
-Again, services are just tables. So we can simply add in fields as we want. In our above method, we are returning `0` for `GetPoints()` because we have nowhere to store/retreive points. Likewise, our `AddPoints()` method can't do anything. Let's change that. Let's create a property that holds a table of points per player:
+Again, services are just tables. So we can simply add in properties as we want. In our above method, we are returning `0` for `GetPoints()` because we have nowhere to store/retreive points. Likewise, our `AddPoints()` method can't do anything. Let's change that. Let's create a property that holds a table of points per player:
 
 ```lua
 PointsService.PointsPerPlayer = {}
@@ -98,7 +98,7 @@ end
 
 ## KnitInit and KnitStart
 
-In that last code snippet, there's an odd `KnitStart()` method. This is part of the Knit lifecycle (read more under [Execution Model](executionmodel.md)). These methods are optional, but very useful for orchestrating communication between other services.
+In that last code snippet, there's an odd `KnitStart()` method. This is part of the Knit lifecycle (read more under [execution model](executionmodel.md)). These methods are optional, but very useful for orchestrating communication between other services.
 
 When a service is first created, it is not guaranteed that other services are also created and ready to be used. The `KnitInit` and `KnitStart` methods come to save the day! After all services are created and the `Knit.Start()` method is fired, the `KnitInit` methods of all services will be fired.
 
