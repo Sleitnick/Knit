@@ -1,13 +1,17 @@
 local KnitClient = {}
 
+KnitClient.Controllers = {}
 KnitClient.Util = script.Parent.Util
 
 local Promise = require(KnitClient.Util.Promise)
 local Thread = require(KnitClient.Util.Thread)
 local Event = require(KnitClient.Util.Event)
+local TableUtil = require(KnitClient.Util.TableUtil)
 
 local services = {}
 local servicesFolder = script.Parent:WaitForChild("Services")
+
+local started = false
 
 
 local function BuildService(serviceName, folder)
@@ -47,8 +51,16 @@ local function BuildService(serviceName, folder)
 end
 
 
-function KnitClient.CreateController(controllerName)
-	
+function KnitClient.CreateController(controller)
+	assert(type(controller) == "table", "Controller must be a table; got " .. type(controller))
+	assert(type(controller.Name) == "string", "Controller.Name must be a string; got " .. type(controller.Name))
+	assert(#controller.Name > 0, "Controller.Name must be a non-empty string")
+	assert(KnitClient.Controllers[controller.Name] == nil, "Service \"" .. controller.Name .. "\" already exists")
+	TableUtil.Extend(controller, {
+		_knit_is_controller = true;
+	})
+	KnitClient.Controllers[controller.Name] = controller
+	return controller
 end
 
 
@@ -62,7 +74,34 @@ end
 
 function KnitClient.Start()
 	
+	assert(not started, "Knit already started")
+	started = true
+	if (next(KnitClient.Controllers) == nil) then
+		warn("No controllers created for Knit\n\nYou may have run Start before creating controllers\n\n" .. debug.traceback())
+	end
+
+	local controllers = KnitClient.Controllers
+	
 	return Promise.new(function(resolve)
+
+		-- Init:
+		local promisesStartControllers = {}
+		for _,controller in pairs(controllers) do
+			if (type(controller.KnitInit) == "function") then
+				table.insert(promisesStartControllers, Promise.new(function(r)
+					controller:KnitInit()
+					r()
+				end))
+			end
+		end
+		Promise.all(promisesStartControllers):await()
+
+		-- Start:
+		for _,controller in pairs(controllers) do
+			if (type(controller.KnitStart) == "function") then
+				Thread.SpawnNow(controller.KnitStart, controller)
+			end
+		end
 		
 		resolve()
 		

@@ -11,15 +11,9 @@ knitRepServiceFolder.Parent = script.Parent
 local Promise = require(KnitServer.Util.Promise)
 local Thread = require(KnitServer.Util.Thread)
 local Event = require(KnitServer.Util.Event)
+local TableUtil = require(KnitServer.Util.TableUtil)
 
 local started = false
-
-
-local function ExtendTable(tbl, additional)
-	for k,v in pairs(additional) do
-		tbl[k] = v
-	end
-end
 
 
 local function CreateRepFolder(serviceName)
@@ -56,15 +50,15 @@ function KnitServer.CreateService(service)
 	assert(type(service) == "table", "Service must be a table; got " .. type(service))
 	assert(type(service.Name) == "string", "Service.Name must be a string; got " .. type(service.Name))
 	assert(#service.Name > 0, "Service.Name must be a non-empty string")
-	assert(KnitServer[service.Name] == nil, "Service \"" .. service.Name .. "\" already exists")
-	ExtendTable(service, {
+	assert(KnitServer.Services[service.Name] == nil, "Service \"" .. service.Name .. "\" already exists")
+	TableUtil.Extend(service, {
 		_knit_is_service = true;
 		_knit_rf = {};
 		_knit_re = {};
 		_knit_rep_folder = CreateRepFolder(service.Name);
 	})
 	if (type(service.Client) ~= "table") then
-		service.Client = {Server = service};
+		service.Client = {Server = service}
 	else
 		if (service.Client.Server ~= service) then
 			service.Client.Server = service

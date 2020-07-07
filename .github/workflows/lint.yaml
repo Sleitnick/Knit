@@ -1,0 +1,23 @@
+name: Lint
+
+on:
+  push:
+    branches:
+    - master
+  pull_request:
+    branches:
+    - master
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install Selene
+      run: |
+        wget -q -O selene https://github.com/Kampfkarren/selene/releases/latest/download/selene-linux
+        chmod +x ./selene
+    - name: Lint
+      run: |
+        ./selene ./src
