@@ -20,4 +20,4 @@ jobs:
         chmod +x ./selene
     - name: Lint
       run: |
-        ./selene ./src
+        ./selene ./
