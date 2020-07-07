@@ -300,6 +300,22 @@ end
 return PointsService
 ```
 
+Alternatively, we could have put all non-methods within the `CreateService` constructor:
+
+```lua
+local PointsService = Knit.CreateService {
+	Name = "PointsService";
+	PointsPerPlayer = {};
+	PointsChanged = Event.new();
+	Client = {
+		PointsChanged = Event.new();
+		GiveMePoints = Event.new();
+	};
+}
+
+-- The rest of code here
+```
+
 ### Client Consumer LocalScript
 
 Example of client-side LocalScript consuming the PointsService:
