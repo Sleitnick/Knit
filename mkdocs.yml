@@ -16,8 +16,8 @@ theme:
   favicon: "img/logo_32.png"
   name: material
   palette:
-    primary: blue
-    accent: blue
+    primary: brown
+    accent: brown
   highlightjs: true
   hljs_languages:
     - lua
