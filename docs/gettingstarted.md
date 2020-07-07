@@ -9,7 +9,7 @@ Installing Knit is very simple. Just drop in the module into ReplicatedStorage. 
 
 **Rojo workflow:**
 
-1. Get Knit [TODO] from the latest release on GitHub.
+1. [Download Knit](https://github.com/Sleitnick/Knit/releases/latest/download/knit.zip) from the latest release on GitHub.
 1. Place Knit within your project.
 1. Use Rojo to point Knit to ReplicatedStorage.
 
