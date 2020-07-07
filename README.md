@@ -4,7 +4,9 @@
 
 **[Under Development]**
 
-Simple game framework for the Roblox game engine.
+A lightweight framework for Roblox that simplifies communication between core parts of your game and seamlessly bridges the gap between the server and the client.
+
+[Read the documentation](https://sleitnick.github.io/Knit/) for more info.
 
 -------------------
 
