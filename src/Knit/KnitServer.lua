@@ -1,5 +1,6 @@
 local KnitServer = {}
 
+KnitServer.Version = script.Parent.Version.Value
 KnitServer.Services = {}
 KnitServer.Util = script.Parent.Util
 

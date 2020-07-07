@@ -1,5 +1,6 @@
 local KnitClient = {}
 
+KnitClient.Version = script.Parent.Version.Value
 KnitClient.Controllers = {}
 KnitClient.Util = script.Parent.Util
 
