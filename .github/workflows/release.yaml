@@ -19,7 +19,7 @@ jobs:
       - name: Build project # This would actually build your project, using zip for an example artifact
         run: |
           cd src
-          zip knit.zip Knit/**
+          zip -r knit.zip Knit/**
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
