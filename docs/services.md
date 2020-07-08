@@ -158,10 +158,10 @@ print("Points for myself:", points)
 
 ### Events (Server-to-Client)
 
-We should also create an event that we can fire for the clients when their points change. We can use the Event module again, and just put one within the `Client` table:
+We should also create an event that we can fire for the clients when their points change. We can use the RemoteEvent module (`Knit.Util.Remote.RemoteEvent`), and just put one within the `Client` table:
 
 ```lua
-PointsService.Client.PointsChanged = Event.new()
+PointsService.Client.PointsChanged = RemoteEvent.new()
 ```
 
 Under the hood, Knit is creating a RemoteEvent linked to this event. This is a two-way event (like a tranceiver), so we can both send and receive data on both the server and the client.
@@ -194,6 +194,9 @@ PointsService.PointsChanged:Connect(function(points)
 end)
 ```
 
+!!! note
+	Be sure to use `RemoteEvent` (_not_ `Event`) for client-exposed events.
+
 ### Events (Client-to-Server)
 
 Events can also be fired from the client. This is useful when the client needs to give the server information, but doesn't care about any response from the server. For instance, maybe the client wants to tell the PointsService that it wants some points. This is an odd use-case, but let's just role with it.
@@ -202,7 +205,7 @@ We will create another client-exposed event called `GiveMePoints` which will ran
 
 Let's create the event on the PointsService:
 ```lua
-PointsService.Client.GiveMePoints = Event.new()
+PointsService.Client.GiveMePoints = RemoteEvent.new()
 ```
 
 Now, let's listen for the client to call this event. We can hook this up in our `KnitInit` method:
@@ -234,6 +237,50 @@ local PointsService = Knit.GetService("PointsService")
 PointsService.GiveMePoints:Fire()
 ```
 
+### Properties
+
+Knit provides a `RemoteProperty` module to easily expose valuse to the client. These values are read-only on the client.
+
+For our example, let's say that we want to show the most points in the game. First, let's create the `RemoteProperty` object:
+
+```lua
+local RemoteProperty = require(Knit.Util.Remote.RemoteProperty)
+
+PointsService.MostPoints = RemoteProperty.new(0)
+```
+
+Now, let's change this object whenever we add points:
+
+```lua
+function PointsService:AddPoints(player, amount)
+	-- Other code from before...
+
+	-- Set MostPoints value:
+	if (points > self.Client.MostPoints:Get()) then
+		self.Client.MostPoints:Set(points)
+	end
+end
+```
+
+On the server, the `RemoteProperty` object has `Set` and `Get` methods, and also has a `Changed` event. On the client, it only has the `Get` method and `Changed` event (no `Set` method on the client; read-only).
+
+Let's grab this value on the client:
+
+```lua
+-- From a LocalScript
+local Knit = require(game:GetService("ReplicatedStorage").Knit)
+
+local PointsService = Knit.GetService("PointsService")
+
+-- Grab value:
+local mostPoints = PointsService.MostPoints:Get()
+
+-- Keep it updated:
+PointsService.MostPoints.Changed:Connect(function(newMostPoints)
+	mostPoints = newMostPoints
+end)
+```
+
 -----------------------------------------------------
 
 ## Full Example
@@ -245,6 +292,8 @@ At the end of this tutorial, we should have a PointsService that looks something
 ```lua
 local Knit = require(game:GetService("ReplicatedStorage").Knit)
 local Event = require(Knit.Util.Event)
+local RemoteEvent = require(Knit.Util.Remote.RemoteEvent)
+local RemoteProperty = require(Knit.Util.Remote.RemoteProperty)
 
 local PointsService = Knit.CreateService { Name = "PointsService", Client = {} }
 
@@ -253,8 +302,11 @@ PointsService.PointsPerPlayer = {}
 PointsService.PointsChanged = Event.new()
 
 -- Client exposed events:
-PointsService.Client.PointsChanged = Event.new()
-PointsService.Client.GiveMePoints = Event.new()
+PointsService.Client.PointsChanged = RemoteEvent.new()
+PointsService.Client.GiveMePoints = RemoteEvent.new()
+
+-- Client exposed properties:
+PointsService.Client.MostPoints = RemoteProperty.new(0)
 
 -- Client exposed GetPoints method:
 function PointsService.Client:GetPoints(player)
@@ -269,6 +321,9 @@ function PointsService:AddPoints(player, amount)
 	if (amount ~= 0) then
 		self.PointsChanged:Fire(player, points)
 		self.Client.PointsChanged:Fire(player, points)
+	end
+	if (points > self.Client.MostPoints:Get()) then
+		self.Client.MostPoints:Set(points)
 	end
 end
 
@@ -316,7 +371,7 @@ local PointsService = Knit.CreateService {
 -- The rest of code here
 ```
 
-### Client Consumer LocalScript
+### Client Consumer
 
 Example of client-side LocalScript consuming the PointsService:
 
@@ -337,6 +392,14 @@ PointsService.PointsChanged:Connect(PointsChanged)
 
 -- Ask server to give points randomly:
 PointsService.GiveMePoints:Fire()
+
+-- Grab MostPoints value:
+local mostPoints = PointsService.MostPoints:Get()
+
+-- Keep MostPoints value updated:
+PointsService.MostPoints.Changed:Connect(function(newMostPoints)
+	mostPoints = newMostPoints
+end)
 
 -- Advanced example, using promises to get points:
 PointsService:GetPointsPromise():andThen(function(points)

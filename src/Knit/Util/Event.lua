@@ -125,13 +125,18 @@ end
 
 
 function Event:DisconnectAll()
-	self._bindable:Destroy()
-	self._bindable = Instance.new("BindableEvent")
+	for _,c in ipairs(self._connections) do
+		if (c._conn) then
+			c._conn:Disconnect()
+		end
+	end
+	self._connections = {}
 	self._args = {}
 end
 
 
 function Event:Destroy()
+	self:DisconnectAll()
 	self._bindable:Destroy()
 end
 

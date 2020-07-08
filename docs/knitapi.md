@@ -64,6 +64,15 @@ Knit.Start():andThen(function()
 end)
 ```
 
+### `Knit.OnStart()` -> `Promise`
+
+Wait for Knit to start. This is useful if there are other scripts that need to access Knit services or controllers. If Knit is already started, it resolves the promise immediately.
+
+```lua
+-- Wait for Knit to be started:
+Knit.OnStart():await()
+```
+
 ### `Knit.CreateService(service: Table)` -> `Service`
 [Server-side only]
 

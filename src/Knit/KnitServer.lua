@@ -12,29 +12,42 @@ knitRepServiceFolder.Parent = script.Parent
 local Promise = require(KnitServer.Util.Promise)
 local Thread = require(KnitServer.Util.Thread)
 local Event = require(KnitServer.Util.Event)
+local RemoteEvent = require(KnitServer.Util.Remote.RemoteEvent)
+local RemoteProperty = require(KnitServer.Util.Remote.RemoteProperty)
 local TableUtil = require(KnitServer.Util.TableUtil)
 
 local started = false
+local startedComplete = false
+local onStartedComplete = Instance.new("BindableEvent")
 
 
 local function CreateRepFolder(serviceName)
 	local folder = Instance.new("Folder")
 	folder.Name = serviceName
-	local rf = Instance.new("Folder")
-	rf.Name = "RF"
-	rf.Parent = folder
-	local re = Instance.new("Folder")
-	re.Name = "RE"
-	re.Parent = folder
 	return folder
+end
+
+
+local function GetFolderOrCreate(parent, name)
+	local f = parent:FindFirstChild(name)
+	if (not f) then
+		f = Instance.new("Folder")
+		f.Name = name
+		f.Parent = parent
+	end
+	return f
 end
 
 
 local function AddToRepFolder(service, remoteObj)
 	if (remoteObj:IsA("RemoteFunction")) then
-		remoteObj.Parent = service._knit_rep_folder.RF
+		remoteObj.Parent = GetFolderOrCreate(service._knit_rep_folder, "RF")
+	elseif (remoteObj:IsA("RemoteEvent")) then
+		remoteObj.Parent = GetFolderOrCreate(service._knit_rep_folder, "RE")
+	elseif (remoteObj:IsA("ValueBase")) then
+		remoteObj.Parent = GetFolderOrCreate(service._knit_rep_folder, "PR")
 	else
-		remoteObj.Parent = service._knit_rep_folder.RE
+		error("Invalid rep object: " .. remoteObj.ClassName)
 	end
 	if (not service._knit_rep_folder.Parent) then
 		service._knit_rep_folder.Parent = knitRepServiceFolder
@@ -56,6 +69,7 @@ function KnitServer.CreateService(service)
 		_knit_is_service = true;
 		_knit_rf = {};
 		_knit_re = {};
+		_knit_pr = {};
 		_knit_rep_folder = CreateRepFolder(service.Name);
 	})
 	if (type(service.Client) ~= "table") then
@@ -70,38 +84,16 @@ function KnitServer.CreateService(service)
 end
 
 
-function KnitServer.BindRemoteEvent(service, eventName, event)
-	assert(KnitServer.IsService(service), "Expected Service")
-	assert(type(eventName) == "string", "Expected string for EventName; got " .. type(eventName))
+function KnitServer.BindRemoteEvent(service, eventName, remoteEvent)
 	assert(service._knit_re[eventName] == nil, "RemoteEvent \"" .. eventName .. "\" already exists")
-	local re = Instance.new("RemoteEvent")
+	local re = remoteEvent._remote
 	re.Name = eventName
 	service._knit_re[eventName] = re
 	AddToRepFolder(service, re)
-	local _fire = event.Fire
-	function event:Fire(...)
-		re:FireClient(...)
-	end
-	function event:FireAll(...)
-		re:FireAllClients(...)
-	end
-	function event:FireExcept(plr, ...)
-		for _,p in ipairs(game:GetService("Players"):GetPlayers()) do
-			if (p ~= plr) then
-				re:FireClient(p, ...)
-			end
-		end
-	end
-	re.OnServerEvent:Connect(function(...)
-		_fire(event, ...)
-	end)
 end
 
 
 function KnitServer.BindRemoteFunction(service, funcName, func)
-	assert(KnitServer.IsService(service), "Expected Service")
-	assert(type(func) == "function", "Expected function for Func; got " .. type(func))
-	assert(funcName ~= nil, "Failed to find function within service; make sure the function passed belongs to the given service")
 	assert(service._knit_rf[funcName] == nil, "RemoteFunction \"" .. funcName .. "\" already exists")
 	local rf = Instance.new("RemoteFunction")
 	rf.Name = funcName
@@ -110,6 +102,14 @@ function KnitServer.BindRemoteFunction(service, funcName, func)
 	function rf.OnServerInvoke(...)
 		return func(service, ...)
 	end
+end
+
+
+function KnitServer.BindRemoteProperty(service, propName, prop)
+	assert(service._knit_pr[propName] == nil, "RemoteProperty \"" .. propName .. "\" already exists")
+	prop._object.Name = propName
+	service._knit_pr[propName] = prop
+	AddToRepFolder(service, prop._object)
 end
 
 
@@ -130,8 +130,12 @@ function KnitServer.Start()
 			for k,v in pairs(service.Client) do
 				if (type(v) == "function") then
 					KnitServer.BindRemoteFunction(service, k, v)
-				elseif (Event.Is(v)) then
+				elseif (RemoteEvent.Is(v)) then
 					KnitServer.BindRemoteEvent(service, k, v)
+				elseif (RemoteProperty.Is(v)) then
+					KnitServer.BindRemoteProperty(service, k, v)
+				elseif (Event.Is(v)) then
+					warn("Found Event instead of RemoteEvent (Knit.Util.RemoteEvent). Please change to RemoteEvent. [" .. service.Name .. ".Client." .. k .. "]")
 				end
 			end
 		end
@@ -155,10 +159,32 @@ function KnitServer.Start()
 			end
 		end
 		
+		startedComplete = true
 		resolve()
+		onStartedComplete:Fire()
+
+		Thread.Spawn(function()
+			onStartedComplete:Destroy()
+		end)
 		
 	end)
 	
+end
+
+
+function KnitServer.OnStart()
+	if (startedComplete) then
+		return Promise.resolve()
+	else
+		return Promise.new(function(resolve)
+			if (startedComplete) then
+				resolve()
+				return
+			end
+			onStartedComplete.Event:Wait()
+			resolve()
+		end)
+	end
 end
 
 

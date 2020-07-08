@@ -6,13 +6,16 @@ KnitClient.Util = script.Parent.Util
 
 local Promise = require(KnitClient.Util.Promise)
 local Thread = require(KnitClient.Util.Thread)
-local Event = require(KnitClient.Util.Event)
+local RemoteEvent = require(KnitClient.Util.Remote.RemoteEvent)
+local RemoteProperty = require(KnitClient.Util.Remote.RemoteProperty)
 local TableUtil = require(KnitClient.Util.TableUtil)
 
 local services = {}
 local servicesFolder = script.Parent:WaitForChild("Services")
 
 local started = false
+local startedComplete = false
+local onStartedComplete = Instance.new("BindableEvent")
 
 
 local function BuildService(serviceName, folder)
@@ -35,15 +38,14 @@ local function BuildService(serviceName, folder)
 	if (folder:FindFirstChild("RE")) then
 		for _,re in ipairs(folder.RE:GetChildren()) do
 			if (re:IsA("RemoteEvent")) then
-				local event = Event.new()
-				local _fire = event.Fire
-				function event:Fire(...)
-					re:FireServer(...)
-				end
-				re.OnClientEvent:Connect(function(...)
-					_fire(event, ...)
-				end)
-				service[re.Name] = event
+				service[re.Name] = RemoteEvent.new(re)
+			end
+		end
+	end
+	if (folder:FindFirstChild("PR")) then
+		for _,pr in ipairs(folder.PR:GetChildren()) do
+			if (pr:IsA("ValueBase")) then
+				service[pr.Name] = RemoteProperty.new(pr)
 			end
 		end
 	end
@@ -104,10 +106,32 @@ function KnitClient.Start()
 			end
 		end
 		
+		startedComplete = true
 		resolve()
+		onStartedComplete:Fire()
+
+		Thread.Spawn(function()
+			onStartedComplete:Destroy()
+		end)
 		
 	end)
 	
+end
+
+
+function KnitClient.OnStart()
+	if (startedComplete) then
+		return Promise.resolve()
+	else
+		return Promise.new(function(resolve)
+			if (startedComplete) then
+				resolve()
+				return
+			end
+			onStartedComplete.Event:Wait()
+			resolve()
+		end)
+	end
 end
 
 
