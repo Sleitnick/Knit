@@ -5,7 +5,7 @@
 
 	[Server]
 
-		property = RemoteProperty.new(value)
+		property = RemoteProperty.new(value [, overrideClass])
 
 		property:Get()
 		property:Set(value)
@@ -49,10 +49,15 @@ end
 
 if (IS_SERVER) then
 
-	function RemoteProperty.new(value)
+	function RemoteProperty.new(value, overrideClass)
+
+		if (overrideClass ~= nil) then
+			assert(type(overrideClass) == "string", "OverrideClass must be a string; got " .. type(overrideClass))
+			assert(overrideClass:match("Value$"), "OverrideClass must be of super type ValueBase (e.g. IntValue); got " .. overrideClass)
+		end
 
 		local t = typeof(value)
-		local class = typeClassMap[t]
+		local class = overrideClass or typeClassMap[t]
 		assert(class, "RemoteProperty does not support type \"" .. t .. "\"")
 
 		local self = setmetatable({
