@@ -100,7 +100,7 @@ function KnitServer.BindRemoteFunction(service, funcName, func)
 	service._knit_rf[funcName] = rf
 	AddToRepFolder(service, rf)
 	function rf.OnServerInvoke(...)
-		return func(service, ...)
+		return func(service.Client, ...)
 	end
 end
 
