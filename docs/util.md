@@ -157,6 +157,7 @@ On the client, a RemoteProperty must be instantiated by giving the ValueBase to 
 -- Server-side
 local property = RemoteProperty.new(10)
 property:Set(30)
+property:Replicate() -- Only for table values
 local value = property:Get()
 property.Changed:Connect(function(newValue) end)
 ```
@@ -167,6 +168,9 @@ local property = RemoteProperty.new(valueBaseObject)
 local value = property:Get()
 property.Changed:Connect(function(newValue) end)
 ```
+
+!!! warning "Tables"
+	When using a table in a RemoteProperty, you **_must_** call `property:Replicate()` server-side after changing a value in the table in order for the changes to replicate to the client. This is necessary because there is no way to watch for changes on a table (unless you clutter it with a bunch of metatables). Calling `Replicate` will reserialize the value.
 
 !!! note
 	Knit manages RemoteProperty objects on the client, so developers should never have to instantiate these themselves on the client unless creating completely custom workflows.
