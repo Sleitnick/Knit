@@ -96,6 +96,7 @@ else
 		self._change = object.Changed:Connect(function(v)
 			self._value = v
 		end)
+		self.Changed = object.Changed
 		return self
 	end
 
