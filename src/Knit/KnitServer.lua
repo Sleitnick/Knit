@@ -45,7 +45,7 @@ local function AddToRepFolder(service, remoteObj)
 	elseif (remoteObj:IsA("RemoteEvent")) then
 		remoteObj.Parent = GetFolderOrCreate(service._knit_rep_folder, "RE")
 	elseif (remoteObj:IsA("ValueBase")) then
-		remoteObj.Parent = GetFolderOrCreate(service._knit_rep_folder, "PR")
+		remoteObj.Parent = GetFolderOrCreate(service._knit_rep_folder, "RP")
 	else
 		error("Invalid rep object: " .. remoteObj.ClassName)
 	end
@@ -69,7 +69,7 @@ function KnitServer.CreateService(service)
 		_knit_is_service = true;
 		_knit_rf = {};
 		_knit_re = {};
-		_knit_pr = {};
+		_knit_rp = {};
 		_knit_rep_folder = CreateRepFolder(service.Name);
 	})
 	if (type(service.Client) ~= "table") then
@@ -106,9 +106,9 @@ end
 
 
 function KnitServer.BindRemoteProperty(service, propName, prop)
-	assert(service._knit_pr[propName] == nil, "RemoteProperty \"" .. propName .. "\" already exists")
+	assert(service._knit_rp[propName] == nil, "RemoteProperty \"" .. propName .. "\" already exists")
 	prop._object.Name = propName
-	service._knit_pr[propName] = prop
+	service._knit_rp[propName] = prop
 	AddToRepFolder(service, prop._object)
 end
 

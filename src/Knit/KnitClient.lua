@@ -43,10 +43,10 @@ local function BuildService(serviceName, folder)
 			end
 		end
 	end
-	if (folder:FindFirstChild("PR")) then
-		for _,pr in ipairs(folder.PR:GetChildren()) do
-			if (pr:IsA("ValueBase")) then
-				service[pr.Name] = RemoteProperty.new(pr)
+	if (folder:FindFirstChild("RP")) then
+		for _,rp in ipairs(folder.RP:GetChildren()) do
+			if (rp:IsA("ValueBase")) then
+				service[rp.Name] = RemoteProperty.new(rp)
 			end
 		end
 	end

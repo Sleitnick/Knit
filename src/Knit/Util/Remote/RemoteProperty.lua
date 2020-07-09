@@ -9,6 +9,7 @@
 
 		property:Get()
 		property:Set(value)
+		property:Replicate()  [Only for table values]
 		property:Destroy()
 
 		property.Changed(newValue)
@@ -26,10 +27,12 @@
 --]]
 
 local IS_SERVER = game:GetService("RunService"):IsServer()
+local httpService = game:GetService("HttpService")
 
 local typeClassMap = {
 	bool = "BoolValue";
 	string = "StringValue";
+	table = "StringValue";
 	CFrame = "CFrameValue";
 	Color3 = "Color3Value";
 	BrickColor = "BrickColorValue";
@@ -63,18 +66,35 @@ if (IS_SERVER) then
 		local self = setmetatable({
 			_value = value;
 			_type = t;
+			_isTable = (t == "table");
 			_object = Instance.new(class);
 		}, RemoteProperty)
 
+		if (self._isTable) then
+			local tblMarker = Instance.new("ObjectValue")
+			tblMarker.Name = "IsTable"
+			tblMarker.Parent = self._object
+		end
+
 		self.Changed = self._object.Changed
-		self._object.Value = value
+		self:Set(value)
 
 		return self
 
 	end
 
+	function RemoteProperty:Replicate()
+		if (self._isTable) then
+			self:Set(self._value)
+		end
+	end
+
 	function RemoteProperty:Set(value)
-		self._object.Value = value
+		if (self._isTable) then
+			self._object.Value = httpService:JSONEncode(value)
+		else
+			self._object.Value = value
+		end
 		self._value = value
 	end
 
@@ -92,10 +112,17 @@ else
 		local self = setmetatable({
 			_object = object;
 			_value = object.Value;
+			_isTable = object:FindFirstChild("IsTable") ~= nil;
 		}, RemoteProperty)
-		self._change = object.Changed:Connect(function(v)
-			self._value = v
-		end)
+		local function SetValue(v)
+			if (self._isTable) then
+				self._value = httpService:JSONDecode(v)
+			else
+				self._value = v
+			end
+		end
+		self._change = object.Changed:Connect(SetValue)
+		SetValue(object.Value)
 		self.Changed = object.Changed
 		return self
 	end
