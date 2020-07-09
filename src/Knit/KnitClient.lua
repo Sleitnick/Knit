@@ -1,6 +1,7 @@
 local KnitClient = {}
 
 KnitClient.Version = script.Parent.Version.Value
+KnitClient.Player = game:GetService("Players").LocalPlayer
 KnitClient.Controllers = {}
 KnitClient.Util = script.Parent.Util
 
@@ -97,7 +98,10 @@ function KnitClient.Start()
 				end))
 			end
 		end
-		Promise.all(promisesStartControllers):await()
+
+		resolve(Promise.all(promisesStartControllers))
+
+	end):andThen(function()
 
 		-- Start:
 		for _,controller in pairs(controllers) do
@@ -107,7 +111,6 @@ function KnitClient.Start()
 		end
 		
 		startedComplete = true
-		resolve()
 		onStartedComplete:Fire()
 
 		Thread.Spawn(function()

@@ -150,7 +150,9 @@ function KnitServer.Start()
 				end))
 			end
 		end
-		Promise.all(promisesStartServices):await()
+		resolve(Promise.all(promisesStartServices))
+
+	end):andThen(function()
 		
 		-- Start:
 		for _,service in pairs(services) do
@@ -160,7 +162,6 @@ function KnitServer.Start()
 		end
 		
 		startedComplete = true
-		resolve()
 		onStartedComplete:Fire()
 
 		Thread.Spawn(function()
