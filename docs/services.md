@@ -69,16 +69,16 @@ end
 What if we want to fire an event when the amount of points changes? This is easy. We can assign an event named `PointsChanged` as a property of our service, and have our `AddPoints()` method fire the event:
 
 ```lua
--- Load the Event module and create PointsChanged event:
-local Event = require(Knit.Util.Event)
-PointsService.PointsChanged = Event.new()
+-- Load the Signal module and create PointsChanged signal:
+local Signal = require(Knit.Util.Signal)
+PointsService.PointsChanged = Signal.new()
 
--- Modify AddPoints event:
+-- Modify AddPoints:
 function PointsService:AddPoints(player, amount)
 	local points = self:GetPoints(player)
 	points = points + amount
 	self.PointsPerPlayer[player] = points
-	-- Fire event, as long as we actually changed the points:
+	-- Fire event signal, as long as we actually changed the points:
 	if (amount ~= 0) then
 		self.PointsChanged:Fire(player, points)
 	end
@@ -291,7 +291,7 @@ At the end of this tutorial, we should have a PointsService that looks something
 
 ```lua
 local Knit = require(game:GetService("ReplicatedStorage").Knit)
-local Event = require(Knit.Util.Event)
+local Signal = require(Knit.Util.Signal)
 local RemoteEvent = require(Knit.Util.Remote.RemoteEvent)
 local RemoteProperty = require(Knit.Util.Remote.RemoteProperty)
 
@@ -299,7 +299,7 @@ local PointsService = Knit.CreateService { Name = "PointsService", Client = {} }
 
 -- Server-exposed events/fields:
 PointsService.PointsPerPlayer = {}
-PointsService.PointsChanged = Event.new()
+PointsService.PointsChanged = Signal.new()
 
 -- Client exposed events:
 PointsService.Client.PointsChanged = RemoteEvent.new()

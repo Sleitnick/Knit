@@ -11,7 +11,7 @@ knitRepServiceFolder.Parent = script.Parent
 
 local Promise = require(KnitServer.Util.Promise)
 local Thread = require(KnitServer.Util.Thread)
-local Event = require(KnitServer.Util.Event)
+local Signal = require(KnitServer.Util.Signal)
 local RemoteEvent = require(KnitServer.Util.Remote.RemoteEvent)
 local RemoteProperty = require(KnitServer.Util.Remote.RemoteProperty)
 local TableUtil = require(KnitServer.Util.TableUtil)
@@ -134,8 +134,8 @@ function KnitServer.Start()
 					KnitServer.BindRemoteEvent(service, k, v)
 				elseif (RemoteProperty.Is(v)) then
 					KnitServer.BindRemoteProperty(service, k, v)
-				elseif (Event.Is(v)) then
-					warn("Found Event instead of RemoteEvent (Knit.Util.RemoteEvent). Please change to RemoteEvent. [" .. service.Name .. ".Client." .. k .. "]")
+				elseif (Signal.Is(v)) then
+					warn("Found Signal instead of RemoteEvent (Knit.Util.RemoteEvent). Please change to RemoteEvent. [" .. service.Name .. ".Client." .. k .. "]")
 				end
 			end
 		end

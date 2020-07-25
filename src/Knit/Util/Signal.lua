@@ -1,17 +1,17 @@
--- Event
+-- Signal
 -- Stephen Leitnick
 -- Based off of Anaminus' Signal class: https://gist.github.com/Anaminus/afd813efc819bad8e560caea28942010
 
 --[[
 
-	event = Event.new()
+	signal = Signal.new()
 
-	event:Fire(...)
-	event:Wait()
-	event:Destroy()
-	event:DisconnectAll()
+	signal:Fire(...)
+	signal:Wait()
+	signal:Destroy()
+	signal:DisconnectAll()
 	
-	connection = event:Connect(functionHandler)
+	connection = signal:Connect(functionHandler)
 
 	connection:Disconnect()
 	connection:IsConnected()
@@ -23,9 +23,9 @@ local Promise = require(script.Parent.Promise)
 local Connection = {}
 Connection.__index = Connection
 
-function Connection.new(event, connection)
+function Connection.new(signal, connection)
 	local self = setmetatable({
-		_event = event;
+		_signal = signal;
 		_conn = connection;
 		Connected = true;
 	}, Connection)
@@ -37,9 +37,9 @@ function Connection:Disconnect()
 		self._conn:Disconnect()
 		self._conn = nil
 	end
-	if (not self._event) then return end
+	if (not self._signal) then return end
 	self.Connected = false
-	local connections = self._event._connections
+	local connections = self._signal._connections
 	for i,c in ipairs(connections) do
 		if (c == self) then
 			connections[i] = connections[#connections]
@@ -47,7 +47,7 @@ function Connection:Disconnect()
 			break
 		end
 	end
-	self._event = nil
+	self._signal = nil
 end
 
 function Connection:IsConnected()
@@ -61,28 +61,28 @@ Connection.Destroy = Connection.Disconnect
 
 --------------------------------------------
 
-local Event = {}
-Event.__index = Event
+local Signal = {}
+Signal.__index = Signal
 
 
-function Event.new()
+function Signal.new()
 	local self = setmetatable({
 		_bindable = Instance.new("BindableEvent");
 		_connections = {};
 		_args = {};
 		_threads = 0;
 		_id = 0;
-	}, Event)
+	}, Signal)
 	return self
 end
 
 
-function Event.Is(obj)
-	return (type(obj) == "table" and getmetatable(obj) == Event)
+function Signal.Is(obj)
+	return (type(obj) == "table" and getmetatable(obj) == Signal)
 end
 
 
-function Event:Fire(...)
+function Signal:Fire(...)
 	local id = self._id
 	self._id = self._id + 1
 	self._args[id] = {#self._connections + self._threads, {n = select("#", ...), ...}}
@@ -91,7 +91,7 @@ function Event:Fire(...)
 end
 
 
-function Event:Wait()
+function Signal:Wait()
 	self._threads = self._threads + 1
 	local id = self._bindable.Event:Wait()
 	local args = self._args[id]
@@ -103,14 +103,14 @@ function Event:Wait()
 end
 
 
-function Event:WaitPromise()
+function Signal:WaitPromise()
 	return Promise.new(function(resolve)
 		resolve(self:Wait())
 	end)
 end
 
 
-function Event:Connect(handler)
+function Signal:Connect(handler)
 	local connection = Connection.new(self, self._bindable.Event:Connect(function(id)
 		local args = self._args[id]
 		args[1] = args[1] - 1
@@ -124,7 +124,7 @@ function Event:Connect(handler)
 end
 
 
-function Event:DisconnectAll()
+function Signal:DisconnectAll()
 	for _,c in ipairs(self._connections) do
 		if (c._conn) then
 			c._conn:Disconnect()
@@ -135,10 +135,10 @@ function Event:DisconnectAll()
 end
 
 
-function Event:Destroy()
+function Signal:Destroy()
 	self:DisconnectAll()
 	self._bindable:Destroy()
 end
 
 
-return Event
+return Signal

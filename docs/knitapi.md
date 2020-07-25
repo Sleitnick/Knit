@@ -44,7 +44,7 @@ This folder contains the following modules:
 They can be required like any other module:
 
 ```lua
-local Event = require(Knit.Util.Event)
+local Signal = require(Knit.Util.Signal)
 ```
 
 ### `Knit.Start()` -> `Promise`

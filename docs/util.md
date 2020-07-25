@@ -1,29 +1,29 @@
 There are some utility modules that come prepackaged with Knit. These are used internally, but are also meant to be accessible to developers.
 
-These modules are accessible via `Knit.Util` and must be required, such as `require(Knit.Util.Event)`.
+These modules are accessible via `Knit.Util` and must be required, such as `require(Knit.Util.Signal)`.
 
 --------------------
 
-## [Event](https://github.com/Sleitnick/Knit/blob/master/src/Knit/Util/Event.lua)
+## [Signal](https://github.com/Sleitnick/Knit/blob/master/src/Knit/Util/Signal.lua)
 
-The [Event](https://github.com/Sleitnick/Knit/blob/master/src/Knit/Util/Event.lua) module gives basic Roblox Signal functionality. It is easy to instantiate and use an event object.
+The [Signal](https://github.com/Sleitnick/Knit/blob/master/src/Knit/Util/Signal.lua) module gives basic Roblox Signal functionality. It is easy to instantiate and use a signal object.
 
 ```lua
-local Event = require(Knit.Util.Event)
+local Signal = require(Knit.Util.Signal)
 
-local event = Event.new()
+local signal = Signal.new()
 
-event:Fire(...)
-event:DisconnectAll()
-event:Destroy()
+signal:Fire(...)
+signal:DisconnectAll()
+signal:Destroy()
 
-local connection = event:Connect(function(...) end)
+local connection = signal:Connect(function(...) end)
 
 connection.Connected
 connection:Disconnect()
 ```
 
-The Connection object internal to the Event module also has a Destroy method associated with it, so it will still play nicely with the Maid module.
+The Connection object internal to the Signal module also has a Destroy method associated with it, so it will still play nicely with the Maid module.
 
 --------------------
 
