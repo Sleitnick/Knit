@@ -4,7 +4,16 @@
 
 --[[
 
+	Component.Auto(folder)
+		-> Create components automatically from descendant modules of this folder
+		-> Each module must have a '.Tag' string property
+		-> Each module optionally can have '.RenderPriority' number property
+
+	component = Component.FromTag(tag)
+		-> Retrieves an existing component from the tag name
+
 	component = Component.new(tag, class [, renderPriority])
+		-> Creates a new component from the tag name, class module, and optional render priority
 
 	component:GetAll()
 	component:GetFromInstance(instance)
@@ -68,11 +77,14 @@ local Maid = require(Knit.Util.Maid)
 local Signal = require(Knit.Util.Signal)
 local TableUtil = require(Knit.Util.TableUtil)
 local CollectionService = game:GetService("CollectionService")
-local HttpService = game:GetService("HttpService")
 local RunService = game:GetService("RunService")
+
+local IS_SERVER = RunService:IsServer()
 
 local Component = {}
 Component.__index = Component
+
+local componentsByTag = {}
 
 
 local function FastRemove(tbl, i)
@@ -82,12 +94,38 @@ local function FastRemove(tbl, i)
 end
 
 
+function Component.FromTag(tag)
+	return componentsByTag[tag]
+end
+
+
+function Component.Auto(folder)
+	local function Setup(moduleScript)
+		local m = require(moduleScript)
+		assert(type(m) == "table", "Expected table for component")
+		assert(type(m.Tag) == "string", "Expected .Tag property")
+		Component.new(m.Tag, m, m.RenderPriority)
+	end
+	for _,v in ipairs(folder:GetDescendants()) do
+		if (v:IsA("ModuleScript")) then
+			Setup(v)
+		end
+	end
+	folder.DescendantAdded:Connect(function(v)
+		if (v:IsA("ModuleScript")) then
+			Setup(v)
+		end
+	end)
+end
+
+
 function Component.new(tag, class, renderPriority)
 
 	assert(type(tag) == "string", "Argument #1 (tag) should be a string; got " .. type(tag))
 	assert(type(class) == "table", "Argument #2 (class) should be a table; got " .. type(class))
 	assert(type(class.new) == "function", "Class must contain a .new constructor function")
 	assert(type(class.Destroy) == "function", "Class must contain a :Destroy function")
+	assert(componentsByTag[tag] == nil, "Component already bound to this tag")
 
 	local self = setmetatable({}, Component)
 
@@ -107,6 +145,7 @@ function Component.new(tag, class, renderPriority)
 	self._hasDeinit = (type(class.Deinit) == "function")
 	self._renderPriority = renderPriority or Enum.RenderPriority.Last.Value
 	self._lifecycle = false
+	self._nextId = 0
 
 	self._maid:GiveTask(CollectionService:GetInstanceAddedSignal(tag):Connect(function(instance)
 		self:_instanceAdded(instance)
@@ -129,6 +168,11 @@ function Component.new(tag, class, renderPriority)
 		end
 		b:Destroy()
 	end
+
+	componentsByTag[tag] = self
+	self._maid:GiveTask(function()
+		componentsByTag[tag] = nil
+	end)
 
 	return self
 
@@ -196,7 +240,14 @@ function Component:_instanceAdded(instance)
 	if (not self._lifecycle) then
 		self:_startLifecycle()
 	end
-	local id = HttpService:GenerateGUID(false)
+	self._nextId = (self._nextId + 1)
+	local id = (self._tag .. tostring(self._nextId))
+	if (IS_SERVER) then
+		local idStr = Instance.new("StringValue")
+		idStr.Name = "ServerID"
+		idStr.Value = id
+		idStr.Parent = instance
+	end
 	local obj = self._class.new(instance)
 	obj._instance = instance
 	obj._id = id
@@ -216,6 +267,9 @@ function Component:_instanceRemoved(instance)
 		if (obj._instance == instance) then
 			if (self._hasDeinit) then
 				obj:Deinit()
+			end
+			if (IS_SERVER and instance:FindFirstChild("ServerID")) then
+				instance.ServerID:Destroy()
 			end
 			self.Removed:Fire(obj)
 			obj:Destroy()
