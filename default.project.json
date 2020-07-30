@@ -8,7 +8,7 @@
 				"$path": "src/Knit"
 			},
 			"KnitTest": {
-				"$path": "test/testez"
+				"$path": "test/tests"
 			}
 		},
 		"ServerScriptService": {

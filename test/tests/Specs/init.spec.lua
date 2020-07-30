@@ -1,6 +1,6 @@
 return function()
 
-	local Knit = require(script.Parent)
+	local Knit = require(game:GetService("ReplicatedStorage").Knit)
 	local RemoteEvent = require(Knit.Util.Remote.RemoteEvent)
 	local RemoteProperty = require(Knit.Util.Remote.RemoteProperty)
 
