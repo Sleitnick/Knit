@@ -78,8 +78,12 @@ local Signal = require(Knit.Util.Signal)
 local TableUtil = require(Knit.Util.TableUtil)
 local CollectionService = game:GetService("CollectionService")
 local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
 
 local IS_SERVER = RunService:IsServer()
+
+-- Components will only work on instances parented under these descendants:
+local DESCENDANT_WHITELIST = {workspace, Players}
 
 local Component = {}
 Component.__index = Component
@@ -91,6 +95,16 @@ local function FastRemove(tbl, i)
 	local n = #tbl
 	tbl[i] = tbl[n]
 	tbl[n] = nil
+end
+
+
+local function IsDescendantOfWhitelist(instance)
+	for _,v in ipairs(DESCENDANT_WHITELIST) do
+		if (instance:IsDescendantOf(v)) then
+			return true
+		end
+	end
+	return false
 end
 
 
@@ -148,7 +162,9 @@ function Component.new(tag, class, renderPriority)
 	self._nextId = 0
 
 	self._maid:GiveTask(CollectionService:GetInstanceAddedSignal(tag):Connect(function(instance)
-		self:_instanceAdded(instance)
+		if (IsDescendantOfWhitelist(instance)) then
+			self:_instanceAdded(instance)
+		end
 	end))
 
 	self._maid:GiveTask(CollectionService:GetInstanceRemovedSignal(tag):Connect(function(instance)
@@ -160,11 +176,13 @@ function Component.new(tag, class, renderPriority)
 	do
 		local b = Instance.new("BindableEvent")
 		for _,instance in ipairs(CollectionService:GetTagged(tag)) do
-			local c = b.Event:Connect(function()
-				self:_instanceAdded(instance)
-			end)
-			b:Fire()
-			c:Disconnect()
+			if (IsDescendantOfWhitelist(instance)) then
+				local c = b.Event:Connect(function()
+					self:_instanceAdded(instance)
+				end)
+				b:Fire()
+				c:Disconnect()
+			end
 		end
 		b:Destroy()
 	end
@@ -273,6 +291,7 @@ function Component:_instanceRemoved(instance)
 			end
 			self.Removed:Fire(obj)
 			obj:Destroy()
+			obj._destroyed = true
 			FastRemove(self._objects, i)
 			break
 		end
