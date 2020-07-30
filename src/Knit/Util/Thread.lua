@@ -7,6 +7,7 @@
 	Thread.SpawnNow(func, ...)
 	Thread.Spawn(func, ...)
 	Thread.Delay(waitTime, func, ...)
+	Thread.DelayRepeat(waitTime, func, ...)
 
 	SpawnNow(Function func, Arguments...)
 
