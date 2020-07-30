@@ -115,11 +115,11 @@ end
 
 function KnitServer.Start()
 	
-	assert(not started, "Knit already started")
-	started = true
-	if (next(KnitServer.Services) == nil) then
-		warn("No services created for Knit\n\nYou may have run Start before creating services\n\n" .. debug.traceback())
+	if (started) then
+		return Promise.reject("Knit already started")
 	end
+
+	started = true
 	
 	local services = KnitServer.Services
 	

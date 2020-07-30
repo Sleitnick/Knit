@@ -78,11 +78,11 @@ end
 
 function KnitClient.Start()
 	
-	assert(not started, "Knit already started")
-	started = true
-	if (next(KnitClient.Controllers) == nil) then
-		warn("No controllers created for Knit\n\nYou may have run Start before creating controllers\n\n" .. debug.traceback())
+	if (started) then
+		return Promise.reject("Knit already started")
 	end
+	
+	started = true
 
 	local controllers = KnitClient.Controllers
 	

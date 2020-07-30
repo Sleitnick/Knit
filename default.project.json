@@ -6,7 +6,25 @@
 			"$className": "ReplicatedStorage",
 			"Knit": {
 				"$path": "src/Knit"
+			},
+			"KnitTest": {
+				"$path": "test/testez"
 			}
-		}
+		},
+		"ServerScriptService": {
+			"$className": "ServerScriptService",
+			"KnitTest": {
+				"$path": "test/server"
+			}
+		},
+		"StarterPlayer": {
+			"$className": "StarterPlayer",
+			"StarterPlayerScripts": {
+				"$className": "StarterPlayerScripts",
+				"KnitTest": {
+					"$path": "test/client"
+				}
+			}
+			}
 	}
 }
