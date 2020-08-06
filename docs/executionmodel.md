@@ -44,7 +44,7 @@ end)
 
 ## Best Practices
 - Only one Script on the server should manage loading services and starting the Knit
-- Only one LoalScript on the client shoudl manage loading controllers and starting Knit
+- Only one LocalScript on the client should manage loading controllers and starting Knit
 - Split up services and controllers into their own modules
 - Services should be kept in either ServerStorage or ServerScriptService to avoid being exposed to the client
 - Code within `KnitInit` and within the root scope of the ModuleScript should try to finish ASAP, and should avoid yielding if possible
