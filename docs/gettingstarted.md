@@ -86,7 +86,7 @@ local moneyService = Knit.GetService("MoneyService")
 local money = moneyService:GetMoney()
 
 -- Alternatively, using promises:
-moneyService:GetMoneyPromise():andThen(function(money)
+moneyService:GetMoneyPromise():Then(function(money)
 	print(money)
 end)
 ```

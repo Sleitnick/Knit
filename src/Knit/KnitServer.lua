@@ -116,7 +116,7 @@ end
 function KnitServer.Start()
 	
 	if (started) then
-		return Promise.reject("Knit already started")
+		return Promise.Reject("Knit already started")
 	end
 
 	started = true
@@ -150,9 +150,9 @@ function KnitServer.Start()
 				end))
 			end
 		end
-		resolve(Promise.all(promisesStartServices))
+		resolve(Promise.All(promisesStartServices))
 
-	end):andThen(function()
+	end):Then(function()
 		
 		-- Start:
 		for _,service in pairs(services) do
@@ -175,7 +175,7 @@ end
 
 function KnitServer.OnStart()
 	if (startedComplete) then
-		return Promise.resolve()
+		return Promise.Resolve()
 	else
 		return Promise.new(function(resolve)
 			if (startedComplete) then

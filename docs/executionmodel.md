@@ -36,7 +36,7 @@ end
 ```
 
 ```lua
-Knit.Start():catch(function(err)
+Knit.Start():Catch(function(err)
 	-- Handle error
 	warn(tostring(err))
 end)

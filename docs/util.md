@@ -96,10 +96,10 @@ local function Fetch(url)
 end
 
 Fetch("https://www.example.com")
-	:andThen(function(result)
+	:Then(function(result)
 		print(result)
 	end)
-	:catch(function(err)
+	:Catch(function(err)
 		warn(err)
 	end)
 ```
