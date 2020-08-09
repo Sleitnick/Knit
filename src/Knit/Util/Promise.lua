@@ -333,9 +333,11 @@ function Promise.defer(callback)
 
 	return promise
 end
+Promise.Defer = Promise.defer
 
 -- Backwards compatibility
 Promise.async = Promise.defer
+Promise.Async = Promise.defer
 
 --[[
 	Create a promise that represents the immediately resolved value.
@@ -346,6 +348,7 @@ function Promise.resolve(...)
 		resolve(unpack(values, 1, length))
 	end)
 end
+Promise.Resolve = Promise.resolve
 
 --[[
 	Create a promise that represents the immediately rejected value.
@@ -356,6 +359,7 @@ function Promise.reject(...)
 		reject(unpack(values, 1, length))
 	end)
 end
+Promise.Reject = Promise.reject
 
 --[[
 	Runs a non-promise-returning function as a Promise with the
@@ -375,6 +379,7 @@ end
 function Promise.try(...)
 	return Promise._try(debug.traceback(nil, 2), ...)
 end
+Promise.Try = Promise.try
 
 --[[
 	Returns a new promise that:
@@ -468,18 +473,21 @@ end
 function Promise.all(promises)
 	return Promise._all(debug.traceback(nil, 2), promises)
 end
+Promise.All = Promise.all
 
 function Promise.some(promises, amount)
 	assert(type(amount) == "number", "Bad argument #2 to Promise.some: must be a number")
 
 	return Promise._all(debug.traceback(nil, 2), promises, amount)
 end
+Promise.Some = Promise.some
 
 function Promise.any(promises)
 	return Promise._all(debug.traceback(nil, 2), promises, 1):andThen(function(values)
 		return values[1]
 	end)
 end
+Promise.Any = Promise.any
 
 function Promise.allSettled(promises)
 	if type(promises) ~= "table" then
@@ -536,6 +544,7 @@ function Promise.allSettled(promises)
 		end
 	end)
 end
+Promise.AllSettled = Promise.allSettled
 
 --[[
 	Races a set of Promises and returns the first one that resolves,
@@ -579,6 +588,7 @@ function Promise.race(promises)
 		end
 	end)
 end
+Promise.Race = Promise.race
 
 --[[
 	Iterates serially over the given an array of values, calling the predicate callback on each before continuing.
@@ -680,6 +690,7 @@ function Promise.each(list, predicate)
 		resolve(results)
 	end)
 end
+Promise.Each = Promise.each
 
 --[[
 	Is the given object a Promise instance?
@@ -704,6 +715,7 @@ function Promise.is(object)
 
 	return false
 end
+Promise.Is = Promise.is
 
 --[[
 	Converts a yielding function into a Promise-returning one.
@@ -713,6 +725,7 @@ function Promise.promisify(callback)
 		return Promise._try(debug.traceback(nil, 2), callback, ...)
 	end
 end
+Promise.Promisify = Promise.promisify
 
 --[[
 	Creates a Promise that resolves after given number of seconds.
@@ -811,6 +824,7 @@ do
 			end)
 		end)
 	end
+	Promise.Delay = Promise.delay
 end
 
 --[[
@@ -834,10 +848,12 @@ function Promise.prototype:timeout(seconds, rejectionValue)
 		self,
 	})
 end
+Promise.prototype.Timeout = Promise.prototype.timeout
 
 function Promise.prototype:getStatus()
 	return self._status
 end
+Promise.prototype.GetStatus = Promise.prototype.getStatus
 
 --[[
 	Creates a new promise that receives the result of this promise.
@@ -906,6 +922,8 @@ function Promise.prototype:andThen(successHandler, failureHandler)
 
 	return self:_andThen(debug.traceback(nil, 2), successHandler, failureHandler)
 end
+Promise.prototype.AndThen = Promise.prototype.andThen
+Promise.prototype.Then = Promise.prototype.andThen
 
 --[[
 	Used to catch any errors that may have occurred in the promise.
@@ -917,6 +935,7 @@ function Promise.prototype:catch(failureCallback)
 	)
 	return self:_andThen(debug.traceback(nil, 2), nil, failureCallback)
 end
+Promise.prototype.Catch = Promise.prototype.catch
 
 --[[
 	Like andThen, but the value passed into the handler is also the
@@ -937,6 +956,7 @@ function Promise.prototype:tap(tapCallback)
 		return ...
 	end)
 end
+Promise.prototype.Tap = Promise.prototype.tap
 
 --[[
 	Calls a callback on `andThen` with specific arguments.
@@ -948,6 +968,8 @@ function Promise.prototype:andThenCall(callback, ...)
 		return callback(unpack(values, 1, length))
 	end)
 end
+Promise.prototype.AndThenCall = Promise.prototype.andThenCall
+Promise.prototype.ThenCall = Promise.prototype.andThenCall
 
 --[[
 	Shorthand for an andThen handler that returns the given value.
@@ -958,6 +980,8 @@ function Promise.prototype:andThenReturn(...)
 		return unpack(values, 1, length)
 	end)
 end
+Promise.prototype.AndThenReturn = Promise.prototype.andThenReturn
+Promise.prototype.ThenReturn = Promise.prototype.andThenReturn
 
 --[[
 	Cancels the promise, disallowing it from rejecting or resolving, and calls
@@ -984,6 +1008,7 @@ function Promise.prototype:cancel()
 
 	self:_finalize()
 end
+Promise.prototype.Cancel = Promise.prototype.cancel
 
 --[[
 	Used to decrease the number of consumers by 1, and if there are no more,
@@ -1050,6 +1075,7 @@ function Promise.prototype:finally(finallyHandler)
 	)
 	return self:_finally(debug.traceback(nil, 2), finallyHandler)
 end
+Promise.prototype.Finally = Promise.prototype.finally
 
 --[[
 	Calls a callback on `finally` with specific arguments.
@@ -1061,6 +1087,7 @@ function Promise.prototype:finallyCall(callback, ...)
 		return callback(unpack(values, 1, length))
 	end)
 end
+Promise.prototype.FinallyCall = Promise.prototype.finallyCall
 
 --[[
 	Shorthand for a finally handler that returns the given value.
@@ -1071,6 +1098,7 @@ function Promise.prototype:finallyReturn(...)
 		return unpack(values, 1, length)
 	end)
 end
+Promise.prototype.FinallyReturn = Promise.prototype.finallyReturn
 
 --[[
 	Similar to finally, except rejections are propagated through it.
@@ -1082,6 +1110,7 @@ function Promise.prototype:done(finallyHandler)
 	)
 	return self:_finally(debug.traceback(nil, 2), finallyHandler, true)
 end
+Promise.prototype.Done = Promise.prototype.done
 
 --[[
 	Calls a callback on `done` with specific arguments.
@@ -1093,6 +1122,7 @@ function Promise.prototype:doneCall(callback, ...)
 		return callback(unpack(values, 1, length))
 	end, true)
 end
+Promise.prototype.DoneCall = Promise.prototype.doneCall
 
 --[[
 	Shorthand for a done handler that returns the given value.
@@ -1103,6 +1133,7 @@ function Promise.prototype:doneReturn(...)
 		return unpack(values, 1, length)
 	end, true)
 end
+Promise.prototype.DoneReturn = Promise.prototype.doneReturn
 
 --[[
 	Yield until the promise is completed.
@@ -1131,6 +1162,7 @@ function Promise.prototype:awaitStatus()
 
 	return self._status
 end
+Promise.prototype.AwaitStatus = Promise.prototype.awaitStatus
 
 local function awaitHelper(status, ...)
 	return status == Promise.Status.Resolved, ...
@@ -1142,6 +1174,7 @@ end
 function Promise.prototype:await()
 	return awaitHelper(self:awaitStatus())
 end
+Promise.prototype.Await = Promise.prototype.await
 
 local function expectHelper(status, ...)
 	if status ~= Promise.Status.Resolved then
@@ -1158,9 +1191,11 @@ end
 function Promise.prototype:expect()
 	return expectHelper(self:awaitStatus())
 end
+Promise.prototype.Expect = Promise.prototype.expect
 
 -- Backwards compatibility
 Promise.prototype.awaitValue = Promise.prototype.expect
+Promise.prototype.AwaitValue = Promise.prototype.expect
 
 --[[
 	Intended for use in tests.
@@ -1341,6 +1376,7 @@ function Promise.prototype:now(rejectionValue)
 		}) or rejectionValue)
 	end
 end
+Promise.prototype.Now = Promise.prototype.now
 
 --[[
 	Retries a Promise-returning callback N times until it succeeds.
@@ -1359,6 +1395,7 @@ function Promise.retry(callback, times, ...)
 		end
 	end)
 end
+Promise.Retry = Promise.retry
 
 --[[
 	Converts an event into a Promise with an optional predicate
@@ -1406,5 +1443,6 @@ function Promise.fromEvent(event, predicate)
 		end)
 	end)
 end
+Promise.FromEvent = Promise.fromEvent
 
 return Promise
