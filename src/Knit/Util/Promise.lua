@@ -81,7 +81,7 @@ local Error do
 			context = options.context,
 			kind = options.kind,
 			parent = parent,
-			createdTick = tick(),
+			createdTime = os.clock(),
 			createdTrace = debug.traceback(),
 		}, Error)
 	end

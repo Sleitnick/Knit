@@ -192,12 +192,12 @@ local UPDATE_INTERVAL = 0.5
 
 function DanceFloor.new()
 	local self = setmetatable({}, DanceFloor)
-	self._nextUpdate = tick() + UPDATE_INTERVAL
+	self._nextUpdate = os.clock() + UPDATE_INTERVAL
 	return self
 end
 
 function DanceFloor:HeartbeatUpdate(dt)
-	if (tick() > self._nextUpdate) then
+	if (os.clock() > self._nextUpdate) then
 		-- Set the assigned instance to a random color:
 		self._instance.Color = Color3.new(
 			math.random(),

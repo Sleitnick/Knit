@@ -73,7 +73,7 @@
 		delayConnection:Disconnect()
 
 		local repeatConnection = Thread.DelayRepeat(1, function()
-			print("Hello again", tick())
+			print("Hello again", os.clock())
 		end)
 		wait(5)
 		repeatConnection:Disconnect()
@@ -136,10 +136,10 @@ end
 
 function Thread.Delay(waitTime, func, ...)
 	local args = table.pack(...)
-	local executeTime = (tick() + waitTime)
+	local executeTime = (os.clock() + waitTime)
 	local hb
 	hb = heartbeat:Connect(function()
-		if (tick() >= executeTime) then
+		if (os.clock() >= executeTime) then
 			hb:Disconnect()
 			func(table.unpack(args, 1, args.n))
 		end
@@ -150,11 +150,11 @@ end
 
 function Thread.DelayRepeat(intervalTime, func, ...)
 	local args = table.pack(...)
-	local nextExecuteTime = (tick() + intervalTime)
+	local nextExecuteTime = (os.clock() + intervalTime)
 	local hb
 	hb = heartbeat:Connect(function()
-		if (tick() >= nextExecuteTime) then
-			nextExecuteTime = (tick() + intervalTime)
+		if (os.clock() >= nextExecuteTime) then
+			nextExecuteTime = (os.clock() + intervalTime)
 			func(table.unpack(args, 1, args.n))
 		end
 	end)
