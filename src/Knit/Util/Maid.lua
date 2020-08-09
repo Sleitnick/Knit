@@ -10,8 +10,6 @@
 
 	maid:GiveTask(task)
 		> task is an event connection, function, or instance/table with a 'Destroy' method
-
-	maid:GivePromise(promise)
 	
 	maid:DoCleaning()
 		> Alias for Destroy
@@ -28,8 +26,6 @@
 
 local Maid = {}
 Maid.ClassName = "Maid"
-
-local Promise
 
 
 --- Returns a new Maid object
@@ -100,23 +96,6 @@ function Maid:GiveTask(task)
 end
 
 
-function Maid:GivePromise(promise)
-	if (promise:GetStatus() ~= Promise.Status.Started) then
-		return promise
-	end
-
-	local newPromise = Promise.Resolve(promise)
-	local id = self:GiveTask(newPromise)
-
-	-- Ensure GC
-	newPromise:Finally(function()
-		self[id] = nil
-	end)
-
-	return newPromise
-end
-
-
 --- Cleans up all tasks.
 -- @alias Destroy
 function Maid:DoCleaning()
@@ -143,11 +122,6 @@ function Maid:DoCleaning()
 		end
 		index, task = next(tasks)
 	end
-end
-
-
-function Maid:Init()
-	Promise = self.Shared.Promise
 end
 
 

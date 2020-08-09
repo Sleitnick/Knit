@@ -79,7 +79,7 @@ end
 function KnitClient.Start()
 	
 	if (started) then
-		return Promise.reject("Knit already started")
+		return Promise.Reject("Knit already started")
 	end
 	
 	started = true
@@ -99,9 +99,9 @@ function KnitClient.Start()
 			end
 		end
 
-		resolve(Promise.all(promisesStartControllers))
+		resolve(Promise.All(promisesStartControllers))
 
-	end):andThen(function()
+	end):Then(function()
 
 		-- Start:
 		for _,controller in pairs(controllers) do
@@ -124,7 +124,7 @@ end
 
 function KnitClient.OnStart()
 	if (startedComplete) then
-		return Promise.resolve()
+		return Promise.Resolve()
 	else
 		return Promise.new(function(resolve)
 			if (startedComplete) then

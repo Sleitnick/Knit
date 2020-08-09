@@ -59,8 +59,10 @@ local Knit = require(game:GetService("ReplicatedStorage").Knit)
 ----
 
 -- Start Knit:
-Knit.Start():andThen(function()
+Knit.Start():Then(function()
 	print("Knit is running")
+end):Catch(function(err)
+	warn(err)
 end)
 ```
 
@@ -109,7 +111,7 @@ Every method will also have a "Promisefied" version. Just append "Promise" to th
 
 ```lua
 local SomeService = Knit.GetService("SomeService")
-SomeService:DoSomethingPromise():andThen(function() ... end)
+SomeService:DoSomethingPromise():Then(function() ... end)
 ```
 
 --------------

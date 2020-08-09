@@ -402,7 +402,7 @@ PointsService.MostPoints.Changed:Connect(function(newMostPoints)
 end)
 
 -- Advanced example, using promises to get points:
-PointsService:GetPointsPromise():andThen(function(points)
+PointsService:GetPointsPromise():Then(function(points)
 	print("Got points:", points)
 end)
 ```
