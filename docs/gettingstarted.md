@@ -4,7 +4,7 @@ Installing Knit is very simple. Just drop in the module into ReplicatedStorage. 
 
 **Standard workflow:**
 
-1. Get [Knit](https://www.roblox.com/library/5306486095/Knit) from the Roblox library.
+1. Get [Knit](https://www.roblox.com/library/5530714855/Knit) from the Roblox library.
 1. Place Knit directly within the ReplicatedStorage service.
 
 **Rojo workflow:**
