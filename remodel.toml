@@ -1,0 +1,94 @@
+[[remodel.readPlaceFile.args]]
+required = true
+type = "string"
+
+[[remodel.readModelFile.args]]
+required = true
+type = "string"
+
+[[remodel.readPlaceAsset.args]]
+required = true
+type = "string"
+
+[[remodel.readModelAsset.args]]
+required = true
+type = "string"
+
+[[remodel.writePlaceFile.args]]
+required = true
+type = "any"
+[[remodel.writePlaceFile.args]]
+required = true
+type = "string"
+
+[[remodel.writeModelFile.args]]
+required = true
+type = "any"
+[[remodel.writeModelFile.args]]
+required = true
+type = "string"
+
+[[remodel.writeExistingPlaceAsset.args]]
+required = true
+type = "any"
+[[remodel.writeExistingPlaceAsset.args]]
+required = true
+type = "string"
+
+[[remodel.writeExistingModelAsset.args]]
+required = true
+type = "any"
+[[remodel.writeExistingModelAsset.args]]
+required = true
+type = "string"
+
+[[remodel.getRawProperty.args]]
+required = true
+type = "any"
+[[remodel.getRawProperty.args]]
+required = true
+type = "string"
+
+[[remodel.setRawProperty.args]]
+required = true
+type = "any"
+[[remodel.setRawProperty.args]]
+required = true
+type = "string"
+[[remodel.setRawProperty.args]]
+required = true
+type = "string"
+[[remodel.setRawProperty.args]]
+required = true
+type = "any"
+
+[[remodel.readFile.args]]
+required = true
+type = "string"
+
+[[remodel.readDir.args]]
+required = true
+type = "string"
+
+[[remodel.writeFile.args]]
+required = true
+type = "string"
+[[remodel.writeFile.args]]
+required = true
+type = "string"
+
+[[remodel.isFile.args]]
+required = true
+type = "string"
+
+[[remodel.isDir.args]]
+required = true
+type = "string"
+
+[[json.fromString.args]]
+required = true
+type = "string"
+
+[[json.toString.args]]
+required = true
+type = "any"
