@@ -1,4 +1,4 @@
--- Remodel Deploy script
+-- Remodel Publish script
 
 local KNIT_ASSET_ID = "5530714855"
 
