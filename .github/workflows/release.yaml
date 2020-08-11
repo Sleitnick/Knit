@@ -34,7 +34,6 @@ jobs:
         env:
           REMODEL_AUTH: ${{ secrets.RBX_AUTH }}
         run: |
-          echo "$TEST"
           ./remodel run publish.lua
       - name: Create Release
         id: create_release
