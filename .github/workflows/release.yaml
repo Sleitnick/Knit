@@ -30,6 +30,8 @@ jobs:
         run: |
           ./rojo build -o Knit.rbxlx
       - name: Publish Knit to Roblox
+        env:
+          RBX_AUTH: ${{ secrets.RBX_AUTH }}
         run: |
           ./remodel run publish.lua --auth "$RBX_AUTH"
       - name: Create Release
