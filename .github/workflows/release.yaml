@@ -32,11 +32,10 @@ jobs:
       - name: Publish Knit to Roblox
         shell: bash
         env:
-          RBX_AUTH: ${{ secrets.RBX_AUTH }}
-          TEST: ${{ secrets.TEST }}
+          REMODEL_AUTH: ${{ secrets.RBX_AUTH }}
         run: |
           echo "$TEST"
-          ./remodel run publish.lua --auth "$RBX_AUTH"
+          ./remodel run publish.lua
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
