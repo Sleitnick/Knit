@@ -1,4 +1,4 @@
-std = "roblox"
+std = "roblox+remodel"
 
 [rules]
 parenthese_conditions = "allow"
