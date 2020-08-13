@@ -27,6 +27,7 @@
 --]]
 
 local IS_SERVER = game:GetService("RunService"):IsServer()
+local Signal = require(script.Parent.Parent.Signal)
 local httpService = game:GetService("HttpService")
 
 local typeClassMap = {
@@ -121,9 +122,17 @@ else
 				self._value = v
 			end
 		end
-		self._change = object.Changed:Connect(SetValue)
 		SetValue(object.Value)
-		self.Changed = object.Changed
+		if (self._isTable) then
+			self.Changed = Signal.new()
+			self._change = object.Changed:Connect(function(v)
+				SetValue(v)
+				self.Changed:Fire(self._value)
+			end)
+		else
+			self.Changed = object.Changed
+			self._change = object.Changed:Connect(SetValue)
+		end
 		return self
 	end
 
@@ -134,6 +143,9 @@ else
 	function RemoteProperty:Destroy()
 		self._change:Disconnect()
 		self._set:Destroy()
+		if (self._isTable) then
+			self.Changed:Destroy()
+		end
 	end
 
 end
