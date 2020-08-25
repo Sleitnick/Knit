@@ -84,7 +84,7 @@ end
 
 function Signal:Fire(...)
 	local id = self._id
-	self._id = self._id + 1
+	self._id += 1
 	self._args[id] = {#self._connections + self._threads, {n = select("#", ...), ...}}
 	self._threads = 0
 	self._bindable:Fire(id)
@@ -92,10 +92,10 @@ end
 
 
 function Signal:Wait()
-	self._threads = self._threads + 1
+	self._threads += 1
 	local id = self._bindable.Event:Wait()
 	local args = self._args[id]
-	args[1] = args[1] - 1
+	args[1] -= 1
 	if (args[1] <= 0) then
 		self._args[id] = nil
 	end
@@ -113,7 +113,7 @@ end
 function Signal:Connect(handler)
 	local connection = Connection.new(self, self._bindable.Event:Connect(function(id)
 		local args = self._args[id]
-		args[1] = args[1] - 1
+		args[1] -= 1
 		if (args[1] <= 0) then
 			self._args[id] = nil
 		end
