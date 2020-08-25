@@ -8,6 +8,7 @@
 
 	signal:Fire(...)
 	signal:Wait()
+	signal:WaitPromise()
 	signal:Destroy()
 	signal:DisconnectAll()
 	
@@ -40,12 +41,11 @@ function Connection:Disconnect()
 	if (not self._signal) then return end
 	self.Connected = false
 	local connections = self._signal._connections
-	for i,c in ipairs(connections) do
-		if (c == self) then
-			connections[i] = connections[#connections]
-			connections[#connections] = nil
-			break
-		end
+	local connectionIndex = table.find(connections, self)
+	if (connectionIndex) then
+		local n = #connections
+		connections[connectionIndex] = connections[n]
+		connections[n] = nil
 	end
 	self._signal = nil
 end
