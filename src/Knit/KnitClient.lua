@@ -1,3 +1,12 @@
+--[[
+
+	Knit.CreateController(controller): Controller
+	Knit.GetService(serviceName): Service
+	Knit.Start(): Promise<void>
+	Knit.OnStart(): Promise<void>
+
+--]]
+
 local KnitClient = {}
 
 KnitClient.Version = script.Parent.Version.Value
@@ -7,6 +16,7 @@ KnitClient.Util = script.Parent.Util
 
 local Promise = require(KnitClient.Util.Promise)
 local Thread = require(KnitClient.Util.Thread)
+local Ser = require(KnitClient.Util.Ser)
 local RemoteEvent = require(KnitClient.Util.Remote.RemoteEvent)
 local RemoteProperty = require(KnitClient.Util.Remote.RemoteProperty)
 local TableUtil = require(KnitClient.Util.TableUtil)
@@ -25,12 +35,12 @@ local function BuildService(serviceName, folder)
 		for _,rf in ipairs(folder.RF:GetChildren()) do
 			if (rf:IsA("RemoteFunction")) then
 				service[rf.Name] = function(self, ...)
-					return rf:InvokeServer(...)
+					return Ser.DeserializeArgsAndUnpack(rf:InvokeServer(Ser.SerializeArgsAndUnpack(...)))
 				end
 				service[rf.Name .. "Promise"] = function(self, ...)
-					local args = table.pack(...)
+					local args = Ser.SerializeArgs(...)
 					return Promise.new(function(resolve)
-						resolve(rf:InvokeServer(table.unpack(args, 1, args.n)))
+						resolve(Ser.DeserializeArgsAndUnpack(rf:InvokeServer(table.unpack(args, 1, args.n))))
 					end)
 				end
 			end

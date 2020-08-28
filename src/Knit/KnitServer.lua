@@ -1,3 +1,12 @@
+--[[
+
+	Knit.CreateService(service): Service
+	Knit.Start(): Promise<void>
+	Knit.OnStart(): Promise<void>
+
+--]]
+
+
 local KnitServer = {}
 
 KnitServer.Version = script.Parent.Version.Value
@@ -12,6 +21,7 @@ knitRepServiceFolder.Parent = script.Parent
 local Promise = require(KnitServer.Util.Promise)
 local Thread = require(KnitServer.Util.Thread)
 local Signal = require(KnitServer.Util.Signal)
+local Ser = require(KnitServer.Util.Ser)
 local RemoteEvent = require(KnitServer.Util.Remote.RemoteEvent)
 local RemoteProperty = require(KnitServer.Util.Remote.RemoteProperty)
 local TableUtil = require(KnitServer.Util.TableUtil)
@@ -100,7 +110,7 @@ function KnitServer.BindRemoteFunction(service, funcName, func)
 	service._knit_rf[funcName] = rf
 	AddToRepFolder(service, rf)
 	function rf.OnServerInvoke(...)
-		return func(service.Client, ...)
+		return Ser.SerializeArgsAndUnpack(func(service.Client, Ser.DeserializeArgsAndUnpack(...)))
 	end
 end
 
