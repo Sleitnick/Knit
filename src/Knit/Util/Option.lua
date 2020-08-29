@@ -238,5 +238,5 @@ Option.None = Option._new()
 
 
 return setmetatable(Option, {
-	__call = function(_, v) return Option.new(v) end;
+	__call = function(_, v) return Option._new(v) end;
 })
