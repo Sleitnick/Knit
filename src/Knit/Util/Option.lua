@@ -45,7 +45,7 @@
 
 	-- Raw check:
 	if result2:IsSome() then
-		local value = result2:Unwrap() -- Explicitly call Unwrapap
+		local value = result2:Unwrap() -- Explicitly call Unwrap
 		print("Value of result2:", value)
 	end
 
