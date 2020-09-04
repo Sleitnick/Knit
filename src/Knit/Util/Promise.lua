@@ -1,41 +1,11 @@
 --[[
 	An implementation of Promises similar to Promise/A+.
-	
-	https://github.com/evaera/roblox-lua-promise
-	
-	=================================================================================
-	
-	MIT License
-	
-	Copyright (c) 2019 Eryn L. K.
-	
-	Permission is hereby granted, free of charge, to any person obtaining a copy
-	of this software and associated documentation files (the "Software"), to deal
-	in the Software without restriction, including without limitation the rights
-	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-	copies of the Software, and to permit persons to whom the Software is
-	furnished to do so, subject to the following conditions:
-	
-	The above copyright notice and this permission notice shall be included in all
-	copies or substantial portions of the Software.
-	
-	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-	SOFTWARE.
-
 ]]
 
 local ERROR_NON_PROMISE_IN_LIST = "Non-promise value passed into %s at index %s"
 local ERROR_NON_LIST = "Please pass a list of promises to %s"
 local ERROR_NON_FUNCTION = "Please pass a handler function to %s!"
-
 local MODE_KEY_METATABLE = {__mode = "k"}
-
-local RunService = game:GetService("RunService")
 
 --[[
 	Creates an enum dictionary with some metamethods to prevent common mistakes.
@@ -81,7 +51,7 @@ local Error do
 			context = options.context,
 			kind = options.kind,
 			parent = parent,
-			createdTime = os.clock(),
+			createdTick = os.clock(),
 			createdTrace = debug.traceback(),
 		}, Error)
 	end
@@ -205,8 +175,8 @@ end
 local Promise = {
 	Error = Error,
 	Status = makeEnum("Promise.Status", {"Started", "Resolved", "Rejected", "Cancelled"}),
-	_timeEvent = RunService.Heartbeat,
-	_getTime = tick,
+	_getTime = os.clock,
+	_timeEvent = game:GetService("RunService").Heartbeat,
 }
 Promise.prototype = {}
 Promise.__index = Promise.prototype
@@ -708,7 +678,11 @@ function Promise.is(object)
 	elseif objectMetatable == nil then
 		-- No metatable, but we should still chain onto tables with andThen methods
 		return type(object.andThen) == "function"
-	elseif type(objectMetatable) == "table" and type(rawget(objectMetatable, "andThen")) == "function" then
+	elseif
+		type(objectMetatable) == "table"
+		and type(rawget(objectMetatable, "__index")) == "table"
+		and type(rawget(rawget(objectMetatable, "__index"), "andThen")) == "function"
+	then
 		-- Maybe this came from a different or older Promise library.
 		return true
 	end
@@ -758,18 +732,20 @@ do
 			if connection == nil then -- first is nil when connection is nil
 				first = node
 				connection = Promise._timeEvent:Connect(function()
-					local currentTime = Promise._getTime()
-					while first.endTime <= currentTime do
-						-- Don't use currentTime here, as this is the time when we started resolving,
-						-- not necessarily the time *right now*.
-						first.resolve(Promise._getTime() - first.startTime)
-						first = first.next
+					local threadStart = Promise._getTime()
+
+					while first ~= nil and first.endTime < threadStart do
+						local current = first
+						first = current.next
+
 						if first == nil then
 							connection:Disconnect()
 							connection = nil
-							break
+						else
+							first.previous = nil
 						end
-						first.previous = nil
+
+						current.resolve(Promise._getTime() - current.startTime)
 					end
 				end)
 			else -- first is non-nil
@@ -1283,7 +1259,7 @@ function Promise.prototype:_resolve(...)
 
 	-- We assume that these callbacks will not throw errors.
 	for _, callback in ipairs(self._queuedResolve) do
-		callback(...)
+		coroutine.wrap(callback)(...)
 	end
 
 	self:_finalize()
@@ -1301,7 +1277,7 @@ function Promise.prototype:_reject(...)
 	if not isEmpty(self._queuedReject) then
 		-- We assume that these callbacks will not throw errors.
 		for _, callback in ipairs(self._queuedReject) do
-			callback(...)
+			coroutine.wrap(callback)(...)
 		end
 	else
 		-- At this point, no one was able to observe the error.
@@ -1348,8 +1324,12 @@ function Promise.prototype:_finalize()
 		-- Purposefully not passing values to callbacks here, as it could be the
 		-- resolved values, or rejected errors. If the developer needs the values,
 		-- they should use :andThen or :catch explicitly.
-		callback(self._status)
+		coroutine.wrap(callback)(self._status)
 	end
+
+	self._queuedFinally = nil
+	self._queuedReject = nil
+	self._queuedResolve = nil
 
 	-- Clear references to other Promises to allow gc
 	if not Promise.TEST then
@@ -1395,7 +1375,7 @@ function Promise.retry(callback, times, ...)
 		end
 	end)
 end
-Promise.Retry = Promise.retry
+Promise.prototype.Retry = Promise.prototype.retry
 
 --[[
 	Converts an event into a Promise with an optional predicate
