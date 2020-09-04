@@ -31,10 +31,10 @@
 
 	Example:
 
-	local result1 = Option(32)
-	local result2 = Option(nil)
-	local result3 = Option("Hi")
-	local result4 = Option(nil)
+	local result1 = Option.Some(32)
+	local result2 = Option.Some(nil)
+	local result3 = Option.Some("Hi")
+	local result4 = Option.Some(nil)
 	local result5 = Option.None
 
 	-- Use 'Match' to match if the value is Some or None:
@@ -45,7 +45,7 @@
 
 	-- Raw check:
 	if result2:IsSome() then
-		local value = result2:Unwrap() -- Explicitly call Unwrapap
+		local value = result2:Unwrap() -- Explicitly call Unwrap
 		print("Value of result2:", value)
 	end
 
@@ -237,6 +237,4 @@ end
 Option.None = Option._new()
 
 
-return setmetatable(Option, {
-	__call = function(_, v) return Option.new(v) end;
-})
+return Option
