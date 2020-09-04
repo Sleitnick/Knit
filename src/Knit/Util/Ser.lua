@@ -22,6 +22,7 @@
 	Ser.DeserializeArgsAndUnpack(...) -> Tuple
 	Ser.Serialize(value: any)         -> any
 	Ser.Deserialize(value: any)       -> any
+	Ser.UnpackArgs(args: table)       -> Tuple
 
 --]]
 
@@ -97,6 +98,11 @@ function Ser.Deserialize(value)
 		end
 	end
 	return value
+end
+
+
+function Ser.UnpackArgs(args)
+	return table.unpack(args, 1, args.n)
 end
 
 

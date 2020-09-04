@@ -100,17 +100,15 @@ function Option:Serialize()
 end
 
 
-function Option:Match()
-	return function(matches)
-		local onSome = matches.Some
-		local onNone = matches.None
-		assert(type(onSome) == "function", "Missing 'Some' match")
-		assert(type(onNone) == "function", "Missing 'None' match")
-		if (self:IsSome()) then
-			onSome(self:Unwrap())
-		else
-			onNone()
-		end
+function Option:Match(matches)
+	local onSome = matches.Some
+	local onNone = matches.None
+	assert(type(onSome) == "function", "Missing 'Some' match")
+	assert(type(onNone) == "function", "Missing 'None' match")
+	if (self:IsSome()) then
+		onSome(self:Unwrap())
+	else
+		onNone()
 	end
 end
 

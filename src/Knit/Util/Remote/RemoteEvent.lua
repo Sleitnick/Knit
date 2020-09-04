@@ -27,7 +27,8 @@
 
 local IS_SERVER = game:GetService("RunService"):IsServer()
 
-local players = game:GetService("Players")
+local Players = game:GetService("Players")
+local Ser = require(script.Parent.Parent.Ser)
 
 local RemoteEvent = {}
 RemoteEvent.__index = RemoteEvent
@@ -46,17 +47,18 @@ if (IS_SERVER) then
 	end
 
 	function RemoteEvent:Fire(player, ...)
-		self._remote:FireClient(player, ...)
+		self._remote:FireClient(player, Ser.SerializeArgsAndUnpack(...))
 	end
 
 	function RemoteEvent:FireAll(...)
-		self._remote:FireAllClients(...)
+		self._remote:FireAllClients(Ser.SerializeArgsAndUnpack(...))
 	end
 
 	function RemoteEvent:FireExcept(player, ...)
-		for _,plr in ipairs(players:GetPlayers()) do
+		local args = Ser.SerializeArgs(...)
+		for _,plr in ipairs(Players:GetPlayers()) do
 			if (plr ~= player) then
-				self._remote:FireClient(plr, ...)
+				self._remote:FireClient(plr, Ser.UnpackArgs(args))
 			end
 		end
 	end
@@ -66,7 +68,9 @@ if (IS_SERVER) then
 	end
 
 	function RemoteEvent:Connect(handler)
-		return self._remote.OnServerEvent:Connect(handler)
+		return self._remote.OnServerEvent:Connect(function(player, ...)
+			handler(player, Ser.DeserializeArgsAndUnpack(...))
+		end)
 	end
 
 	function RemoteEvent:Destroy()
@@ -126,15 +130,17 @@ else
 	end
 
 	function RemoteEvent:Fire(...)
-		self._remote:FireServer(...)
+		self._remote:FireServer(Ser.SerializeArgsAndUnpack(...))
 	end
 
 	function RemoteEvent:Wait()
-		return self._remote.OnClientEvent:Wait()
+		return Ser.DeserializeArgsAndUnpack(self._remote.OnClientEvent:Wait())
 	end
 
 	function RemoteEvent:Connect(handler)
-		local connection = Connection.new(self, self._remote.OnClientEvent:Connect(handler))
+		local connection = Connection.new(self, self._remote.OnClientEvent:Connect(function(...)
+			handler(Ser.DeserializeArgsAndUnpack(...))
+		end))
 		table.insert(self._connections, connection)
 		return connection
 	end
