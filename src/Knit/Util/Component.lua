@@ -19,6 +19,7 @@
 	component:GetFromInstance(instance)
 	component:GetFromID(id)
 	component:Filter(filterFunc)
+	component:WaitFor(instanceName)
 	component:Destroy()
 
 	component.Added(obj)
@@ -75,6 +76,8 @@
 local Knit = require(game:GetService("ReplicatedStorage").Knit)
 local Maid = require(Knit.Util.Maid)
 local Signal = require(Knit.Util.Signal)
+local Promise = require(Knit.Util.Promise)
+local Thread = require(Knit.Util.Thread)
 local TableUtil = require(Knit.Util.TableUtil)
 local CollectionService = game:GetService("CollectionService")
 local RunService = game:GetService("RunService")
@@ -324,6 +327,33 @@ end
 
 function Component:Filter(filterFunc)
 	return TableUtil.Filter(self._objects, filterFunc)
+end
+
+
+function Component:WaitFor(instanceName, timeout)
+	timeout = (timeout or 60)
+	for _,v in ipairs(self._objects) do
+		if (v._instance.Name == instanceName) then
+			return Promise.Resolve(v)
+		end
+	end
+	return Promise.new(function(resolve, reject, onCancel)
+		local added, delayer
+		delayer = Thread.Delay(timeout, function()
+			reject("Timeout")
+		end)
+		added = self.Added:Connect(function(obj)
+			if (obj._instance.Name == instanceName) then
+				added:Disconnect()
+				delayer:Disconnect()
+				resolve(obj)
+			end
+		end)
+		onCancel(function()
+			added:Disconnect()
+			delayer:Disconnect()
+		end)
+	end)
 end
 
 
