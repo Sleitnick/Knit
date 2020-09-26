@@ -16,7 +16,6 @@ KnitServer.Util = script.Parent.Util
 
 local knitRepServiceFolder = Instance.new("Folder")
 knitRepServiceFolder.Name = "Services"
-knitRepServiceFolder.Parent = script.Parent
 
 local Promise = require(KnitServer.Util.Promise)
 local Thread = require(KnitServer.Util.Thread)
@@ -177,6 +176,9 @@ function KnitServer.Start()
 		Thread.Spawn(function()
 			onStartedComplete:Destroy()
 		end)
+
+		-- Expose service remotes to everyone:
+		knitRepServiceFolder.Parent = script.Parent
 		
 	end)
 	
