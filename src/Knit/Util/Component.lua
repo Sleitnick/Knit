@@ -19,7 +19,7 @@
 	component:GetFromInstance(instance)
 	component:GetFromID(id)
 	component:Filter(filterFunc)
-	component:WaitFor(instanceName)
+	component:WaitFor(instanceOrName)
 	component:Destroy()
 
 	component.Added(obj)
@@ -330,10 +330,11 @@ function Component:Filter(filterFunc)
 end
 
 
-function Component:WaitFor(instanceName, timeout)
+function Component:WaitFor(instance, timeout)
 	timeout = (timeout or 60)
+	local isName = (type(instance) == "string")
 	for _,v in ipairs(self._objects) do
-		if (v._instance.Name == instanceName) then
+		if ((isName and v._instance.Name == instance) or ((not isName) and v._instance == instance)) then
 			return Promise.Resolve(v)
 		end
 	end
@@ -343,7 +344,7 @@ function Component:WaitFor(instanceName, timeout)
 			reject("Timeout")
 		end)
 		added = self.Added:Connect(function(obj)
-			if (obj._instance.Name == instanceName) then
+			if ((isName and obj._instance.Name == instance) or ((not isName) and obj._instance == instance)) then
 				added:Disconnect()
 				delayer:Disconnect()
 				resolve(obj)
