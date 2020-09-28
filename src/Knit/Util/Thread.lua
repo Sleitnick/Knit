@@ -124,41 +124,60 @@ function Thread.SpawnNow(func, ...)
 end
 
 
+local function finish(thread, success, ...) 
+    if not success then
+        warn(debug.traceback(thread, tostring(...)))
+    end 
+
+    return success, ...
+end
+
 function Thread.Spawn(func, ...)
-	local args = table.pack(...)
-	local hb
-	hb = heartbeat:Connect(function()
-		hb:Disconnect()
-		func(table.unpack(args, 1, args.n))
-	end)
+    assert(type(func) == "function", string.format("Invalid argument #1 to Thread.Spawn (function? expected, got %s)", typeof(func))) 
+    
+    local thread = coroutine.create(func)
+    return finish(thread, coroutine.resume(func, ...))
 end
 
 
-function Thread.Delay(waitTime, func, ...)
-	local args = table.pack(...)
-	local executeTime = (time() + waitTime)
-	local hb
-	hb = heartbeat:Connect(function()
-		if (time() >= executeTime) then
-			hb:Disconnect()
-			func(table.unpack(args, 1, args.n))
-		end
-	end)
-	return hb
+
+
+function Thread.Delay(n, func, ...)
+    assert(typeof(n) == "number", string.format("Invalid argument #1 to Thread.Delay (number? expected, got %s)", typeof(n)))
+    assert(typeof(func) == "function", string.format("Invalid argument #2 to Thread.Delay (function? expected, got %s)", typeof(func))) 
+    
+    local args = {...}
+    local executeTime = os.clock() + n
+
+    local hb
+    hb = Services.RunService.Heartbeat:Connect(function()
+        if os.clock() >= executeTime then
+            hb:Disconnect()
+
+            func(unpack(args))
+        end
+    end)
+
+    return hb
 end
 
 
-function Thread.DelayRepeat(intervalTime, func, ...)
-	local args = table.pack(...)
-	local nextExecuteTime = (time() + intervalTime)
-	local hb
-	hb = heartbeat:Connect(function()
-		if (time() >= nextExecuteTime) then
-			nextExecuteTime = (time() + intervalTime)
-			func(table.unpack(args, 1, args.n))
-		end
-	end)
-	return hb
+function Thread.DelayRepeat(n, func, ...) 
+    assert(typeof(n) == "number", string.format("Invalid argument #1 to Thread.Delay (number? expected, got %s)", typeof(n)))
+    assert(typeof(func) == "function", string.format("Invalid argument #2 to Thread.Delay (function? expected, got %s)", typeof(func))) 
+    
+    local args = {...}
+    local executeTime = os.clock() + n
+
+    local hb
+    hb = Services.RunService.Heartbeat:Connect(function()
+        if os.clock() >= executeTime then
+            executeTime += n
+            func(unpack(args))
+        end
+    end)
+
+    return hb
 end
 
 
