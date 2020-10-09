@@ -4,9 +4,9 @@ These modules are accessible via `Knit.Util` and must be required, such as `requ
 
 --------------------
 
-## [Signal](https://github.com/Sleitnick/Knit/blob/master/src/Knit/Util/Signal.lua)
+## [Signal](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Signal.lua)
 
-The [Signal](https://github.com/Sleitnick/Knit/blob/master/src/Knit/Util/Signal.lua) module gives basic Roblox Signal functionality. It is easy to instantiate and use a signal object.
+The [Signal](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Signal.lua) module gives basic Roblox Signal functionality. It is easy to instantiate and use a signal object.
 
 ```lua
 local Signal = require(Knit.Util.Signal)
@@ -27,9 +27,9 @@ The Connection object internal to the Signal module also has a Destroy method as
 
 --------------------
 
-## [Thread](https://github.com/Sleitnick/Knit/blob/master/src/Knit/Util/Thread.lua)
+## [Thread](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Thread.lua)
 
-The [Thread](https://github.com/Sleitnick/Knit/blob/master/src/Knit/Util/Thread.lua) module aims to replace the somewhat-broken built-in thread functions (such as `wait`, `spawn`, and `delay`), which suffer from throttling.
+The [Thread](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Thread.lua) module aims to replace the somewhat-broken built-in thread functions (such as `wait`, `spawn`, and `delay`), which suffer from throttling.
 
 ```lua
 local Thread = require(Knit.Util.Thread)
@@ -52,9 +52,9 @@ delayConnection:Disconnect()
 
 --------------------
 
-## [Maid](https://github.com/Sleitnick/Knit/blob/master/src/Knit/Util/Maid.lua)
+## [Maid](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Maid.lua)
 
-The [Maid](https://github.com/Sleitnick/Knit/blob/master/src/Knit/Util/Maid.lua) module is a powerful tool for tracking and cleaning up your messes (hence the name). The Maid module was created by [James Onnen](https://github.com/Quenty). Read his [tutorial on Maids](https://medium.com/roblox-development/how-to-use-a-maid-class-on-roblox-to-manage-state-651bf74de98b) for a better understanding of how to use it.
+The [Maid](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Maid.lua) module is a powerful tool for tracking and cleaning up your messes (hence the name). The Maid module was created by [James Onnen](https://github.com/Quenty). Read his [tutorial on Maids](https://medium.com/roblox-development/how-to-use-a-maid-class-on-roblox-to-manage-state-651bf74de98b) for a better understanding of how to use it.
 
 ```lua
 local Maid = require(Knit.Util.Maid)
@@ -75,9 +75,9 @@ Any table with a `Destroy` method can be added to a maid. If you have a bunch of
 
 --------------------
 
-## [Promise](https://github.com/Sleitnick/Knit/blob/master/src/Knit/Util/Promise.lua)
+## [Promise](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Promise.lua)
 
-The [Promise](https://github.com/Sleitnick/Knit/blob/master/src/Knit/Util/Promise.lua) module reproduces the behavior of Promises common in web programming, written by [evaera](https://github.com/evaera). Promises are incredibly useful for managing asynchronous flows. Read the [official documentation](https://eryn.io/roblox-lua-promise/lib/) for usage.
+The [Promise](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Promise.lua) module reproduces the behavior of Promises common in web programming, written by [evaera](https://github.com/evaera). Promises are incredibly useful for managing asynchronous flows. Read the [official documentation](https://eryn.io/roblox-lua-promise/lib/) for usage.
 
 ```lua
 local Promise = require(Knit.Util.Promise)
@@ -106,9 +106,9 @@ Fetch("https://www.example.com")
 
 --------------------
 
-## [RemoteEvent](https://github.com/Sleitnick/Knit/blob/master/src/Knit/Util/Remote/RemoteEvent.lua)
+## [RemoteEvent](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Remote/RemoteEvent.lua)
 
-The [RemoteEvent](https://github.com/Sleitnick/Knit/blob/master/src/Knit/Util/Remote/RemoteEvent.lua) module wraps the RemoteEvent object and is used within services and controllers. The only time a developer should ever have to instantiate a RemoteEvent is within the `Client` table of a service. The behavior differs between the server and the client.
+The [RemoteEvent](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Remote/RemoteEvent.lua) module wraps the RemoteEvent object and is used within services and controllers. The only time a developer should ever have to instantiate a RemoteEvent is within the `Client` table of a service. The behavior differs between the server and the client.
 
 ```lua
 -- Server-side
@@ -143,9 +143,9 @@ connection:Disconnect()
 
 --------------------
 
-## [RemoteProperty](https://github.com/Sleitnick/Knit/blob/master/src/Knit/Util/Remote/RemoteProperty.lua)
+## [RemoteProperty](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Remote/RemoteProperty.lua)
 
-The [RemoteProperty](https://github.com/Sleitnick/Knit/blob/master/src/Knit/Util/Remote/RemoteProperty.lua) module wraps a ValueBase object to expose properties to the client from the server. The server can read and write to this object, but the client can only read. This is useful when it's overkill to write a combination of a method and event to replicate data to the client.
+The [RemoteProperty](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Remote/RemoteProperty.lua) module wraps a ValueBase object to expose properties to the client from the server. The server can read and write to this object, but the client can only read. This is useful when it's overkill to write a combination of a method and event to replicate data to the client.
 
 The behavior is slightly different between the server and the client.
 
@@ -177,9 +177,9 @@ property.Changed:Connect(function(newValue) end)
 
 --------------------
 
-## [Component](https://github.com/Sleitnick/Knit/blob/master/src/Knit/Util/Component.lua)
+## [Component](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Component.lua)
 
-The [Component](https://github.com/Sleitnick/Knit/blob/master/src/Knit/Util/Component.lua) class allows developers to bind custom component classes to in-game objects based on tags provided by the [CollectionService](https://developer.roblox.com/en-us/api-reference/class/CollectionService).
+The [Component](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Component.lua) class allows developers to bind custom component classes to in-game objects based on tags provided by the [CollectionService](https://developer.roblox.com/en-us/api-reference/class/CollectionService).
 
 For instance, a component might be created called `DanceFloor`, which has the purpose of making a part flash random colors. Here's what our DanceFloor component module might look like:
 
@@ -225,14 +225,14 @@ local danceFloor = Component.new("DanceFloor", DanceFloor)
 
 Lastly, simply assign parts within the game with the `DanceFloor` tag, and the DanceFloor component will automatically be instantiated for those objects. For editing tags within Studio, check out the [Tag Editor](https://www.roblox.com/library/948084095/Tag-Editor) plugin.
 
-The full API for components is listed within the [Component](https://github.com/Sleitnick/Knit/blob/master/src/Knit/Util/Component.lua) module.
+The full API for components is listed within the [Component](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Component.lua) module.
 
 !!! note
 	If a component needs to be used on both the server and the client, it is recommended to make two separate component modules for each environment. In the above example, we made a DanceFloor. Ideally, such a module should only run on the client, since it is rapidly changing the color of the part at random. Another DanceFloor component could also be created for the server if desired.
 
 --------------------
 
-## [Option](https://github.com/Sleitnick/Knit/blob/master/src/Knit/Util/Option.lua)
+## [Option](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Option.lua)
 
 An Option is a powerful concept taken from [Rust](https://doc.rust-lang.org/std/option/index.html) and other languages. The purpose is to represent an otional value. An option can either be `Some` or `None`. Using Options helps reduce `nil` bugs (which can cause silent bugs that can be hard to track down). Options automatically serialize/deserialize across the server/client boundary when passed through services or controllers.
 
