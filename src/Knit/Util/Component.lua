@@ -275,7 +275,10 @@ function Component:_instanceAdded(instance)
 	self._instancesToObjects[instance] = obj
 	table.insert(self._objects, obj)
 	if (self._hasInit) then
-		obj:Init()
+		Thread.Spawn(function()
+			if (self._instancesToObjects[instance] ~= obj) then return end
+			obj:Init()
+		end)
 	end
 	self.Added:Fire(obj)
 	return obj
