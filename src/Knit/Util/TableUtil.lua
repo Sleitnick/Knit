@@ -20,7 +20,8 @@
 	TableUtil.Shuffle(Table tbl)
 	TableUtil.IsEmpty(Table tbl)
 	TableUtil.EncodeJSON(Table tbl)
-	TableUtil.DecodeJSON(String json)
+    TableUtil.DecodeJSON(String json)
+    TableUtil.Replace(Table tbl, Table tbl)
 
 	EXAMPLES:
 
@@ -212,7 +213,15 @@
 
 			local tbl = {1, 2, 3, 4, 5, 6, 7, 8, 9}
 			TableUtil.Shuffle(tbl)
-			print(table.concat(tbl, ", "))  -- e.g. > 3, 6, 9, 2, 8, 4, 1, 7, 5
+            print(table.concat(tbl, ", "))  -- e.g. > 3, 6, 9, 2, 8, 4, 1, 7, 5
+            
+        Replace:
+            
+            Replaces all values in the first table with the any matching key values in the second table.
+
+            local tbl1 = {Cat = "Jessie", Dog = "Felix"}
+            local tbl2 = {Cat = "Jones", Elephant = "Barry"}
+            TableUtil.Replace(tbl1, tbl2) --> {Cat = "Jones", Dog = "Felix"}
 	
 --]]
 
@@ -470,6 +479,19 @@ local function FastRemoveFirstValue(t, v)
 end
 
 
+local function Replace(t1, t2)
+    local final = {}
+    for k, v in pairs(t1) do
+        if (t2[k]) then
+            final[k] = t2[k]
+        else
+            final[k] = v
+        end
+    end
+    return final
+end
+
+
 TableUtil.Copy = CopyTable
 TableUtil.CopyShallow = CopyTableShallow
 TableUtil.Sync = Sync
@@ -487,6 +509,7 @@ TableUtil.Shuffle = Shuffle
 TableUtil.IsEmpty = IsEmpty
 TableUtil.EncodeJSON = EncodeJSON
 TableUtil.DecodeJSON = DecodeJSON
+TableUtil.Replace = Replace
 
 
 return TableUtil
