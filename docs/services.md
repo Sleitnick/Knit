@@ -239,7 +239,7 @@ PointsService.GiveMePoints:Fire()
 
 ### Properties
 
-Knit provides a `RemoteProperty` module to easily expose valuse to the client. These values are read-only on the client.
+Knit provides a `RemoteProperty` module to easily expose values to the client. These values are read-only on the client.
 
 For our example, let's say that we want to show the most points in the game. First, let's create the `RemoteProperty` object:
 
