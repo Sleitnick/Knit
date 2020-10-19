@@ -199,7 +199,7 @@ end)
 
 ### Events (Client-to-Server)
 
-Events can also be fired from the client. This is useful when the client needs to give the server information, but doesn't care about any response from the server. For instance, maybe the client wants to tell the PointsService that it wants some points. This is an odd use-case, but let's just role with it.
+Events can also be fired from the client. This is useful when the client needs to give the server information, but doesn't care about any response from the server. For instance, maybe the client wants to tell the PointsService that it wants some points. This is an odd use-case, but let's just roll with it.
 
 We will create another client-exposed event called `GiveMePoints` which will randomly give the player points. Again, this is nonesense in the context of an actual game, but useful for example.
 
