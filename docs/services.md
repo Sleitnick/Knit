@@ -199,7 +199,7 @@ end)
 
 ### Events (Client-to-Server)
 
-Events can also be fired from the client. This is useful when the client needs to give the server information, but doesn't care about any response from the server. For instance, maybe the client wants to tell the PointsService that it wants some points. This is an odd use-case, but let's just role with it.
+Events can also be fired from the client. This is useful when the client needs to give the server information, but doesn't care about any response from the server. For instance, maybe the client wants to tell the PointsService that it wants some points. This is an odd use-case, but let's just roll with it.
 
 We will create another client-exposed event called `GiveMePoints` which will randomly give the player points. Again, this is nonesense in the context of an actual game, but useful for example.
 
@@ -239,7 +239,7 @@ PointsService.GiveMePoints:Fire()
 
 ### Properties
 
-Knit provides a `RemoteProperty` module to easily expose valuse to the client. These values are read-only on the client.
+Knit provides a `RemoteProperty` module to easily expose values to the client. These values are read-only on the client.
 
 For our example, let's say that we want to show the most points in the game. First, let's create the `RemoteProperty` object:
 
