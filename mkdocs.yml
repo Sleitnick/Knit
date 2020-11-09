@@ -12,6 +12,7 @@ nav:
   - Util: util.md
   - Knit API: knitapi.md
   - Execution Model: executionmodel.md
+  - VS Code Snippets: vscodesnippets.md
   - Examples: examples.md
 
 theme:
