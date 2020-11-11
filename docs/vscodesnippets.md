@@ -163,7 +163,7 @@ Reference Knit, create a service, and return the service.
 ```lua
 local Knit = require(game:GetService("ReplicatedStorage").Knit)
 
-local MyController = Knit.CreateService {
+local MyController = Knit.CreateController {
 	Name = "MyController";
 }
 
