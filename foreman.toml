@@ -1,0 +1,5 @@
+[tools]
+# Install latest selene
+selene = { source = "Kampfkarren/selene", version = "x" }
+rojo = { source = "rojo-rbx/rojo", version = "0.5.4" }
+remodel = { source = "rojo-rbx/remodel", version = "0.7.1"}
