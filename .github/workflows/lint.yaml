@@ -15,8 +15,8 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Install foreman
-        uses: Roblox/setup-foreman@v1
-        with:
+    - uses: Roblox/setup-foreman@v1
+      with:
           version: "^1.0.0"
           token: ${{ SECRETS.GITHUB_TOKEN }}
     - name: Lint
