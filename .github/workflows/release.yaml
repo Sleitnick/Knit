@@ -12,29 +12,24 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+      - name: Install foreman
+        uses: Roblox/setup-foreman@v1
+        with:
+          version: "^1.0.0"
+          token: ${{ SECRETS.GITHUB_TOKEN }}
       - name: Build project
         run: |
           cd src
           zip -r knit.zip Knit/**
-      - name: Install Rojo
-        run: |
-          wget -q -O rojo.zip https://github.com/Roblox/rojo/releases/download/v0.5.4/rojo-0.5.4-linux.zip
-          unzip rojo.zip
-          chmod +x ./rojo
-      - name: Install Remodel
-        run: |
-          wget -q -O remodel.zip https://github.com/Roblox/remodel/releases/download/v0.7.1/remodel-0.7.1-linux.zip
-          unzip remodel.zip
-          chmod +x ./remodel
       - name: Build place file
         run: |
-          ./rojo build -o Knit.rbxlx
+          rojo build -o Knit.rbxlx
       - name: Publish Knit to Roblox
         shell: bash
         env:
           REMODEL_AUTH: ${{ secrets.RBX_AUTH }}
         run: |
-          ./remodel run publish.lua
+          remodel run publish.lua
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1

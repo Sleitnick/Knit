@@ -14,10 +14,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Install Selene
-      run: |
-        wget -q -O selene https://github.com/Kampfkarren/selene/releases/latest/download/selene-linux
-        chmod +x ./selene
+    - name: Install foreman
+    - uses: Roblox/setup-foreman@v1
+      with:
+          version: "^1.0.0"
+          token: ${{ SECRETS.GITHUB_TOKEN }}
     - name: Lint
       run: |
-        ./selene ./
+        selene ./
