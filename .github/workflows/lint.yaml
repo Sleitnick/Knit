@@ -14,8 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Install foreman
     - uses: Roblox/setup-foreman@v1
+      name: Install Foreman
       with:
           version: "^1.0.0"
           token: ${{ SECRETS.GITHUB_TOKEN }}
