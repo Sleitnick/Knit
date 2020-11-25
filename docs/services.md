@@ -39,7 +39,7 @@ end
 
 ## Adding properties
 
-Again, services are just tables. So we can simply add in properties as we want. In our above method, we are returning `0` for `GetPoints()` because we have nowhere to store/retreive points. Likewise, our `AddPoints()` method can't do anything. Let's change that. Let's create a property that holds a table of points per player:
+Again, services are just tables. So we can simply add in properties as we want. In our above method, we are returning `0` for `GetPoints()` because we have nowhere to store/retrieve points. Likewise, our `AddPoints()` method can't do anything. Let's change that. Let's create a property that holds a table of points per player:
 
 ```lua
 PointsService.PointsPerPlayer = {}
@@ -164,7 +164,7 @@ We should also create an event that we can fire for the clients when their point
 PointsService.Client.PointsChanged = RemoteEvent.new()
 ```
 
-Under the hood, Knit is creating a RemoteEvent linked to this event. This is a two-way event (like a tranceiver), so we can both send and receive data on both the server and the client.
+Under the hood, Knit is creating a RemoteEvent linked to this event. This is a two-way event (like a transceiver), so we can both send and receive data on both the server and the client.
 
 We can then modify our `AddPoints` method again to fire this event too:
 
@@ -201,7 +201,7 @@ end)
 
 Events can also be fired from the client. This is useful when the client needs to give the server information, but doesn't care about any response from the server. For instance, maybe the client wants to tell the PointsService that it wants some points. This is an odd use-case, but let's just roll with it.
 
-We will create another client-exposed event called `GiveMePoints` which will randomly give the player points. Again, this is nonesense in the context of an actual game, but useful for example.
+We will create another client-exposed event called `GiveMePoints` which will randomly give the player points. Again, this is nonsense in the context of an actual game, but useful for example.
 
 Let's create the event on the PointsService:
 ```lua
