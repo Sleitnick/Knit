@@ -1,5 +1,6 @@
 ![Release](https://github.com/Sleitnick/Knit/workflows/Release/badge.svg)
 ![Lint](https://github.com/Sleitnick/Knit/workflows/Lint/badge.svg)
+![Deploy Docs](https://github.com/Sleitnick/Knit/workflows/Deploy%20Docs/badge.svg)
 
 # Knit
 
