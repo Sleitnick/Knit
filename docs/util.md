@@ -234,7 +234,7 @@ The full API for components is listed within the [Component](https://github.com/
 
 ## [Option](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Option.lua)
 
-An Option is a powerful concept taken from [Rust](https://doc.rust-lang.org/std/option/index.html) and other languages. The purpose is to represent an otional value. An option can either be `Some` or `None`. Using Options helps reduce `nil` bugs (which can cause silent bugs that can be hard to track down). Options automatically serialize/deserialize across the server/client boundary when passed through services or controllers.
+An Option is a powerful concept taken from [Rust](https://doc.rust-lang.org/std/option/index.html) and other languages. The purpose is to represent an optional value. An option can either be `Some` or `None`. Using Options helps reduce `nil` bugs (which can cause silent bugs that can be hard to track down). Options automatically serialize/deserialize across the server/client boundary when passed through services or controllers.
 
 Using Options is very simple:
 
