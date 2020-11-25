@@ -13,7 +13,7 @@ A lightweight framework for Roblox that simplifies communication between core pa
 
 -------------------
 
-Knit gives developers the tools to create services/controllers on the server and client. These services and controllers can talk to each other seamlessly, including serialization/deserialization of custom classes.
+Knit gives developers the tools to create services/controllers on the server and client. These services and controllers can talk to each other seamlessly, including serialization/de-serialization of custom classes.
 
 ## Using Knit
 
