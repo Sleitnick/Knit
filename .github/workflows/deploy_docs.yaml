@@ -6,11 +6,12 @@ on:
     - main
 
 jobs:
-  lint:
-    name: Lint
+  build:
+    name: Build & deploy docs
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
     - name: Deploy docs
       uses: mhausenblas/mkdocs-deploy-gh-pages@master
       env:
