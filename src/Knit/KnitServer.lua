@@ -48,8 +48,10 @@ local function GetFolderOrCreate(parent, name)
 end
 
 
-local function AddToRepFolder(service, remoteObj)
-	if (remoteObj:IsA("RemoteFunction")) then
+local function AddToRepFolder(service, remoteObj, folderOverride)
+	if (folderOverride) then
+		remoteObj.Parent = GetFolderOrCreate(service._knit_rep_folder, folderOverride)
+	elseif (remoteObj:IsA("RemoteFunction")) then
 		remoteObj.Parent = GetFolderOrCreate(service._knit_rep_folder, "RF")
 	elseif (remoteObj:IsA("RemoteEvent")) then
 		remoteObj.Parent = GetFolderOrCreate(service._knit_rep_folder, "RE")
@@ -118,7 +120,7 @@ function KnitServer.BindRemoteProperty(service, propName, prop)
 	assert(service._knit_rp[propName] == nil, "RemoteProperty \"" .. propName .. "\" already exists")
 	prop._object.Name = propName
 	service._knit_rp[propName] = prop
-	AddToRepFolder(service, prop._object)
+	AddToRepFolder(service, prop._object, "RP")
 end
 
 
