@@ -28,12 +28,11 @@
 
 local IS_SERVER = game:GetService("RunService"):IsServer()
 local Signal = require(script.Parent.Parent.Signal)
-local httpService = game:GetService("HttpService")
 
 local typeClassMap = {
 	bool = "BoolValue";
 	string = "StringValue";
-	table = "StringValue";
+	table = "RemoteEvent";
 	CFrame = "CFrameValue";
 	Color3 = "Color3Value";
 	BrickColor = "BrickColorValue";
@@ -72,9 +71,12 @@ if (IS_SERVER) then
 		}, RemoteProperty)
 
 		if (self._isTable) then
-			local tblMarker = Instance.new("ObjectValue")
-			tblMarker.Name = "IsTable"
-			tblMarker.Parent = self._object
+			local req = Instance.new("RemoteFunction")
+			req.Name = "TableRequest"
+			req.Parent = self._object
+			function req.OnServerInvoke(_player)
+				return self._value
+			end
 		end
 
 		self.Changed = self._object.Changed
@@ -92,7 +94,7 @@ if (IS_SERVER) then
 
 	function RemoteProperty:Set(value)
 		if (self._isTable) then
-			self._object.Value = httpService:JSONEncode(value)
+			self._object:FireAllClients(value)
 		else
 			self._object.Value = value
 		end
@@ -112,24 +114,21 @@ else
 	function RemoteProperty.new(object)
 		local self = setmetatable({
 			_object = object;
-			_value = object.Value;
-			_isTable = object:FindFirstChild("IsTable") ~= nil;
+			_value = nil;
+			_isTable = object:IsA("RemoteEvent");
 		}, RemoteProperty)
 		local function SetValue(v)
-			if (self._isTable) then
-				self._value = httpService:JSONDecode(v)
-			else
-				self._value = v
-			end
+			self._value = v
 		end
-		SetValue(object.Value)
 		if (self._isTable) then
 			self.Changed = Signal.new()
-			self._change = object.Changed:Connect(function(v)
-				SetValue(v)
-				self.Changed:Fire(self._value)
+			self._change = object.OnClientEvent:Connect(function(tbl)
+				SetValue(tbl)
+				self.Changed:Fire(tbl)
 			end)
+			SetValue(object.TableRequest:InvokeServer())
 		else
+			SetValue(object.Value)
 			self.Changed = object.Changed
 			self._change = object.Changed:Connect(SetValue)
 		end
