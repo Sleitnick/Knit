@@ -31,7 +31,7 @@ local Knit = require(game:GetService("ReplicatedStorage").Knit)
 -- Start Knit:
 Knit.Start():Then(function()
 	print("Knit running")
-end):Catch(err)
+end):Catch(function(err)
 	warn(err)
 end)
 ```
