@@ -14,6 +14,7 @@
 	TableUtil.Filter(Table tbl, Function callback)
 	TableUtil.Reduce(Table tbl, Function callback [, Number initialValue])
 	TableUtil.Assign(Table target, ...Table sources)
+	TableUtil.GetTableType(Table tbl)
 	TableUtil.Extend(Table target, Table extension)
 	TableUtil.IndexOf(Table tbl, Variant item)
 	TableUtil.Reverse(Table tbl)
