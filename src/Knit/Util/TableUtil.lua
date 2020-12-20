@@ -375,22 +375,22 @@ end
 
 local function GetTableType(t)
 	if next(t) == nil then return "Empty" end
-    local isArray = true
-    local isDictionary = true
-    for k, _ in next, t do
-        if typeof(k) == "number" and k%1 == 0 and k > 0 then
-            isDictionary = false
-        else
-            isArray = false
-        end
-    end
-    if isArray then
-        return "Array"
-    elseif isDictionary then
-        return "Dictionary"
-    else
-        return "Mixed"
-    end
+	local isArray = true
+	local isDictionary = true
+	for k, _ in pairs(t) do
+		if typeof(k) == "number" and k%1 == 0 and k > 0 then
+			isDictionary = false
+		else
+			isArray = false
+		end
+	end
+	if isArray then
+		return "Array"
+	elseif isDictionary then
+		return "Dictionary"
+	else
+		return "Mixed"
+	end
 end
 
 
