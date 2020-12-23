@@ -31,7 +31,7 @@ local Signal = require(script.Parent.Parent.Signal)
 local httpService = game:GetService("HttpService")
 
 local typeClassMap = {
-	bool = "BoolValue";
+	boolean = "BoolValue";
 	string = "StringValue";
 	table = "StringValue";
 	CFrame = "CFrameValue";
