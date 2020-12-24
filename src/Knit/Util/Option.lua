@@ -5,20 +5,42 @@
 --[[
 
 	MatchTable {
-		Some: (value: any) -> void
-		None: () -> void
+		Some: (value: any) -> any
+		None: () -> any
 	}
 
-	Option.Some(anyValue): Option<any>
+	CONSTRUCTORS:
 
-	Option.None: Option<None>
+		Option.Some(anyNonNilValue): Option<any>
+		Option.Wrap(anyValue): Option<any>
 
-	Option.Is(obj): boolean
 
-	opt:Match(): (matches: MatchTable) -> void
-	opt:IsSome(): boolean
-	opt:IsNone(): boolean
-	opt:Unwrap(): any
+	STATIC FIELDS:
+
+		Option.None: Option<None>
+
+
+	STATIC METHODS:
+
+		Option.Is(obj): boolean
+
+
+	METHODS:
+
+		opt:Match(): (matches: MatchTable) -> any
+		opt:IsSome(): boolean
+		opt:IsNone(): boolean
+		opt:Unwrap(): any
+		opt:Expect(errMsg: string): any
+		opt:ExpectNone(errMsg: string): void
+		opt:UnwrapOr(default: any): any
+		opt:UnwrapOrElse(default: () -> any): any
+		opt:And(opt2: Option<any>): Option<any>
+		opt:AndThen(predicate: (unwrapped: any) -> Option<any>): Option<any>
+		opt:Or(opt2: Option<any>): Option<any>
+		opt:OrElse(orElseFunc: () -> Option<any>): Option<any>
+		opt:XOr(opt2: Option<any>): Option<any>
+		opt:Contains(value: any): boolean
 
 	--------------------------------------------------------------------
 
@@ -81,8 +103,22 @@ function Option.Some(value)
 end
 
 
+function Option.Wrap(value)
+	if (value == nil) then
+		return Option.None
+	else
+		return Option.Some(value)
+	end
+end
+
+
 function Option.Is(obj)
 	return (type(obj) == "table" and getmetatable(obj) == Option)
+end
+
+
+function Option.Assert(obj)
+	assert(Option.Is(obj), "Result was not of type Option")
 end
 
 
@@ -106,9 +142,9 @@ function Option:Match(matches)
 	assert(type(onSome) == "function", "Missing 'Some' match")
 	assert(type(onNone) == "function", "Missing 'None' match")
 	if (self:IsSome()) then
-		onSome(self:Unwrap())
+		return onSome(self:Unwrap())
 	else
-		onNone()
+		return onNone()
 	end
 end
 
@@ -168,7 +204,9 @@ end
 
 function Option:AndThen(andThenFunc)
 	if (self:IsSome()) then
-		return andThenFunc()
+		local result = andThenFunc(self:Unwrap())
+		Option.Assert(result)
+		return result
 	else
 		return Option.None
 	end
@@ -177,7 +215,7 @@ end
 
 function Option:Or(optB)
 	if (self:IsSome()) then
-		return self:Unwrap()
+		return self
 	else
 		return optB
 	end
@@ -186,9 +224,11 @@ end
 
 function Option:OrElse(orElseFunc)
 	if (self:IsSome()) then
-		return self:Unwrap()
+		return self
 	else
-		return orElseFunc()
+		local result = orElseFunc()
+		Option.Assert(result)
+		return result
 	end
 end
 
@@ -199,15 +239,24 @@ function Option:XOr(optB)
 	if (someOptA == someOptB) then
 		return Option.None
 	elseif (someOptA) then
-		return self:Unwrap()
+		return self
 	else
-		return optB:Unwrap()
+		return optB
+	end
+end
+
+
+function Option:Filter(predicate)
+	if (self:IsNone() or not predicate(self._v)) then
+		return Option.None
+	else
+		return self
 	end
 end
 
 
 function Option:Contains(value)
-	return (self:IsSome() and self:Unwrap() == value)
+	return (self:IsSome() and self._v == value)
 end
 
 
