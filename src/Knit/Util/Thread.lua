@@ -7,9 +7,9 @@
 	Thread.SpawnNow(func, ...)
 	Thread.Spawn(func, ...)
 	Thread.Delay(waitTime, func, ...)
-	Thread.DelayRepeat(waitTime, func, ...)
+	Thread.DelayRepeat(waitTime, func, immediate, ...)
 
-	SpawnNow(Function func, Arguments...)
+	SpawnNow(func: (...any) -> void, ...args)
 
 		>	Uses a BindableEvent to spawn a new thread
 			immediately. More performance-intensive than
@@ -20,7 +20,7 @@
 			right away, otherwise use Thread.Spawn for
 			the sake of performance.
 
-	Spawn(Function func, Arguments...)
+	Spawn(func: (...any) -> void, ...args)
 
 		>	Uses RunService's Heartbeat to spawn a new
 			thread on the next heartbeat and then
@@ -30,7 +30,7 @@
 			will have a short delay of 1 frame before
 			calling the function.
 
-	Delay(Number waitTime, Function func, Arguments...)
+	Delay(waitTime: number, func: (...any) -> void, ...args)
 
 		>	The same as Thread.Spawn, but waits to call
 			the function until the in-game time as elapsed
@@ -40,7 +40,7 @@
 			so the delay can be cancelled by disconnecting
 			the returned connection.
 
-	DelayRepeat(Number intervalTime, Function func, Arguments...)
+	DelayRepeat(intervalTime: number, func: (...any) -> void, immedate: boolean, ...args)
 
 		>	The same as Thread.Delay, except it repeats
 			indefinitely.
@@ -148,9 +148,9 @@ function Thread.Delay(waitTime, func, ...)
 end
 
 
-function Thread.DelayRepeat(intervalTime, func, ...)
+function Thread.DelayRepeat(intervalTime, func, immediate, ...)
 	local args = table.pack(...)
-	local nextExecuteTime = (time() + intervalTime)
+	local nextExecuteTime = (time() + (immediate and 0 or intervalTime))
 	local hb
 	hb = heartbeat:Connect(function()
 		if (time() >= nextExecuteTime) then
