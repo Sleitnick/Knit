@@ -2,6 +2,15 @@
 -- Stephen Leitnick
 -- December 27, 2020
 
+--[[
+
+	symbol = Symbol.new(id: string [, scope: Symbol])
+
+	Symbol.Is(obj: any): boolean
+	Symbol.IsInScope(obj: any, scope: Symbol): boolean
+
+--]]
+
 
 local CLASSNAME = "Symbol"
 
@@ -28,7 +37,7 @@ function Symbol.Is(obj)
 end
 
 
-function Symbol.IsScope(obj, scope)
+function Symbol.IsInScope(obj, scope)
 	return (Symbol.Is(obj) and obj._scope == scope)
 end
 
