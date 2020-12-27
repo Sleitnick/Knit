@@ -6,12 +6,12 @@
 
 	Thread.DelayRepeatBehavior { Delayed, Immediate }
 
-	Thread.SpawnNow(func: (...any) -> void, ...any)
-	Thread.Spawn(func: (...any) -> void, ...any)
-	Thread.Delay(waitTime: number, func: (...any) -> void, ...any)
-	Thread.DelayRepeat(waitTime: number, func: (...any) -> void, behavior: DelayRepeatBehavior, ...any)
+	Thread.SpawnNow(func: (...any) -> void, [...any])
+	Thread.Spawn(func: (...any) -> void, [...any])
+	Thread.Delay(waitTime: number, func: (...any) -> void [, ...any])
+	Thread.DelayRepeat(waitTime: number, func: (...any) -> void [, behavior: DelayRepeatBehavior, ...any])
 
-	SpawnNow(func: (...any) -> void, ...args)
+	SpawnNow(func: (...any) -> void [, ...args])
 
 		>	Uses a BindableEvent to spawn a new thread
 			immediately. More performance-intensive than
@@ -22,7 +22,7 @@
 			right away, otherwise use Thread.Spawn for
 			the sake of performance.
 
-	Spawn(func: (...any) -> void, ...args)
+	Spawn(func: (...any) -> void [, ...args])
 
 		>	Uses RunService's Heartbeat to spawn a new
 			thread on the next heartbeat and then
@@ -32,7 +32,7 @@
 			will have a short delay of 1 frame before
 			calling the function.
 
-	Delay(waitTime: number, func: (...any) -> void, ...args)
+	Delay(waitTime: number, func: (...any) -> void [, ...args])
 
 		>	The same as Thread.Spawn, but waits to call
 			the function until the in-game time as elapsed
@@ -42,7 +42,7 @@
 			so the delay can be cancelled by disconnecting
 			the returned connection.
 
-	DelayRepeat(intervalTime: number, func: (...any) -> void, behavior: DelayRepeatBehavior, ...args)
+	DelayRepeat(intervalTime: number, func: (...any) -> void [, behavior: DelayRepeatBehavior, ...args])
 
 		>	The same as Thread.Delay, except it repeats
 			indefinitely.
