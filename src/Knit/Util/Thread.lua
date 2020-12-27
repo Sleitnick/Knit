@@ -4,10 +4,12 @@
 
 --[[
 
-	Thread.SpawnNow(func, ...)
-	Thread.Spawn(func, ...)
-	Thread.Delay(waitTime, func, ...)
-	Thread.DelayRepeat(waitTime, func, immediate, ...)
+	Thread.DelayRepeatBehavior { Delayed, Immediate }
+
+	Thread.SpawnNow(func: (...any) -> void, ...any)
+	Thread.Spawn(func: (...any) -> void, ...any)
+	Thread.Delay(waitTime: number, func: (...any) -> void, ...any)
+	Thread.DelayRepeat(waitTime: number, func: (...any) -> void, behavior: DelayRepeatBehavior, ...any)
 
 	SpawnNow(func: (...any) -> void, ...args)
 
@@ -40,7 +42,7 @@
 			so the delay can be cancelled by disconnecting
 			the returned connection.
 
-	DelayRepeat(intervalTime: number, func: (...any) -> void, immedate: boolean, ...args)
+	DelayRepeat(intervalTime: number, func: (...any) -> void, behavior: DelayRepeatBehavior, ...args)
 
 		>	The same as Thread.Delay, except it repeats
 			indefinitely.
@@ -51,6 +53,11 @@
 
 		>	Properly bound to the time interval, thus will
 			not experience drift.
+
+		>	If DelayRepeatBehavior is Delayed (default behavior),
+			then the function will first fire after an initial
+			delay. If set to Immediate, the function will fire
+			immediately before the first delay.
 
 	
 	Examples:
@@ -74,7 +81,7 @@
 
 		local repeatConnection = Thread.DelayRepeat(1, function()
 			print("Hello again", time())
-		end)
+		end, Thread.DelayRepeatBehavior.Delayed)
 		wait(5)
 		repeatConnection:Disconnect()
 
@@ -102,10 +109,17 @@
 --]]
 
 
+local Symbol = require(script.Parent.Symbol)
 
 local Thread = {}
 
 local heartbeat = game:GetService("RunService").Heartbeat
+local threadScope = Symbol.new("Thread")
+
+Thread.DelayRepeatBehavior = {
+	Delayed = Symbol.new("Delayed", threadScope);
+	Immediate = Symbol.new("Immediate", threadScope);
+}
 
 
 function Thread.SpawnNow(func, ...)
@@ -148,8 +162,13 @@ function Thread.Delay(waitTime, func, ...)
 end
 
 
-function Thread.DelayRepeat(intervalTime, func, immediate, ...)
+function Thread.DelayRepeat(intervalTime, func, behavior, ...)
 	local args = table.pack(...)
+	if (behavior == nil) then
+		behavior = Thread.DelayRepeatBehavior.Delayed
+	end
+	assert(Symbol.IsScope(behavior, threadScope), "Invalid behavior")
+	local immediate = (behavior == Thread.DelayRepeatBehavior.Immediate)
 	local nextExecuteTime = (time() + (immediate and 0 or intervalTime))
 	local hb
 	hb = heartbeat:Connect(function()
@@ -160,6 +179,16 @@ function Thread.DelayRepeat(intervalTime, func, immediate, ...)
 	end)
 	return hb
 end
+
+
+setmetatable(Thread.DelayRepeatBehavior, {
+	__index = function(_t, k)
+		error("Unknown DelayRepeatBehavior: " .. tostring(k), 2)
+	end;
+	__newindex = function()
+		error("Cannot add new DelayRepeatBehavior", 2)
+	end;
+})
 
 
 return Thread
