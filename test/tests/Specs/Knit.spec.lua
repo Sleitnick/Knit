@@ -111,7 +111,7 @@ return function()
 			end)
 
 			it("should successfully call promisified remote method", function()
-				local success, result = AnotherService:TestMethodPromise("xyz"):await()
+				local success, result = AnotherService:TestMethodPromise("xyz"):Await()
 				if (not success) then warn(result) end
 				expect(success).to.equal(true)
 				expect(result).to.equal("test")
@@ -143,18 +143,18 @@ return function()
 		end)
 
 		it("should successfully start", function()
-			local success, err = Knit.Start():await()
+			local success, err = Knit.Start():Await()
 			if (not success) then warn(err) end
 			expect(success).to.equal(true)
 		end)
 
 		it("should fail if attempting to start after already started", function()
-			local success = Knit.Start():await()
+			local success = Knit.Start():Await()
 			expect(success).to.equal(false)
 		end)
 
 		it("should wait for start", function()
-			local success = Knit.OnStart():await()
+			local success = Knit.OnStart():Await()
 			expect(success).to.equal(true)
 		end)
 

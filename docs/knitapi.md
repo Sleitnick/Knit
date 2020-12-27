@@ -66,13 +66,34 @@ end):Catch(function(err)
 end)
 ```
 
+Alternative ways to start Knit:
+
+```lua
+-- Use 'Await' to wait for Knit to start and capture any errors:
+local success, err = Knit.Start():Await()
+if (not success) then
+	warn(err)
+end
+```
+```lua
+-- Feed the 'warn' built-in function directly to the Catch of the returned promise:
+Knit.Start():Catch(warn)
+```
+```lua
+-- Same as above, but also yield until Knit has started.
+-- Just note that the 'Catch' will eat up the error, so Await will return successfully even if an error occurs.
+Knit.Start():Catch(warn):Await()
+```
+
+It is important that errors are handled when starting Catch, as any errors within the Init lifecycle will go undetected otherwise.
+
 ### `Knit.OnStart()` -> `Promise`
 
 Wait for Knit to start. This is useful if there are other scripts that need to access Knit services or controllers. If Knit is already started, it resolves the promise immediately.
 
 ```lua
 -- Wait for Knit to be started:
-Knit.OnStart():await()
+Knit.OnStart():Await()
 ```
 
 ### `Knit.CreateService(service: Table)` -> `Service`

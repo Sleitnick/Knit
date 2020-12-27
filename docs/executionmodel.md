@@ -16,7 +16,7 @@ local Knit = require(game:GetService("ReplicatedStorage").Knit)
 
 -- Load services or controllers here
 
-Knit.Start():await()
+Knit.Start():Catch(warn)
 ```
 
 Once services or controllers are created, they persist forever (until the server shuts down or the player leaves).
@@ -25,10 +25,10 @@ Once services or controllers are created, they persist forever (until the server
 	Services and controllers **_cannot_** be created after `Knit.Start()` has been called.
 
 ## Catching KnitInit Errors
-Due to the way Promises work, errors that occur within `KnitInit` methods of services or controllers will be caught as a rejected promise. These can be handled by either grabbing the status after using `await` or using the `catch()` method:
+Due to the way Promises work, errors that occur within `KnitInit` methods of services or controllers will be caught as a rejected promise. These can be handled by either grabbing the status after using `Await` or using the `Catch()` method:
 
 ```lua
-local success, err = Knit.Start():await()
+local success, err = Knit.Start():Await()
 if (not success) then
 	-- Handle error
 	error(tostring(err))

@@ -1,11 +1,11 @@
 ## Install
 
-Installing Knit is very simple. Just drop in the module into ReplicatedStorage. Knit can also be used within a Rojo project.
+Installing Knit is very simple. Just drop the module into ReplicatedStorage. Knit can also be used within a Rojo project.
 
-**Standard workflow:**
+**Roblox Studio workflow:**
 
 1. Get [Knit](https://www.roblox.com/library/5530714855/Knit) from the Roblox library.
-1. Place Knit directly within the ReplicatedStorage service.
+1. Place Knit directly within ReplicatedStorage.
 
 **Rojo workflow:**
 
@@ -13,6 +13,8 @@ Installing Knit is very simple. Just drop in the module into ReplicatedStorage. 
 1. Extract the Knit directory from the zipped file.
 1. Place Knit within your project.
 1. Use Rojo to point Knit to ReplicatedStorage.
+
+Please note that it is vital for Knit to live directly within ReplicatedStorage. It cannot be nested in another instance, nor can it live in another service. This is due to other parts of Knit needing to reference back to the Knit module.
 
 ## Basic Usage
 
@@ -22,7 +24,11 @@ The most basic usage would look as such:
 
 ```lua
 local Knit = require(game:GetService("ReplicatedStorage").Knit)
-Knit.Start():await()
+
+Knit.Start():Catch(warn)
+-- Knit.Start() returns a Promise, so we are catching any errors and feeding it to the built-in 'warn' function
+-- You could also chain 'Await()' to the end to yield until the whole sequence is completed:
+--    Knit.Start():Catch(warn):Await()
 ```
 
 That would be the necessary code on both the server and the client. However, nothing interesting is going to happen. Let's dive into some more examples.
@@ -54,7 +60,7 @@ function MoneyService:GiveMoney(player, amount)
 	someDataStore:SetAsync("money", money)
 end
 
-Knit.Start():await()
+Knit.Start():Catch(warn)
 ```
 
 !!! note
@@ -80,7 +86,7 @@ We can write client-side code to fetch money from the service:
 ```lua
 -- Client-side code
 local Knit = require(game:GetService("ReplicatedStorage").Knit)
-Knit.Start():await()
+Knit.Start():Catch(warn):Await()
 
 local moneyService = Knit.GetService("MoneyService")
 local money = moneyService:GetMoney()

@@ -21,7 +21,7 @@ for _,v in ipairs(script.Parent.Services:GetDescendants()) do
 	end
 end
 
-Knit.Start()
+Knit.Start():Catch(warn)
 ```
 
 !!! tip
