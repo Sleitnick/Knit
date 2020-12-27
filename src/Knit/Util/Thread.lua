@@ -167,7 +167,7 @@ function Thread.DelayRepeat(intervalTime, func, behavior, ...)
 	if (behavior == nil) then
 		behavior = Thread.DelayRepeatBehavior.Delayed
 	end
-	assert(Symbol.IsScope(behavior, threadScope), "Invalid behavior")
+	assert(Symbol.IsInScope(behavior, threadScope), "Invalid behavior")
 	local immediate = (behavior == Thread.DelayRepeatBehavior.Immediate)
 	local nextExecuteTime = (time() + (immediate and 0 or intervalTime))
 	local hb
