@@ -156,17 +156,17 @@ local points = PointsService:GetPoints()
 print("Points for myself:", points)
 ```
 
-### Events (Server-to-Client)
+### Signals (Server-to-Client)
 
-We should also create an event that we can fire for the clients when their points change. We can use the RemoteEvent module (`Knit.Util.Remote.RemoteEvent`), and just put one within the `Client` table:
+We should also create a signal that we can fire events for the clients when their points change. We can use the RemoteSignal module (`Knit.Util.Remote.RemoteSignal`), and just put one within the `Client` table:
 
 ```lua
-PointsService.Client.PointsChanged = RemoteEvent.new()
+PointsService.Client.PointsChanged = RemoteSignal.new()
 ```
 
-Under the hood, Knit is creating a RemoteEvent linked to this event. This is a two-way event (like a transceiver), so we can both send and receive data on both the server and the client.
+Under the hood, Knit is creating a RemoteEvent object linked to this event. This is a two-way signal (like a transceiver), so we can both send and receive data on both the server and the client.
 
-We can then modify our `AddPoints` method again to fire this event too:
+We can then modify our `AddPoints` method again to fire this signal too:
 
 ```lua
 function PointsService:AddPoints(player, amount)
@@ -175,13 +175,13 @@ function PointsService:AddPoints(player, amount)
 	self.PointsPerPlayer[player] = points
 	if (amount ~= 0) then
 		self.PointsChanged:Fire(player, points)
-		-- Fire the client event:
+		-- Fire the client signal:
 		self.Client.PointsChanged:Fire(player, points)
 	end
 end
 ```
 
-And from the client, we can listen for the event:
+And from the client, we can listen for an event on the signal:
 
 ```lua
 -- From a LocalScript
@@ -195,26 +195,26 @@ end)
 ```
 
 !!! note
-	Be sure to use `RemoteEvent` (_not_ `Event`) for client-exposed events.
+	Be sure to use `RemoteSignal` (_not_ `Signal`) for client-exposed events.
 
-### Events (Client-to-Server)
+### Signals (Client-to-Server)
 
-Events can also be fired from the client. This is useful when the client needs to give the server information, but doesn't care about any response from the server. For instance, maybe the client wants to tell the PointsService that it wants some points. This is an odd use-case, but let's just roll with it.
+Signal events can also be fired from the client. This is useful when the client needs to give the server information, but doesn't care about any response from the server. For instance, maybe the client wants to tell the PointsService that it wants some points. This is an odd use-case, but let's just roll with it.
 
-We will create another client-exposed event called `GiveMePoints` which will randomly give the player points. Again, this is nonsense in the context of an actual game, but useful for example.
+We will create another client-exposed signal called `GiveMePoints` which will randomly give the player points. Again, this is nonsense in the context of an actual game, but useful for example.
 
-Let's create the event on the PointsService:
+Let's create the signal on the PointsService:
 ```lua
-PointsService.Client.GiveMePoints = RemoteEvent.new()
+PointsService.Client.GiveMePoints = RemoteSignal.new()
 ```
 
-Now, let's listen for the client to call this event. We can hook this up in our `KnitInit` method:
+Now, let's listen for the client to fire this signal. We can hook this up in our `KnitInit` method:
 
 ```lua
 function PointsService:KnitInit()
 
 	local rng = Random.new()
-	-- Listen for the client to fire this event, then give random points:
+	-- Listen for the client to fire this signal, then give random points:
 	self.Client.GiveMePoints:Connect(function(player)
 		local points = rng:NextInteger(0, 10)
 		self:AddPoints(player, points)
@@ -225,7 +225,7 @@ function PointsService:KnitInit()
 end
 ```
 
-From the client, we can fire the event like so:
+From the client, we can fire the signal like so:
 
 ```lua
 -- From a LocalScript
@@ -233,7 +233,7 @@ local Knit = require(game:GetService("ReplicatedStorage").Knit)
 
 local PointsService = Knit.GetService("PointsService")
 
--- Fire the event:
+-- Fire the signal:
 PointsService.GiveMePoints:Fire()
 ```
 
@@ -292,18 +292,18 @@ At the end of this tutorial, we should have a PointsService that looks something
 ```lua
 local Knit = require(game:GetService("ReplicatedStorage").Knit)
 local Signal = require(Knit.Util.Signal)
-local RemoteEvent = require(Knit.Util.Remote.RemoteEvent)
+local RemoteSignal = require(Knit.Util.Remote.RemoteSignal)
 local RemoteProperty = require(Knit.Util.Remote.RemoteProperty)
 
 local PointsService = Knit.CreateService { Name = "PointsService", Client = {} }
 
--- Server-exposed events/fields:
+-- Server-exposed signals/fields:
 PointsService.PointsPerPlayer = {}
 PointsService.PointsChanged = Signal.new()
 
--- Client exposed events:
-PointsService.Client.PointsChanged = RemoteEvent.new()
-PointsService.Client.GiveMePoints = RemoteEvent.new()
+-- Client exposed signals:
+PointsService.Client.PointsChanged = RemoteSignal.new()
+PointsService.Client.GiveMePoints = RemoteSignal.new()
 
 -- Client exposed properties:
 PointsService.Client.MostPoints = RemoteProperty.new(0)
@@ -361,10 +361,10 @@ Alternatively, we could have put all non-methods within the `CreateService` cons
 local PointsService = Knit.CreateService {
 	Name = "PointsService";
 	PointsPerPlayer = {};
-	PointsChanged = Event.new();
+	PointsChanged = Signal.new();
 	Client = {
-		PointsChanged = Event.new();
-		GiveMePoints = Event.new();
+		PointsChanged = RemoteSignal.new();
+		GiveMePoints = RemoteSignal.new();
 	};
 }
 

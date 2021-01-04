@@ -142,40 +142,40 @@ Fetch("https://www.example.com")
 
 --------------------
 
-## [RemoteEvent](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Remote/RemoteEvent.lua)
+## [RemoteSignal](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Remote/RemoteSignal.lua)
 
-The [RemoteEvent](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Remote/RemoteEvent.lua) module wraps the RemoteEvent object and is used within services and controllers. The only time a developer should ever have to instantiate a RemoteEvent is within the `Client` table of a service. The behavior differs between the server and the client.
+The [RemoteSignal](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Remote/RemoteSignal.lua) module wraps the RemoteEvent object and is used within services and controllers. The only time a developer should ever have to instantiate a RemoteSignal is within the `Client` table of a service. The behavior differs between the server and the client.
 
 ```lua
 -- Server-side
-local remoteEvent = RemoteEvent.new()
+local remoteSignal = RemoteSignal.new()
 
-remoteEvent:Fire(player, ...)
-remoteEvent:FireExcept(player, ...)
-remoteEvent:FireAll(...)
-remoteEvent:Wait()
-remoteEvent:Destroy()
+remoteSignal:Fire(player, ...)
+remoteSignal:FireExcept(player, ...)
+remoteSignal:FireAll(...)
+remoteSignal:Wait()
+remoteSignal:Destroy()
 
-local connection = remoteEvent:Connect(functionHandler(player, ...))
+local connection = remoteSignal:Connect(functionHandler(player, ...))
 connection:IsConnected()
 connection:Disconnect()
 ```
 
 ```lua
 -- Client side
-local remoteEvent = RemoteEvent.new(remoteEventObject)
+local remoteSignal = RemoteSignal.new(remoteEventObject)
 
-remoteEvent:Fire(...)
-remoteEvent:Wait()
-remoteEvent:Destroy()
+remoteSignal:Fire(...)
+remoteSignal:Wait()
+remoteSignal:Destroy()
 
-local connection = remoteEvent:Connect(functionHandler(...))
+local connection = remoteSignal:Connect(functionHandler(...))
 connection:IsConnected()
 connection:Disconnect()
 ```
 
 !!! note
-	Knit manages RemoteEvent objects on the client, so developers should never have to instantiate these themselves on the client unless creating completely custom workflows.
+	Knit manages RemoteSignal objects on the client, so developers should never have to instantiate these themselves on the client unless creating completely custom workflows.
 
 --------------------
 
