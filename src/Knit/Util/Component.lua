@@ -73,12 +73,11 @@
 --]]
 
 
-local Knit = require(game:GetService("ReplicatedStorage").Knit)
-local Maid = require(Knit.Util.Maid)
-local Signal = require(Knit.Util.Signal)
-local Promise = require(Knit.Util.Promise)
-local Thread = require(Knit.Util.Thread)
-local TableUtil = require(Knit.Util.TableUtil)
+local Maid = require(script.Parent.Maid)
+local Signal = require(script.Parent.Signal)
+local Promise = require(script.Parent.Promise)
+local Thread = require(script.Parent.Thread)
+local TableUtil = require(script.Parent.TableUtil)
 local CollectionService = game:GetService("CollectionService")
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
