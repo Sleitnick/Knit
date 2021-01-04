@@ -97,21 +97,21 @@ end
 
 ## Events
 
-What if we want to create an event that gets fired when the camera is locked and unlocked? We can easily do this! Just create a new signal object as a property of the controller, and fire it in our `LockTo` and `Unlock` methods. Let's created a `Locked` event. It will pass `true` when locked and `false` when unlocked.
+What if we want to create an event that gets fired when the camera is locked and unlocked? We can easily do this! Just create a new signal object as a property of the controller, and fire it in our `LockTo` and `Unlock` methods. Let's created a `LockedChanged` signal. It will pass `true` when locked and `false` when unlocked.
 
 ```lua
 local Signal = require(Knit.Util.Signal)
 
-CameraController.Locked = Signal.new()
+CameraController.LockedChanged = Signal.new()
 
 function CameraController:LockTo(part)
 	-- Other code...
-	self.Locked:Fire(true)
+	self.LockedChanged:Fire(true)
 end
 
 function CameraController:Unlock()
 	-- Other code...
-	self.Locked:Fire(false)
+	self.LockedChanged:Fire(false)
 end
 ```
 
@@ -121,7 +121,7 @@ Other code could then listen in for that event:
 -- Somewhere else on the client
 local CameraController = Knit.Controllers.CameraController
 
-CameraController.Locked:Connect(function(isLocked)
+CameraController.LockedChanged:Connect(function(isLocked)
 	print(isLocked and "Camera is now locked" or "Camera was unlocked")
 end)
 ```
