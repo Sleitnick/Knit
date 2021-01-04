@@ -1,25 +1,25 @@
--- RemoteEvent
+-- RemoteSignal
 -- Stephen Leitnick
 
 --[[
 	
 	[Server]
-		event = RemoteEvent.new()
-		event:Fire(player, ...)
-		event:FireAll(...)
-		event:FireExcept(player, ...)
-		event:Wait()
-		event:Destroy()
-		connection = event:Connect(functionHandler(player, ...))
+		remoteSignal = RemoteSignal.new()
+		remoteSignal:Fire(player, ...)
+		remoteSignal:FireAll(...)
+		remoteSignal:FireExcept(player, ...)
+		remoteSignal:Wait()
+		remoteSignal:Destroy()
+		connection = remoteSignal:Connect(functionHandler(player, ...))
 		connection:Disconnect()
 		connection:IsConnected()
 
 	[Client]
-		event = RemoteEvent.new(remoteEventObject)
-		event:Fire(...)
-		event:Wait()
-		event:Destroy()
-		connection = event:Connect(functionHandler(...))
+		remoteSignal = RemoteSignal.new(remoteEventObject)
+		remoteSignal:Fire(...)
+		remoteSignal:Wait()
+		remoteSignal:Destroy()
+		connection = remoteSignal:Connect(functionHandler(...))
 		connection:Disconnect()
 		connection:IsConnected()
 
@@ -30,31 +30,31 @@ local IS_SERVER = game:GetService("RunService"):IsServer()
 local Players = game:GetService("Players")
 local Ser = require(script.Parent.Parent.Ser)
 
-local RemoteEvent = {}
-RemoteEvent.__index = RemoteEvent
+local RemoteSignal = {}
+RemoteSignal.__index = RemoteSignal
 
-function RemoteEvent.Is(object)
-	return (type(object) == "table" and getmetatable(object) == RemoteEvent)
+function RemoteSignal.Is(object)
+	return (type(object) == "table" and getmetatable(object) == RemoteSignal)
 end
 
 if (IS_SERVER) then
 
-	function RemoteEvent.new()
+	function RemoteSignal.new()
 		local self = setmetatable({
 			_remote = Instance.new("RemoteEvent");
-		}, RemoteEvent)
+		}, RemoteSignal)
 		return self
 	end
 
-	function RemoteEvent:Fire(player, ...)
+	function RemoteSignal:Fire(player, ...)
 		self._remote:FireClient(player, Ser.SerializeArgsAndUnpack(...))
 	end
 
-	function RemoteEvent:FireAll(...)
+	function RemoteSignal:FireAll(...)
 		self._remote:FireAllClients(Ser.SerializeArgsAndUnpack(...))
 	end
 
-	function RemoteEvent:FireExcept(player, ...)
+	function RemoteSignal:FireExcept(player, ...)
 		local args = Ser.SerializeArgs(...)
 		for _,plr in ipairs(Players:GetPlayers()) do
 			if (plr ~= player) then
@@ -63,17 +63,17 @@ if (IS_SERVER) then
 		end
 	end
 
-	function RemoteEvent:Wait()
+	function RemoteSignal:Wait()
 		return self._remote.OnServerEvent:Wait()
 	end
 
-	function RemoteEvent:Connect(handler)
+	function RemoteSignal:Connect(handler)
 		return self._remote.OnServerEvent:Connect(function(player, ...)
 			handler(player, Ser.DeserializeArgsAndUnpack(...))
 		end)
 	end
 
-	function RemoteEvent:Destroy()
+	function RemoteSignal:Destroy()
 		self._remote:Destroy()
 		self._remote = nil
 	end
@@ -119,25 +119,25 @@ else
 
 	Connection.Destroy = Connection.Disconnect
 
-	function RemoteEvent.new(remoteEvent)
+	function RemoteSignal.new(remoteEvent)
 		assert(typeof(remoteEvent) == "Instance", "Argument #1 (RemoteEvent) expected Instance; got " .. typeof(remoteEvent))
 		assert(remoteEvent:IsA("RemoteEvent"), "Argument #1 (RemoteEvent) expected RemoteEvent; got" .. remoteEvent.ClassName)
 		local self = setmetatable({
 			_remote = remoteEvent;
 			_connections = {};
-		}, RemoteEvent)
+		}, RemoteSignal)
 		return self
 	end
 
-	function RemoteEvent:Fire(...)
+	function RemoteSignal:Fire(...)
 		self._remote:FireServer(Ser.SerializeArgsAndUnpack(...))
 	end
 
-	function RemoteEvent:Wait()
+	function RemoteSignal:Wait()
 		return Ser.DeserializeArgsAndUnpack(self._remote.OnClientEvent:Wait())
 	end
 
-	function RemoteEvent:Connect(handler)
+	function RemoteSignal:Connect(handler)
 		local connection = Connection.new(self, self._remote.OnClientEvent:Connect(function(...)
 			handler(Ser.DeserializeArgsAndUnpack(...))
 		end))
@@ -145,7 +145,7 @@ else
 		return connection
 	end
 
-	function RemoteEvent:Destroy()
+	function RemoteSignal:Destroy()
 		for _,c in ipairs(self._connections) do
 			if (c._conn) then
 				c._conn:Disconnect()
@@ -157,4 +157,4 @@ else
 
 end
 
-return RemoteEvent
+return RemoteSignal

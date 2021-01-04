@@ -1,7 +1,7 @@
 return function()
 
 	local Knit = require(game:GetService("ReplicatedStorage").Knit)
-	local RemoteEvent = require(Knit.Util.Remote.RemoteEvent)
+	local RemoteSignal = require(Knit.Util.Remote.RemoteSignal)
 	local RemoteProperty = require(Knit.Util.Remote.RemoteProperty)
 
 	local IS_SERVER = game:GetService("RunService"):IsServer()
@@ -15,7 +15,7 @@ return function()
 			Name = "AnotherService";
 			ABC = 32;
 			Client = {
-				TestEvent = RemoteEvent.new();
+				TestEvent = RemoteSignal.new();
 				TestProp = RemoteProperty.new(10);
 			}
 		}
