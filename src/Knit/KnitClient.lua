@@ -17,7 +17,7 @@ KnitClient.Util = script.Parent.Util
 local Promise = require(KnitClient.Util.Promise)
 local Thread = require(KnitClient.Util.Thread)
 local Ser = require(KnitClient.Util.Ser)
-local RemoteEvent = require(KnitClient.Util.Remote.RemoteEvent)
+local RemoteSignal = require(KnitClient.Util.Remote.RemoteSignal)
 local RemoteProperty = require(KnitClient.Util.Remote.RemoteProperty)
 local TableUtil = require(KnitClient.Util.TableUtil)
 
@@ -49,7 +49,7 @@ local function BuildService(serviceName, folder)
 	if (folder:FindFirstChild("RE")) then
 		for _,re in ipairs(folder.RE:GetChildren()) do
 			if (re:IsA("RemoteEvent")) then
-				service[re.Name] = RemoteEvent.new(re)
+				service[re.Name] = RemoteSignal.new(re)
 			end
 		end
 	end
