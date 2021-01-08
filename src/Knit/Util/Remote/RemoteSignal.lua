@@ -1,10 +1,10 @@
--- ServerRemoteSignal
+-- RemoteSignal
 -- Stephen Leitnick
 -- January 07, 2021
 
 --[[
 
-	remoteSignal = ServerRemoteSignal.new()
+	remoteSignal = RemoteSignal.new()
 
 	remoteSignal:Connect(handler: (player: Player, ...args: any) -> void): RBXScriptConnection
 	remoteSignal:Fire(player: Player, ...args: any): void
@@ -21,35 +21,35 @@ local IS_SERVER = game:GetService("RunService"):IsServer()
 local Players = game:GetService("Players")
 local Ser = require(script.Parent.Parent.Ser)
 
-local ServerRemoteSignal = {}
-ServerRemoteSignal.__index = ServerRemoteSignal
+local RemoteSignal = {}
+RemoteSignal.__index = RemoteSignal
 
 
-function ServerRemoteSignal.Is(object)
-	return (type(object) == "table" and getmetatable(object) == ServerRemoteSignal)
+function RemoteSignal.Is(object)
+	return (type(object) == "table" and getmetatable(object) == RemoteSignal)
 end
 
 
-function ServerRemoteSignal.new()
-	assert(IS_SERVER, "ServerRemoteSignal can only be created on the server")
+function RemoteSignal.new()
+	assert(IS_SERVER, "RemoteSignal can only be created on the server")
 	local self = setmetatable({
 		_remote = Instance.new("RemoteEvent");
-	}, ServerRemoteSignal)
+	}, RemoteSignal)
 	return self
 end
 
 
-function ServerRemoteSignal:Fire(player, ...)
+function RemoteSignal:Fire(player, ...)
 	self._remote:FireClient(player, Ser.SerializeArgsAndUnpack(...))
 end
 
 
-function ServerRemoteSignal:FireAll(...)
+function RemoteSignal:FireAll(...)
 	self._remote:FireAllClients(Ser.SerializeArgsAndUnpack(...))
 end
 
 
-function ServerRemoteSignal:FireExcept(player, ...)
+function RemoteSignal:FireExcept(player, ...)
 	local args = Ser.SerializeArgs(...)
 	for _,plr in ipairs(Players:GetPlayers()) do
 		if (plr ~= player) then
@@ -59,22 +59,22 @@ function ServerRemoteSignal:FireExcept(player, ...)
 end
 
 
-function ServerRemoteSignal:Wait()
+function RemoteSignal:Wait()
 	return self._remote.OnServerEvent:Wait()
 end
 
 
-function ServerRemoteSignal:Connect(handler)
+function RemoteSignal:Connect(handler)
 	return self._remote.OnServerEvent:Connect(function(player, ...)
 		handler(player, Ser.DeserializeArgsAndUnpack(...))
 	end)
 end
 
 
-function ServerRemoteSignal:Destroy()
+function RemoteSignal:Destroy()
 	self._remote:Destroy()
 	self._remote = nil
 end
 
 
-return ServerRemoteSignal
+return RemoteSignal

@@ -1,4 +1,4 @@
--- ServerRemoteProperty
+-- RemoteProperty
 -- Stephen Leitnick
 -- January 07, 2021
 
@@ -35,18 +35,18 @@ local typeClassMap = {
 }
 
 
-local ServerRemoteProperty = {}
-ServerRemoteProperty.__index = ServerRemoteProperty
+local RemoteProperty = {}
+RemoteProperty.__index = RemoteProperty
 
 
-function ServerRemoteProperty.Is(object)
-	return (type(object) == "table" and getmetatable(object) == ServerRemoteProperty)
+function RemoteProperty.Is(object)
+	return (type(object) == "table" and getmetatable(object) == RemoteProperty)
 end
 
 
-function ServerRemoteProperty.new(value, overrideClass)
+function RemoteProperty.new(value, overrideClass)
 
-	assert(IS_SERVER, "ServerRemoteProperty can only be created on the server")
+	assert(IS_SERVER, "RemoteProperty can only be created on the server")
 
 	if (overrideClass ~= nil) then
 		assert(type(overrideClass) == "string", "OverrideClass must be a string; got " .. type(overrideClass))
@@ -62,7 +62,7 @@ function ServerRemoteProperty.new(value, overrideClass)
 		_type = t;
 		_isTable = (t == "table");
 		_object = Instance.new(class);
-	}, ServerRemoteProperty)
+	}, RemoteProperty)
 
 	if (self._isTable) then
 		local req = Instance.new("RemoteFunction")
@@ -83,14 +83,14 @@ function ServerRemoteProperty.new(value, overrideClass)
 end
 
 
-function ServerRemoteProperty:Replicate()
+function RemoteProperty:Replicate()
 	if (self._isTable) then
 		self:Set(self._value)
 	end
 end
 
 
-function ServerRemoteProperty:Set(value)
+function RemoteProperty:Set(value)
 	if (self._isTable) then
 		self._object:FireAllClients(value)
 		self.Changed:Fire(value)
@@ -101,14 +101,14 @@ function ServerRemoteProperty:Set(value)
 end
 
 
-function ServerRemoteProperty:Get()
+function RemoteProperty:Get()
 	return self._value
 end
 
 
-function ServerRemoteProperty:Destroy()
+function RemoteProperty:Destroy()
 	self._object:Destroy()
 end
 
 
-return ServerRemoteProperty
+return RemoteProperty
