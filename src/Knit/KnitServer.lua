@@ -95,6 +95,25 @@ function KnitServer.CreateService(service)
 end
 
 
+function KnitServer.AutoServices(folder, recursive)
+	assert(typeof(folder) == "Instance", "Argument #1 must be an Instance")
+	local function Setup(moduleScript)
+		local m = require(moduleScript)
+		KnitServer.CreateService(m)
+	end
+	for _,v in ipairs(recursive and folder:GetDescendants() or folder:GetChildren()) do
+		if (v:IsA("ModuleScript")) then
+			Setup(v)
+		end
+	end
+	(recursive and folder.DescendantAdded or folder.ChildAdded):Connect(function(v)
+		if (v:IsA("ModuleScript")) then
+			Setup(v)
+		end
+	end)
+end
+
+
 function KnitServer.BindRemoteEvent(service, eventName, remoteEvent)
 	assert(service._knit_re[eventName] == nil, "RemoteEvent \"" .. eventName .. "\" already exists")
 	local re = remoteEvent._remote

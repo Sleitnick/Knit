@@ -78,6 +78,25 @@ function KnitClient.CreateController(controller)
 end
 
 
+function KnitClient.AutoControllers(folder, recursive)
+	assert(typeof(folder) == "Instance", "Argument #1 must be an Instance")
+	local function Setup(moduleScript)
+		local m = require(moduleScript)
+		KnitClient.CreateController(m)
+	end
+	for _,v in ipairs(recursive and folder:GetDescendants() or folder:GetChildren()) do
+		if (v:IsA("ModuleScript")) then
+			Setup(v)
+		end
+	end
+	(recursive and folder.DescendantAdded or folder.ChildAdded):Connect(function(v)
+		if (v:IsA("ModuleScript")) then
+			Setup(v)
+		end
+	end)
+end
+
+
 function KnitClient.GetService(serviceName)
 	assert(type(serviceName) == "string", "ServiceName must be a string; got " .. type(serviceName))
 	local folder = servicesFolder:FindFirstChild(serviceName)
