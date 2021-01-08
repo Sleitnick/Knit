@@ -1,33 +1,24 @@
 -- RemoteProperty
 -- Stephen Leitnick
+-- January 07, 2021
 
 --[[
 
-	[Server]
+	remoteProperty = RemoteProperty.new(value: any [, overrideClass: string])
 
-		property = RemoteProperty.new(value [, overrideClass])
+	remoteProperty:Get(): any
+	remoteProperty:Set(value: any): void
+	remoteProperty:Replicate(): void   [Only for table values]
+	remoteProperty:Destroy(): void
 
-		property:Get()
-		property:Set(value)
-		property:Replicate()  [Only for table values]
-		property:Destroy()
-
-		property.Changed(newValue)
-
-
-	[Client]
-
-		property = RemoteProperty.new(valueObject)
-
-		property:Get()
-		property:Destroy()
-
-		property.Changed(newValue)
+	remoteProperty.Changed(newValue: any): Connection
 
 --]]
 
-local IS_SERVER = game:GetService("RunService"):IsServer()
+
 local Signal = require(script.Parent.Parent.Signal)
+
+local IS_SERVER = game:GetService("RunService"):IsServer()
 
 local typeClassMap = {
 	boolean = "BoolValue";
@@ -43,110 +34,81 @@ local typeClassMap = {
 	["nil"] = "ObjectValue";
 }
 
+
 local RemoteProperty = {}
 RemoteProperty.__index = RemoteProperty
+
 
 function RemoteProperty.Is(object)
 	return (type(object) == "table" and getmetatable(object) == RemoteProperty)
 end
 
-if (IS_SERVER) then
 
-	function RemoteProperty.new(value, overrideClass)
+function RemoteProperty.new(value, overrideClass)
 
-		if (overrideClass ~= nil) then
-			assert(type(overrideClass) == "string", "OverrideClass must be a string; got " .. type(overrideClass))
-			assert(overrideClass:match("Value$"), "OverrideClass must be of super type ValueBase (e.g. IntValue); got " .. overrideClass)
+	assert(IS_SERVER, "RemoteProperty can only be created on the server")
+
+	if (overrideClass ~= nil) then
+		assert(type(overrideClass) == "string", "OverrideClass must be a string; got " .. type(overrideClass))
+		assert(overrideClass:match("Value$"), "OverrideClass must be of super type ValueBase (e.g. IntValue); got " .. overrideClass)
+	end
+
+	local t = typeof(value)
+	local class = overrideClass or typeClassMap[t]
+	assert(class, "RemoteProperty does not support type \"" .. t .. "\"")
+
+	local self = setmetatable({
+		_value = value;
+		_type = t;
+		_isTable = (t == "table");
+		_object = Instance.new(class);
+	}, RemoteProperty)
+
+	if (self._isTable) then
+		local req = Instance.new("RemoteFunction")
+		req.Name = "TableRequest"
+		req.Parent = self._object
+		function req.OnServerInvoke(_player)
+			return self._value
 		end
-
-		local t = typeof(value)
-		local class = overrideClass or typeClassMap[t]
-		assert(class, "RemoteProperty does not support type \"" .. t .. "\"")
-
-		local self = setmetatable({
-			_value = value;
-			_type = t;
-			_isTable = (t == "table");
-			_object = Instance.new(class);
-		}, RemoteProperty)
-
-		if (self._isTable) then
-			local req = Instance.new("RemoteFunction")
-			req.Name = "TableRequest"
-			req.Parent = self._object
-			function req.OnServerInvoke(_player)
-				return self._value
-			end
-		end
-
+		self.Changed = Signal.new()
+	else
 		self.Changed = self._object.Changed
-		self:Set(value)
-
-		return self
-
 	end
 
-	function RemoteProperty:Replicate()
-		if (self._isTable) then
-			self:Set(self._value)
-		end
-	end
+	self:Set(value)
 
-	function RemoteProperty:Set(value)
-		if (self._isTable) then
-			self._object:FireAllClients(value)
-		else
-			self._object.Value = value
-		end
-		self._value = value
-	end
-
-	function RemoteProperty:Get()
-		return self._value
-	end
-
-	function RemoteProperty:Destroy()
-		self._object:Destroy()
-	end
-
-else
-
-	function RemoteProperty.new(object)
-		local self = setmetatable({
-			_object = object;
-			_value = nil;
-			_isTable = object:IsA("RemoteEvent");
-		}, RemoteProperty)
-		local function SetValue(v)
-			self._value = v
-		end
-		if (self._isTable) then
-			self.Changed = Signal.new()
-			self._change = object.OnClientEvent:Connect(function(tbl)
-				SetValue(tbl)
-				self.Changed:Fire(tbl)
-			end)
-			SetValue(object.TableRequest:InvokeServer())
-		else
-			SetValue(object.Value)
-			self.Changed = object.Changed
-			self._change = object.Changed:Connect(SetValue)
-		end
-		return self
-	end
-
-	function RemoteProperty:Get()
-		return self._value
-	end
-
-	function RemoteProperty:Destroy()
-		self._change:Disconnect()
-		self._set:Destroy()
-		if (self._isTable) then
-			self.Changed:Destroy()
-		end
-	end
+	return self
 
 end
+
+
+function RemoteProperty:Replicate()
+	if (self._isTable) then
+		self:Set(self._value)
+	end
+end
+
+
+function RemoteProperty:Set(value)
+	if (self._isTable) then
+		self._object:FireAllClients(value)
+		self.Changed:Fire(value)
+	else
+		self._object.Value = value
+	end
+	self._value = value
+end
+
+
+function RemoteProperty:Get()
+	return self._value
+end
+
+
+function RemoteProperty:Destroy()
+	self._object:Destroy()
+end
+
 
 return RemoteProperty
