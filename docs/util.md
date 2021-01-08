@@ -144,10 +144,9 @@ Fetch("https://www.example.com")
 
 ## [RemoteSignal](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Remote/RemoteSignal.lua)
 
-The [RemoteSignal](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Remote/RemoteSignal.lua) module wraps the RemoteEvent object and is used within services and controllers. The only time a developer should ever have to instantiate a RemoteSignal is within the `Client` table of a service. The behavior differs between the server and the client.
+The [RemoteSignal](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Remote/RemoteSignal.lua) module wraps the RemoteEvent object and is typically used within services. The only time a developer should ever have to instantiate a RemoteSignal is within the `Client` table of a service. For use on the client, see ClientRemoteSignal.
 
 ```lua
--- Server-side
 local remoteSignal = RemoteSignal.new()
 
 remoteSignal:Fire(player, ...)
@@ -161,9 +160,14 @@ connection:IsConnected()
 connection:Disconnect()
 ```
 
+--------------------
+
+## [ClientRemoteSignal](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Remote/ClientRemoteSignal.lua)
+
+The [ClientRemoteSignal](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Remote/ClientRemoteSignal.lua) module wraps the RemoteEvent object and is typically used within services. Usually, ClientRemoteSignals are created behind-the-scenes and don't need to be instantiated by developers. However, it is available for developers in case custom workflows are being used.
+
 ```lua
--- Client side
-local remoteSignal = RemoteSignal.new(remoteEventObject)
+local remoteSignal = ClientRemoteSignal.new(remoteEventObject)
 
 remoteSignal:Fire(...)
 remoteSignal:Wait()
@@ -174,23 +178,17 @@ connection:IsConnected()
 connection:Disconnect()
 ```
 
-!!! note
-	Knit manages RemoteSignal objects on the client, so developers should never have to instantiate these themselves on the client unless creating completely custom workflows.
-
 --------------------
 
 ## [RemoteProperty](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Remote/RemoteProperty.lua)
 
 The [RemoteProperty](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Remote/RemoteProperty.lua) module wraps a ValueBase object to expose properties to the client from the server. The server can read and write to this object, but the client can only read. This is useful when it's overkill to write a combination of a method and event to replicate data to the client.
 
-The behavior is slightly different between the server and the client.
-
 When a RemoteProperty is created on the server, a value must be passed to the constructor. The type of the value will determine the ValueBase chosen. For instance, if a string is passed, it will instantiate a StringValue internally. The server can then set/get this value.
 
 On the client, a RemoteProperty must be instantiated by giving the ValueBase to the constructor.
 
 ```lua
--- Server-side
 local property = RemoteProperty.new(10)
 property:Set(30)
 property:Replicate() -- Only for table values
@@ -198,18 +196,23 @@ local value = property:Get()
 property.Changed:Connect(function(newValue) end)
 ```
 
+!!! warning "Tables"
+	When using a table in a RemoteProperty, you **_must_** call `property:Replicate()` server-side after changing a value in the table in order for the changes to replicate to the client. This is necessary because there is no way to watch for changes on a table (unless you clutter it with a bunch of metatables). Calling `Replicate` will re-serialize the value.
+
+--------------------
+
+## [ClientRemoteProperty](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Remote/ClientRemoteProperty.lua)
+
+The [ClientRemoteProperty](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Remote/ClientRemoteProperty.lua) module wraps a ValueBase object to expose properties from the server to the client. The client can only read the value. This class should be used alongside RemoteProperty on the server.
+
+Typically, developers will never need to instantiate ClientRemoteProperties, as they are automatically created for services on the client if the service has a RemoteProperty defined in its Client table. However, the class is exposed to developers in case custom workflows are being used.
+
 ```lua
 -- Client-side
 local property = RemoteProperty.new(valueBaseObject)
 local value = property:Get()
 property.Changed:Connect(function(newValue) end)
 ```
-
-!!! warning "Tables"
-	When using a table in a RemoteProperty, you **_must_** call `property:Replicate()` server-side after changing a value in the table in order for the changes to replicate to the client. This is necessary because there is no way to watch for changes on a table (unless you clutter it with a bunch of metatables). Calling `Replicate` will reserialize the value.
-
-!!! note
-	Knit manages RemoteProperty objects on the client, so developers should never have to instantiate these themselves on the client unless creating completely custom workflows.
 
 --------------------
 
