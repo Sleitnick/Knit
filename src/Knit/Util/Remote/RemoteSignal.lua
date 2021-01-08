@@ -40,6 +40,7 @@ end
 if (IS_SERVER) then
 
 	function RemoteSignal.new()
+		warn("Using deprecated RemoteSignal")
 		local self = setmetatable({
 			_remote = Instance.new("RemoteEvent");
 		}, RemoteSignal)
@@ -120,6 +121,7 @@ else
 	Connection.Destroy = Connection.Disconnect
 
 	function RemoteSignal.new(remoteEvent)
+		warn("Using deprecated RemoteSignal")
 		assert(typeof(remoteEvent) == "Instance", "Argument #1 (RemoteEvent) expected Instance; got " .. typeof(remoteEvent))
 		assert(remoteEvent:IsA("RemoteEvent"), "Argument #1 (RemoteEvent) expected RemoteEvent; got" .. remoteEvent.ClassName)
 		local self = setmetatable({
