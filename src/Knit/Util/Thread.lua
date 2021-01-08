@@ -109,17 +109,16 @@
 --]]
 
 
-local Symbol = require(script.Parent.Symbol)
+local EnumList = require(script.Parent.EnumList)
 
 local Thread = {}
 
 local heartbeat = game:GetService("RunService").Heartbeat
-local threadScope = Symbol.new("Thread")
 
-Thread.DelayRepeatBehavior = {
-	Delayed = Symbol.new("Delayed", threadScope);
-	Immediate = Symbol.new("Immediate", threadScope);
-}
+Thread.DelayRepeatBehavior = EnumList.new("DelayRepeatBehavior", {
+	"Delayed";
+	"Immediate";
+})
 
 
 function Thread.SpawnNow(func, ...)
@@ -167,7 +166,7 @@ function Thread.DelayRepeat(intervalTime, func, behavior, ...)
 	if (behavior == nil) then
 		behavior = Thread.DelayRepeatBehavior.Delayed
 	end
-	assert(Symbol.IsInScope(behavior, threadScope), "Invalid behavior")
+	assert(Thread.DelayRepeatBehavior:Is(behavior), "Invalid behavior")
 	local immediate = (behavior == Thread.DelayRepeatBehavior.Immediate)
 	local nextExecuteTime = (time() + (immediate and 0 or intervalTime))
 	local hb
@@ -179,16 +178,6 @@ function Thread.DelayRepeat(intervalTime, func, behavior, ...)
 	end)
 	return hb
 end
-
-
-setmetatable(Thread.DelayRepeatBehavior, {
-	__index = function(_t, k)
-		error("Unknown DelayRepeatBehavior: " .. tostring(k), 2)
-	end;
-	__newindex = function()
-		error("Cannot add new DelayRepeatBehavior", 2)
-	end;
-})
 
 
 return Thread

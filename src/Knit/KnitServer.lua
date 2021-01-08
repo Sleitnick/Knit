@@ -20,6 +20,7 @@ knitRepServiceFolder.Name = "Services"
 local Promise = require(KnitServer.Util.Promise)
 local Thread = require(KnitServer.Util.Thread)
 local Signal = require(KnitServer.Util.Signal)
+local EnumList = require(KnitServer.Util.EnumList)
 local Ser = require(KnitServer.Util.Ser)
 local RemoteSignal = require(KnitServer.Util.Remote.RemoteSignal)
 local RemoteProperty = require(KnitServer.Util.Remote.RemoteProperty)
@@ -66,6 +67,9 @@ local function AddToRepFolder(service, remoteObj, folderOverride)
 end
 
 
+KnitServer.AutoBehavior = EnumList.new("AutoBehavior", {"Children", "Descendants"})
+
+
 function KnitServer.IsService(object)
 	return type(object) == "table" and object._knit_is_service == true
 end
@@ -95,13 +99,22 @@ function KnitServer.CreateService(service)
 end
 
 
-function KnitServer.AutoServices(folder, recursive)
+function KnitServer.AutoServices(folder, autoBehavior)
 	assert(typeof(folder) == "Instance", "Argument #1 must be an Instance")
+	assert(KnitServer.AutoBehavior:Is(autoBehavior), "Argument #2 must be an AutoBehavior")
 	local function Setup(moduleScript)
 		local m = require(moduleScript)
 		KnitServer.CreateService(m)
 	end
-	for _,v in ipairs(recursive and folder:GetDescendants() or folder:GetChildren()) do
+	local collection
+	if (autoBehavior == KnitServer.AutoBehavior.Children) then
+		collection = folder:GetChildren()
+	elseif (autoBehavior == KnitServer.AutoBehavior.Descendants) then
+		collection = folder:GetDescendants()
+	else
+		error("Unknown AutoBehavior")
+	end
+	for _,v in ipairs(collection) do
 		if (v:IsA("ModuleScript")) then
 			Setup(v)
 		end

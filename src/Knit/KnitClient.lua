@@ -16,6 +16,7 @@ KnitClient.Util = script.Parent.Util
 
 local Promise = require(KnitClient.Util.Promise)
 local Thread = require(KnitClient.Util.Thread)
+local EnumList = require(KnitClient.Util.EnumList)
 local Ser = require(KnitClient.Util.Ser)
 local ClientRemoteSignal = require(KnitClient.Util.Remote.ClientRemoteSignal)
 local ClientRemoteProperty = require(KnitClient.Util.Remote.ClientRemoteProperty)
@@ -65,6 +66,9 @@ local function BuildService(serviceName, folder)
 end
 
 
+KnitClient.AutoBehavior = EnumList.new("AutoBehavior", {"Children", "Descendants"})
+
+
 function KnitClient.CreateController(controller)
 	assert(type(controller) == "table", "Controller must be a table; got " .. type(controller))
 	assert(type(controller.Name) == "string", "Controller.Name must be a string; got " .. type(controller.Name))
@@ -78,13 +82,22 @@ function KnitClient.CreateController(controller)
 end
 
 
-function KnitClient.AutoControllers(folder, recursive)
+function KnitClient.AutoControllers(folder, autoBehavior)
 	assert(typeof(folder) == "Instance", "Argument #1 must be an Instance")
+	assert(KnitClient.AutoBehavior:Is(autoBehavior), "Argument #2 must be an AutoBehavior")
 	local function Setup(moduleScript)
 		local m = require(moduleScript)
 		KnitClient.CreateController(m)
 	end
-	for _,v in ipairs(recursive and folder:GetDescendants() or folder:GetChildren()) do
+	local collection
+	if (autoBehavior == KnitClient.AutoBehavior.Children) then
+		collection = folder:GetChildren()
+	elseif (autoBehavior == KnitClient.AutoBehavior.Descendants) then
+		collection = folder:GetDescendants()
+	else
+		error("Unknown AutoBehavior")
+	end
+	for _,v in ipairs(collection) do
 		if (v:IsA("ModuleScript")) then
 			Setup(v)
 		end
