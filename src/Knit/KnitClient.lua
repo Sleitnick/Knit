@@ -82,24 +82,37 @@ function KnitClient.CreateController(controller)
 end
 
 
-function KnitClient.AutoControllers(folder, autoBehavior)
-	assert(typeof(folder) == "Instance", "Argument #1 must be an Instance")
-	assert(KnitClient.AutoBehavior:Is(autoBehavior), "Argument #2 must be an AutoBehavior")
+function KnitClient.AutoControllers(autoBehavior, ...)
+	assert(KnitClient.AutoBehavior:Is(autoBehavior), "Argument #1 must be an AutoBehavior")
+	local folders = {...}
 	local function Setup(moduleScript)
 		local m = require(moduleScript)
 		KnitClient.CreateController(m)
 	end
-	local collection
-	if (autoBehavior == KnitClient.AutoBehavior.Children) then
-		collection = folder:GetChildren()
-	elseif (autoBehavior == KnitClient.AutoBehavior.Descendants) then
-		collection = folder:GetDescendants()
-	else
-		error("Unknown AutoBehavior")
+	local function CheckIfDescendant(folder, index)
+		for i = 1,(index - 1) do
+			local f = folders[i]
+			if (f:IsDescendantOf(folder) or folder:IsDescendantOf(f)) then
+				return true
+			end
+		end
+		return false
 	end
-	for _,v in ipairs(collection) do
-		if (v:IsA("ModuleScript")) then
-			Setup(v)
+	for i,folder in ipairs(folders) do
+		assert(typeof(folder) == "Instance", "Must be an Instance")
+		assert(autoBehavior ~= KnitClient.AutoBehavior.Descendants or not CheckIfDescendant(folder, i), "Instances for auto-setup cannot be parented to each other")
+		local collection
+		if (autoBehavior == KnitClient.AutoBehavior.Children) then
+			collection = folder:GetChildren()
+		elseif (autoBehavior == KnitClient.AutoBehavior.Descendants) then
+			collection = folder:GetDescendants()
+		else
+			error("Unknown AutoBehavior")
+		end
+		for _,v in ipairs(collection) do
+			if (v:IsA("ModuleScript")) then
+				Setup(v)
+			end
 		end
 	end
 end

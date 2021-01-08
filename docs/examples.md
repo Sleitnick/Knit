@@ -30,7 +30,7 @@ Alternatively, we can use `Knit.AutoServices` to load all of the services withou
 local Knit = require(game:GetService("ReplicatedStorage").Knit)
 
 -- Load all services:
-Knit.AutoServices(Knit.AutoBehavior.AllDescendants, script.Parent.Services)
+Knit.AutoServices(Knit.AutoBehavior.Descendants, script.Parent.Services)
 
 Knit.Start():Catch(warn)
 ```
