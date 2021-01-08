@@ -47,6 +47,12 @@ They can be required like any other module:
 local Signal = require(Knit.Util.Signal)
 ```
 
+### `Knit.AutoBehavior: EnumList`
+An [EnumList](#) that is used by `AutoServices` and `AutoControllers`. The following are available:
+
+- `Knit.AutoBehavior.Children`
+- `Knit.AutoBehavior.Descendants`
+
 ### `Knit.Start()` -> `Promise`
 
 Start Knit. This returns a promise which resolves once all services or controllers are fully initialized and started. The usage of this is the same on the server and the client.
@@ -107,6 +113,15 @@ The provided `service` table must contain a unique `Name` property. It can optio
 local MyService = Knit.CreateService { Name = "MyService", Client = {} }
 ```
 
+### `Knit.AutoServices(behavior: AutoBehavior, ...folders)`
+[Server-side only]
+
+Automatically creates new [services](#service) from ModuleScripts found within each folder. The behavior can be switched between `Children` and `Descendants` to signal if this function should scan only the immediate children of the folder or all descendants.
+
+```lua
+Knit.AutoServices(Knit.AutoBehavior.Descendants, serverStorage.MyServices)
+```
+
 ### `Knit.CreateController(controller: Table)` -> `Controller`
 [Client-side only]
 
@@ -116,6 +131,15 @@ The provided `controller` table must contain a unique `Name` property.
 
 ```lua
 local MyController = Knit.CreateController { Name = "MyController" }
+```
+
+### `Knit.AutoControllers(behavior: AutoBehavior, ...folders)`
+[Client-side only]
+
+Automatically creates new [controllers](#controller) from ModuleScripts found within each folder. The behavior can be switched between `Children` and `Descendants` to signal if this function should scan only the immediate children of the folder or all descendants.
+
+```lua
+Knit.AutoControllers(Knit.AutoBehavior.Descendants, replicatedStorage.MyControllers)
 ```
 
 ### `Knit.GetService(serviceName: String)` -> `ServiceMirror`

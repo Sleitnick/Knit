@@ -99,24 +99,37 @@ function KnitServer.CreateService(service)
 end
 
 
-function KnitServer.AutoServices(folder, autoBehavior)
-	assert(typeof(folder) == "Instance", "Argument #1 must be an Instance")
-	assert(KnitServer.AutoBehavior:Is(autoBehavior), "Argument #2 must be an AutoBehavior")
+function KnitServer.AutoServices(autoBehavior, ...)
+	assert(KnitServer.AutoBehavior:Is(autoBehavior), "Argument #1 must be an AutoBehavior")
+	local folders = {...}
 	local function Setup(moduleScript)
 		local m = require(moduleScript)
 		KnitServer.CreateService(m)
 	end
-	local collection
-	if (autoBehavior == KnitServer.AutoBehavior.Children) then
-		collection = folder:GetChildren()
-	elseif (autoBehavior == KnitServer.AutoBehavior.Descendants) then
-		collection = folder:GetDescendants()
-	else
-		error("Unknown AutoBehavior")
+	local function CheckIfDescendant(folder, index)
+		for i = 1,(index - 1) do
+			local f = folders[i]
+			if (f:IsDescendantOf(folder) or folder:IsDescendantOf(f)) then
+				return true
+			end
+		end
+		return false
 	end
-	for _,v in ipairs(collection) do
-		if (v:IsA("ModuleScript")) then
-			Setup(v)
+	for i,folder in ipairs(folders) do
+		assert(typeof(folder) == "Instance", "Must be an Instance")
+		assert(autoBehavior ~= KnitServer.AutoBehavior.Descendants or not CheckIfDescendant(folder, i), "Instances for auto-setup cannot be parented to each other")
+		local collection
+		if (autoBehavior == KnitServer.AutoBehavior.Children) then
+			collection = folder:GetChildren()
+		elseif (autoBehavior == KnitServer.AutoBehavior.Descendants) then
+			collection = folder:GetDescendants()
+		else
+			error("Unknown AutoBehavior")
+		end
+		for _,v in ipairs(collection) do
+			if (v:IsA("ModuleScript")) then
+				Setup(v)
+			end
 		end
 	end
 end
