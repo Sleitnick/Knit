@@ -54,6 +54,8 @@ if (IS_SERVER) then
 
 	function RemoteProperty.new(value, overrideClass)
 
+		warn("Using deprecated RemoteProperty")
+
 		if (overrideClass ~= nil) then
 			assert(type(overrideClass) == "string", "OverrideClass must be a string; got " .. type(overrideClass))
 			assert(overrideClass:match("Value$"), "OverrideClass must be of super type ValueBase (e.g. IntValue); got " .. overrideClass)
@@ -112,6 +114,7 @@ if (IS_SERVER) then
 else
 
 	function RemoteProperty.new(object)
+		warn("Using deprecated RemoteProperty")
 		local self = setmetatable({
 			_object = object;
 			_value = nil;

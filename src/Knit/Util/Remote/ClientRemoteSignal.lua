@@ -68,6 +68,11 @@ local ClientRemoteSignal = {}
 ClientRemoteSignal.__index = ClientRemoteSignal
 
 
+function ClientRemoteSignal.Is(object)
+	return (type(object) == "table" and getmetatable(object) == ClientRemoteSignal)
+end
+
+
 function ClientRemoteSignal.new(remoteEvent)
 	assert(not IS_SERVER, "ClientRemoteSignal can only be created on the client")
 	assert(typeof(remoteEvent) == "Instance", "Argument #1 (RemoteEvent) expected Instance; got " .. typeof(remoteEvent))
