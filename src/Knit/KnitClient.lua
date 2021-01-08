@@ -89,11 +89,6 @@ function KnitClient.AutoControllers(folder, recursive)
 			Setup(v)
 		end
 	end
-	(recursive and folder.DescendantAdded or folder.ChildAdded):Connect(function(v)
-		if (v:IsA("ModuleScript")) then
-			Setup(v)
-		end
-	end)
 end
 
 
