@@ -21,7 +21,7 @@ local Promise = require(KnitServer.Util.Promise)
 local Thread = require(KnitServer.Util.Thread)
 local Signal = require(KnitServer.Util.Signal)
 local Ser = require(KnitServer.Util.Ser)
-local RemoteEvent = require(KnitServer.Util.Remote.RemoteEvent)
+local RemoteSignal = require(KnitServer.Util.Remote.RemoteSignal)
 local RemoteProperty = require(KnitServer.Util.Remote.RemoteProperty)
 local TableUtil = require(KnitServer.Util.TableUtil)
 
@@ -141,7 +141,7 @@ function KnitServer.Start()
 			for k,v in pairs(service.Client) do
 				if (type(v) == "function") then
 					KnitServer.BindRemoteFunction(service, k, v)
-				elseif (RemoteEvent.Is(v)) then
+				elseif (RemoteSignal.Is(v)) then
 					KnitServer.BindRemoteEvent(service, k, v)
 				elseif (RemoteProperty.Is(v)) then
 					KnitServer.BindRemoteProperty(service, k, v)
