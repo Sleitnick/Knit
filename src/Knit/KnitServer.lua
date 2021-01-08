@@ -21,8 +21,8 @@ local Promise = require(KnitServer.Util.Promise)
 local Thread = require(KnitServer.Util.Thread)
 local Signal = require(KnitServer.Util.Signal)
 local Ser = require(KnitServer.Util.Ser)
-local RemoteSignal = require(KnitServer.Util.Remote.RemoteSignal)
-local RemoteProperty = require(KnitServer.Util.Remote.RemoteProperty)
+local ServerRemoteSignal = require(KnitServer.Util.Remote.ServerRemoteSignal)
+local ServerRemoteProperty = require(KnitServer.Util.Remote.ServerRemoteProperty)
 local TableUtil = require(KnitServer.Util.TableUtil)
 
 local started = false
@@ -141,9 +141,9 @@ function KnitServer.Start()
 			for k,v in pairs(service.Client) do
 				if (type(v) == "function") then
 					KnitServer.BindRemoteFunction(service, k, v)
-				elseif (RemoteSignal.Is(v)) then
+				elseif (ServerRemoteSignal.Is(v)) then
 					KnitServer.BindRemoteEvent(service, k, v)
-				elseif (RemoteProperty.Is(v)) then
+				elseif (ServerRemoteProperty.Is(v)) then
 					KnitServer.BindRemoteProperty(service, k, v)
 				elseif (Signal.Is(v)) then
 					warn("Found Signal instead of RemoteEvent (Knit.Util.RemoteEvent). Please change to RemoteEvent. [" .. service.Name .. ".Client." .. k .. "]")
