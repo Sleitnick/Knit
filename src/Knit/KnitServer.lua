@@ -1,6 +1,8 @@
 --[[
 
 	Knit.CreateService(service): Service
+	Knit.AddServices(folder): Service[]
+	Knit.AddServicesDeep(folder): Service[]
 	Knit.Start(): Promise<void>
 	Knit.OnStart(): Promise<void>
 
@@ -20,6 +22,7 @@ knitRepServiceFolder.Name = "Services"
 local Promise = require(KnitServer.Util.Promise)
 local Thread = require(KnitServer.Util.Thread)
 local Signal = require(KnitServer.Util.Signal)
+local Loader = require(KnitServer.Util.Loader)
 local Ser = require(KnitServer.Util.Ser)
 local RemoteSignal = require(KnitServer.Util.Remote.RemoteSignal)
 local RemoteProperty = require(KnitServer.Util.Remote.RemoteProperty)
@@ -95,6 +98,16 @@ function KnitServer.CreateService(service)
 end
 
 
+function KnitServer.AddServices(folder)
+	return Loader.LoadChildren(folder)
+end
+
+
+function KnitServer.AddServicesDeep(folder)
+	return Loader.LoadDescendants(folder)
+end
+
+
 function KnitServer.BindRemoteEvent(service, eventName, remoteEvent)
 	assert(service._knit_re[eventName] == nil, "RemoteEvent \"" .. eventName .. "\" already exists")
 	local re = remoteEvent._remote
@@ -146,22 +159,23 @@ function KnitServer.Start()
 				elseif (RemoteProperty.Is(v)) then
 					KnitServer.BindRemoteProperty(service, k, v)
 				elseif (Signal.Is(v)) then
-					warn("Found Signal instead of RemoteEvent (Knit.Util.RemoteEvent). Please change to RemoteEvent. [" .. service.Name .. ".Client." .. k .. "]")
+					warn("Found Signal instead of RemoteSignal (Knit.Util.RemoteSignal). Please change to RemoteSignal. [" .. service.Name .. ".Client." .. k .. "]")
 				end
 			end
 		end
 		
 		-- Init:
-		local promisesStartServices = {}
+		local promisesInitServices = {}
 		for _,service in pairs(services) do
 			if (type(service.KnitInit) == "function") then
-				table.insert(promisesStartServices, Promise.new(function(r)
+				table.insert(promisesInitServices, Promise.new(function(r)
 					service:KnitInit()
 					r()
 				end))
 			end
 		end
-		resolve(Promise.All(promisesStartServices))
+		
+		resolve(Promise.All(promisesInitServices))
 
 	end):Then(function()
 		
