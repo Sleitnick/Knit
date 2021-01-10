@@ -1,6 +1,8 @@
 --[[
 
 	Knit.CreateService(service): Service
+	Knit.AddServices(folder): Service[]
+	Knit.AddServicesDeep(folder): Service[]
 	Knit.Start(): Promise<void>
 	Knit.OnStart(): Promise<void>
 
@@ -20,7 +22,6 @@ knitRepServiceFolder.Name = "Services"
 local Promise = require(KnitServer.Util.Promise)
 local Thread = require(KnitServer.Util.Thread)
 local Signal = require(KnitServer.Util.Signal)
-local EnumList = require(KnitServer.Util.EnumList)
 local Ser = require(KnitServer.Util.Ser)
 local RemoteSignal = require(KnitServer.Util.Remote.RemoteSignal)
 local RemoteProperty = require(KnitServer.Util.Remote.RemoteProperty)
@@ -67,9 +68,6 @@ local function AddToRepFolder(service, remoteObj, folderOverride)
 end
 
 
-KnitServer.AutoBehavior = EnumList.new("AutoBehavior", {"Children", "Descendants"})
-
-
 function KnitServer.IsService(object)
 	return type(object) == "table" and object._knit_is_service == true
 end
@@ -99,39 +97,29 @@ function KnitServer.CreateService(service)
 end
 
 
-function KnitServer.AutoServices(autoBehavior, ...)
-	assert(KnitServer.AutoBehavior:Is(autoBehavior), "Argument #1 must be an AutoBehavior")
-	local folders = {...}
-	local function Setup(moduleScript)
-		local m = require(moduleScript)
-		KnitServer.CreateService(m)
-	end
-	local function CheckIfDescendant(folder, index)
-		for i = 1,(index - 1) do
-			local f = folders[i]
-			if (f:IsDescendantOf(folder) or folder:IsDescendantOf(f)) then
-				return true
-			end
-		end
-		return false
-	end
-	for i,folder in ipairs(folders) do
-		assert(typeof(folder) == "Instance", "Must be an Instance")
-		assert(autoBehavior ~= KnitServer.AutoBehavior.Descendants or not CheckIfDescendant(folder, i), "Instances for auto-setup cannot be parented to each other")
-		local collection
-		if (autoBehavior == KnitServer.AutoBehavior.Children) then
-			collection = folder:GetChildren()
-		elseif (autoBehavior == KnitServer.AutoBehavior.Descendants) then
-			collection = folder:GetDescendants()
-		else
-			error("Unknown AutoBehavior")
-		end
-		for _,v in ipairs(collection) do
-			if (v:IsA("ModuleScript")) then
-				Setup(v)
-			end
+function KnitServer.AddServices(folder)
+	local addedServices = {}
+	for _,child in ipairs(folder:GetChildren()) do
+		if (child:IsA("ModuleScript")) then
+			local m = require(child)
+			local service = KnitServer.CreateService(m)
+			table.insert(addedServices, service)
 		end
 	end
+	return addedServices
+end
+
+
+function KnitServer.AddServicesDeep(folder)
+	local addedServices = {}
+	for _,descendant in ipairs(folder:GetDescendants()) do
+		if (descendant:IsA("ModuleScript")) then
+			local m = require(descendant)
+			local service = KnitServer.CreateService(m)
+			table.insert(addedServices, service)
+		end
+	end
+	return addedServices
 end
 
 
@@ -186,22 +174,23 @@ function KnitServer.Start()
 				elseif (RemoteProperty.Is(v)) then
 					KnitServer.BindRemoteProperty(service, k, v)
 				elseif (Signal.Is(v)) then
-					warn("Found Signal instead of RemoteEvent (Knit.Util.RemoteEvent). Please change to RemoteEvent. [" .. service.Name .. ".Client." .. k .. "]")
+					warn("Found Signal instead of RemoteSignal (Knit.Util.RemoteSignal). Please change to RemoteSignal. [" .. service.Name .. ".Client." .. k .. "]")
 				end
 			end
 		end
 		
 		-- Init:
-		local promisesStartServices = {}
+		local promisesInitServices = {}
 		for _,service in pairs(services) do
 			if (type(service.KnitInit) == "function") then
-				table.insert(promisesStartServices, Promise.new(function(r)
+				table.insert(promisesInitServices, Promise.new(function(r)
 					service:KnitInit()
 					r()
 				end))
 			end
 		end
-		resolve(Promise.All(promisesStartServices))
+		
+		resolve(Promise.All(promisesInitServices))
 
 	end):Then(function()
 		
