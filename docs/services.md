@@ -54,7 +54,7 @@ PointsService.PointsPerPlayer = {}
 
 function PointsService:AddPoints(player, amount)
 	local points = self:GetPoints(player) -- Current amount of points
-	points = points + amount              -- Add points
+	points += amount                      -- Add points
 	self.PointsPerPlayer[player] = points -- Store points
 end
 
@@ -76,7 +76,7 @@ PointsService.PointsChanged = Signal.new()
 -- Modify AddPoints:
 function PointsService:AddPoints(player, amount)
 	local points = self:GetPoints(player)
-	points = points + amount
+	points += amount
 	self.PointsPerPlayer[player] = points
 	-- Fire event signal, as long as we actually changed the points:
 	if (amount ~= 0) then
@@ -171,7 +171,7 @@ We can then modify our `AddPoints` method again to fire this signal too:
 ```lua
 function PointsService:AddPoints(player, amount)
 	local points = self:GetPoints(player)
-	points = points + amount
+	points += amount
 	self.PointsPerPlayer[player] = points
 	if (amount ~= 0) then
 		self.PointsChanged:Fire(player, points)
@@ -316,7 +316,7 @@ end
 -- Add Points:
 function PointsService:AddPoints(player, amount)
 	local points = self:GetPoints(player)
-	points = points + amount
+	points += amount
 	self.PointsPerPlayer[player] = points
 	if (amount ~= 0) then
 		self.PointsChanged:Fire(player, points)
