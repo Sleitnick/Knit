@@ -27,7 +27,7 @@ function EnumList.new(name, enums)
 	local scope = Symbol.new(name)
 	local enumItems = {}
 	for _,enumName in ipairs(enums) do
-		enumItems[enumName] = Symbol.new(enumName)
+		enumItems[enumName] = Symbol.new(enumName, scope)
 	end
 	local self = setmetatable({
 		_scope = scope;
@@ -45,6 +45,7 @@ function EnumList.new(name, enums)
 			error("Cannot add new " .. name, 2)
 		end;
 	})
+	return self
 end
 
 
