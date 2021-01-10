@@ -22,6 +22,7 @@ knitRepServiceFolder.Name = "Services"
 local Promise = require(KnitServer.Util.Promise)
 local Thread = require(KnitServer.Util.Thread)
 local Signal = require(KnitServer.Util.Signal)
+local Loader = require(KnitServer.Util.Loader)
 local Ser = require(KnitServer.Util.Ser)
 local RemoteSignal = require(KnitServer.Util.Remote.RemoteSignal)
 local RemoteProperty = require(KnitServer.Util.Remote.RemoteProperty)
@@ -98,28 +99,12 @@ end
 
 
 function KnitServer.AddServices(folder)
-	local addedServices = {}
-	for _,child in ipairs(folder:GetChildren()) do
-		if (child:IsA("ModuleScript")) then
-			local m = require(child)
-			local service = KnitServer.CreateService(m)
-			table.insert(addedServices, service)
-		end
-	end
-	return addedServices
+	return Loader.LoadChildren(folder)
 end
 
 
 function KnitServer.AddServicesDeep(folder)
-	local addedServices = {}
-	for _,descendant in ipairs(folder:GetDescendants()) do
-		if (descendant:IsA("ModuleScript")) then
-			local m = require(descendant)
-			local service = KnitServer.CreateService(m)
-			table.insert(addedServices, service)
-		end
-	end
-	return addedServices
+	return Loader.LoadDescendants(folder)
 end
 
 

@@ -19,6 +19,7 @@ KnitClient.Util = script.Parent.Util
 
 local Promise = require(KnitClient.Util.Promise)
 local Thread = require(KnitClient.Util.Thread)
+local Loader = require(KnitClient.Util.Loader)
 local Ser = require(KnitClient.Util.Ser)
 local ClientRemoteSignal = require(KnitClient.Util.Remote.ClientRemoteSignal)
 local ClientRemoteProperty = require(KnitClient.Util.Remote.ClientRemoteProperty)
@@ -82,28 +83,12 @@ end
 
 
 function KnitClient.AddControllers(folder)
-	local controllers = {}
-	for _,child in ipairs(folder:GetChildren()) do
-		if (child:IsA("ModuleScript")) then
-			local m = require(child)
-			local controller = KnitClient.CreateController(m)
-			table.insert(controllers, controller)
-		end
-	end
-	return controllers
+	return Loader.LoadChildren(folder)
 end
 
 
 function KnitClient.AddControllersDeep(folder)
-	local controllers = {}
-	for _,descendant in ipairs(folder:GetDescendants()) do
-		if (descendant:IsA("ModuleScript")) then
-			local m = require(descendant)
-			local controller = KnitClient.CreateController(m)
-			table.insert(controllers, controller)
-		end
-	end
-	return controllers
+	return Loader.LoadDescendants(folder)
 end
 
 
