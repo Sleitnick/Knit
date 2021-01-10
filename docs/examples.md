@@ -24,19 +24,22 @@ end
 Knit.Start():Catch(warn)
 ```
 
-Alternatively, we can use `Knit.AutoServices` to load all of the services without writing a loop:
+Alternatively, we can use `Knit.AddServices` or `Knit.AddServicesDeep` to load all of the services without writing a loop. It scans and loads all ModuleScripts found and passes them to `Knit.CreateService`:
 
 ```lua
 local Knit = require(game:GetService("ReplicatedStorage").Knit)
 
--- Load all services:
-Knit.AutoServices(Knit.AutoBehavior.Descendants, script.Parent.Services)
+-- Load all services within 'Services':
+Knit.AddServices(script.Parent.Services)
+
+-- Load all services (the Deep version scans all descendants of the passed instance):
+Knit.AddServicesDeep(script.Parent.OtherServices)
 
 Knit.Start():Catch(warn)
 ```
 
 !!! tip
-	This same design practice can also be done on the client with controllers. Either loop through and collect controllers or use the `Knit.AutoControllers` function.
+	This same design practice can also be done on the client with controllers. Either loop through and collect controllers or use the `Knit.AddControllers` or `Knit.AddControllersDeep` function.
 
 ----------------
 

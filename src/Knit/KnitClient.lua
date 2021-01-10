@@ -1,7 +1,10 @@
 --[[
 
 	Knit.CreateController(controller): Controller
+	Knit.AddControllers(folder): Controller[]
+	Knit.AddControllersDeep(folder): Controller[]
 	Knit.GetService(serviceName): Service
+	Knit.GetController(controllerName): Controller
 	Knit.Start(): Promise<void>
 	Knit.OnStart(): Promise<void>
 
@@ -16,7 +19,6 @@ KnitClient.Util = script.Parent.Util
 
 local Promise = require(KnitClient.Util.Promise)
 local Thread = require(KnitClient.Util.Thread)
-local EnumList = require(KnitClient.Util.EnumList)
 local Ser = require(KnitClient.Util.Ser)
 local ClientRemoteSignal = require(KnitClient.Util.Remote.ClientRemoteSignal)
 local ClientRemoteProperty = require(KnitClient.Util.Remote.ClientRemoteProperty)
@@ -66,9 +68,6 @@ local function BuildService(serviceName, folder)
 end
 
 
-KnitClient.AutoBehavior = EnumList.new("AutoBehavior", {"Children", "Descendants"})
-
-
 function KnitClient.CreateController(controller)
 	assert(type(controller) == "table", "Controller must be a table; got " .. type(controller))
 	assert(type(controller.Name) == "string", "Controller.Name must be a string; got " .. type(controller.Name))
@@ -82,39 +81,29 @@ function KnitClient.CreateController(controller)
 end
 
 
-function KnitClient.AutoControllers(autoBehavior, ...)
-	assert(KnitClient.AutoBehavior:Is(autoBehavior), "Argument #1 must be an AutoBehavior")
-	local folders = {...}
-	local function Setup(moduleScript)
-		local m = require(moduleScript)
-		KnitClient.CreateController(m)
-	end
-	local function CheckIfDescendant(folder, index)
-		for i = 1,(index - 1) do
-			local f = folders[i]
-			if (f:IsDescendantOf(folder) or folder:IsDescendantOf(f)) then
-				return true
-			end
-		end
-		return false
-	end
-	for i,folder in ipairs(folders) do
-		assert(typeof(folder) == "Instance", "Must be an Instance")
-		assert(autoBehavior ~= KnitClient.AutoBehavior.Descendants or not CheckIfDescendant(folder, i), "Instances for auto-setup cannot be parented to each other")
-		local collection
-		if (autoBehavior == KnitClient.AutoBehavior.Children) then
-			collection = folder:GetChildren()
-		elseif (autoBehavior == KnitClient.AutoBehavior.Descendants) then
-			collection = folder:GetDescendants()
-		else
-			error("Unknown AutoBehavior")
-		end
-		for _,v in ipairs(collection) do
-			if (v:IsA("ModuleScript")) then
-				Setup(v)
-			end
+function KnitClient.AddControllers(folder)
+	local controllers = {}
+	for _,child in ipairs(folder:GetChildren()) do
+		if (child:IsA("ModuleScript")) then
+			local m = require(child)
+			local controller = KnitClient.CreateController(m)
+			table.insert(controllers, controller)
 		end
 	end
+	return controllers
+end
+
+
+function KnitClient.AddControllersDeep(folder)
+	local controllers = {}
+	for _,descendant in ipairs(folder:GetDescendants()) do
+		if (descendant:IsA("ModuleScript")) then
+			local m = require(descendant)
+			local controller = KnitClient.CreateController(m)
+			table.insert(controllers, controller)
+		end
+	end
+	return controllers
 end
 
 
@@ -123,6 +112,11 @@ function KnitClient.GetService(serviceName)
 	local folder = servicesFolder:FindFirstChild(serviceName)
 	assert(folder ~= nil, "Could not find service \"" .. serviceName .. "\"")
 	return services[serviceName] or BuildService(serviceName, folder)
+end
+
+
+function KnitClient.GetController(controllerName)
+	return KnitClient.Controllers[controllerName]
 end
 
 
