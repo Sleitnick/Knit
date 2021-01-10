@@ -14,6 +14,7 @@ nav:
   - Execution Model: executionmodel.md
   - VS Code Snippets: vscodesnippets.md
   - Examples: examples.md
+  - Style Guide: styleguide.md
 
 theme:
   logo: "img/logo_64.png"

@@ -56,7 +56,7 @@ end
 function MoneyService:GiveMoney(player, amount)
 	-- Do some sort of data fetch
 	local money = self:GetMoney(player)
-	money = money + amount
+	money += amount
 	someDataStore:SetAsync("money", money)
 end
 

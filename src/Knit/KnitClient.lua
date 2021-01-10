@@ -1,7 +1,10 @@
 --[[
 
 	Knit.CreateController(controller): Controller
+	Knit.AddControllers(folder): Controller[]
+	Knit.AddControllersDeep(folder): Controller[]
 	Knit.GetService(serviceName): Service
+	Knit.GetController(controllerName): Controller
 	Knit.Start(): Promise<void>
 	Knit.OnStart(): Promise<void>
 
@@ -16,6 +19,7 @@ KnitClient.Util = script.Parent.Util
 
 local Promise = require(KnitClient.Util.Promise)
 local Thread = require(KnitClient.Util.Thread)
+local Loader = require(KnitClient.Util.Loader)
 local Ser = require(KnitClient.Util.Ser)
 local ClientRemoteSignal = require(KnitClient.Util.Remote.ClientRemoteSignal)
 local ClientRemoteProperty = require(KnitClient.Util.Remote.ClientRemoteProperty)
@@ -78,11 +82,26 @@ function KnitClient.CreateController(controller)
 end
 
 
+function KnitClient.AddControllers(folder)
+	return Loader.LoadChildren(folder)
+end
+
+
+function KnitClient.AddControllersDeep(folder)
+	return Loader.LoadDescendants(folder)
+end
+
+
 function KnitClient.GetService(serviceName)
 	assert(type(serviceName) == "string", "ServiceName must be a string; got " .. type(serviceName))
 	local folder = servicesFolder:FindFirstChild(serviceName)
 	assert(folder ~= nil, "Could not find service \"" .. serviceName .. "\"")
 	return services[serviceName] or BuildService(serviceName, folder)
+end
+
+
+function KnitClient.GetController(controllerName)
+	return KnitClient.Controllers[controllerName]
 end
 
 
