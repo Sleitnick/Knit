@@ -98,14 +98,10 @@ function KnitServer.CreateService(service)
 end
 
 
-function KnitServer.AddServices(folder)
-	return Loader.LoadChildren(folder)
-end
+KnitServer.AddServices = Loader.LoadChildren
 
 
-function KnitServer.AddServicesDeep(folder)
-	return Loader.LoadDescendants(folder)
-end
+KnitServer.AddServicesDeep = Loader.LoadDescendants
 
 
 function KnitServer.BindRemoteEvent(service, eventName, remoteEvent)

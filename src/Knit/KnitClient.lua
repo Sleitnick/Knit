@@ -82,14 +82,10 @@ function KnitClient.CreateController(controller)
 end
 
 
-function KnitClient.AddControllers(folder)
-	return Loader.LoadChildren(folder)
-end
+KnitClient.AddControllers = Loader.LoadChildren
 
 
-function KnitClient.AddControllersDeep(folder)
-	return Loader.LoadDescendants(folder)
-end
+KnitClient.AddControllersDeep = Loader.LoadDescendants
 
 
 function KnitClient.GetService(serviceName)
