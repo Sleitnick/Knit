@@ -19,7 +19,7 @@ function Loader.LoadChildren(parent)
 	local modules = {}
 	for _,child in ipairs(parent:GetChildren()) do
 		if (child:IsA("ModuleScript")) then
-			local m = require(child)
+			local _, m = pcall(require, child)
 			table.insert(modules, m)
 		end
 	end
@@ -31,7 +31,7 @@ function Loader.LoadDescendants(parent)
 	local modules = {}
 	for _,descendant in ipairs(parent:GetDescendants()) do
 		if (descendant:IsA("ModuleScript")) then
-			local m = require(descendant)
+			local _, m = pcall(require, descendant)
 			table.insert(modules, m)
 		end
 	end
