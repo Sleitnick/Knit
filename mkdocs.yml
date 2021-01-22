@@ -23,7 +23,9 @@ theme:
   logo: "img/logo.png"
   favicon: "img/favicon.png"
   name: material
-  font: Ubuntu
+  font:
+    text: Ubuntu
+    code: Roboto Mono
   palette:
     primary: indigo
     accent: light blue
@@ -41,8 +43,9 @@ extra:
       name: Twitter for Knit's author
 
 markdown_extensions:
-  - codehilite:
+  - pymdownx.highlight:
       linenums: true
+  - pymdownx.superfences
   - admonition
   - toc:
       permalink: true
