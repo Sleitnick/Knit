@@ -60,7 +60,6 @@ end
 
 function ClientRemoteProperty:Destroy()
 	self._change:Disconnect()
-	self._set:Destroy()
 	if (self._isTable) then
 		self.Changed:Destroy()
 	end
