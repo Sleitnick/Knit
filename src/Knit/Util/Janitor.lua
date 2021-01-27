@@ -80,7 +80,7 @@ end
 	@returns [Promise]
 **--]]
 function Janitor.__index:AddPromise(PromiseObject)
-	if PromiseObject:getStatus() == Promise.Status.Started then
+	if PromiseObject:GetStatus() == Promise.Status.Started then
 		local Id = newproxy(false)
 		local NewPromise = self:Add(Promise.Resolve(PromiseObject), "Cancel", Id)
 		NewPromise:Finally(function()
