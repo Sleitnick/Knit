@@ -7,6 +7,7 @@
 -- Documentation: https://rostrap.github.io/Libraries/Events/Janitor/
 
 local RunService = game:GetService("RunService")
+local Promise = require(script.Parent.Promise)
 local Symbol = require(script.Parent.Symbol)
 local Thread = require(script.Parent.Thread)
 
@@ -69,6 +70,27 @@ function Janitor.__index:Add(Object, MethodName, Index)
 
 	self[Object] = MethodName or TypeDefaults[typeof(Object)] or "Destroy"
 	return Object
+end
+
+-- My version of Promise has PascalCase, but I converted it to use lowerCamelCase for this release since obviously that's important to do.
+
+--[[**
+	Adds a promise to the janitor. If the janitor is cleaned up and the promise is not completed, the promise will be cancelled.
+	@param [Promise] PromiseObject The promise you want to add to the janitor.
+	@returns [Promise]
+**--]]
+function Janitor.__index:AddPromise(PromiseObject)
+	if PromiseObject:getStatus() == Promise.Status.Started then
+		local Id = newproxy(false)
+		local NewPromise = self:Add(Promise.Resolve(PromiseObject), "Cancel", Id)
+		NewPromise:Finally(function()
+			self:Remove(Id)
+		end)
+
+		return NewPromise
+	else
+		return PromiseObject
+	end
 end
 
 --[[**
