@@ -4,7 +4,7 @@
 
 --[[
 
-	signal = Signal.new([maid])
+	signal = Signal.new([janitor])
 
 	signal:Fire(...)
 	signal:Wait()
@@ -65,7 +65,7 @@ local Signal = {}
 Signal.__index = Signal
 
 
-function Signal.new(maid)
+function Signal.new(janitor)
 	local self = setmetatable({
 		_bindable = Instance.new("BindableEvent");
 		_connections = {};
@@ -73,8 +73,8 @@ function Signal.new(maid)
 		_threads = 0;
 		_id = 0;
 	}, Signal)
-	if (maid) then
-		maid:GiveTask(self)
+	if (janitor) then
+		janitor:Add(self, "Destroy")
 	end
 	return self
 end

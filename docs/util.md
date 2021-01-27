@@ -23,7 +23,7 @@ connection.Connected
 connection:Disconnect()
 ```
 
-The Connection object internal to the Signal module also has a Destroy method associated with it, so it will still play nicely with the Maid module.
+The Connection object internal to the Signal module also has a Destroy method associated with it, so it will still play nicely with the Janitor module.
 
 --------------------
 
@@ -88,26 +88,30 @@ delayConnection:Disconnect()
 
 --------------------
 
-## [Maid](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Maid.lua)
+## [Janitor](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Janitor.lua)
 
-The [Maid](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Maid.lua) module is a powerful tool for tracking and cleaning up your messes (hence the name). The Maid module was created by [James Onnen](https://github.com/Quenty). Read his [tutorial on Maids](https://medium.com/roblox-development/how-to-use-a-maid-class-on-roblox-to-manage-state-651bf74de98b) for a better understanding of how to use it.
+The [Janitor](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Janitor.lua) module is a powerful tool for tracking and cleaning up your messes (hence the name). The Janitor module was created by [Validark](https://github.com/Validark/) and was modified by [HowManySmall / pobammer](https://github.com/howmanysmall). You can see the [official documentation](https://rostrap.github.io/Libraries/Events/Janitor/) for the guide on how to use the original API and the comments in the module itself on how to use all of it.
 
 ```lua
-local Maid = require(Knit.Util.Maid)
+local Janitor = require(Knit.Util.Janitor)
 
-local maid = Maid.new()
+local janitor = Janitor.new()
 
 -- Give tasks to be cleaned up at a later time:
-maid:GiveTask(somePart)
-maid:GiveTask(something.SomeEvent:Connect(function() end))
-maid:GiveTask(function() end)
+janitor:Add(somePart, "Destroy")
+janitor:Add(someNewClass, "FireAndDestroy") -- You can add custom methods.
+janitor:Add(something.SomeEvent:Connect(function() end), "Disconnect", "Connection")
+local callback = janitor:Add(function() end, true) -- returns the object!
 
--- Both Destroy and DoCleaning do the same thing:
-maid:Destroy()
-maid:DoCleaning()
+-- Removes the connection
+janitor:Remove("Connection")
+
+-- Both Destroy and Cleanup do the same thing, except Destroy renders the Janitor useless.
+janitor:Cleanup()
+janitor:Destroy()
 ```
 
-Any table with a `Destroy` method can be added to a maid. If you have a bunch of events that you've created for a custom class, using a maid would be good to clean them all up when you're done with the object. Typically a maid will live with the object with which contains the items being tracked.
+You can add any method to the janitor to clean up with. If you have a bunch of events that you've created for a custom class, using a janitor would be good to clean them all up when you're done with the object. Typically a janitor will live with the object with which contains the items being tracked.
 
 --------------------
 

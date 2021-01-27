@@ -36,7 +36,7 @@ A folder containing utility modules used by Knit, but also accessible for develo
 
 This folder contains the following modules:
 
-- Maid
+- Janitor
 - Event
 - Promise
 - Thread

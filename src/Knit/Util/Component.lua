@@ -73,7 +73,7 @@
 --]]
 
 
-local Maid = require(script.Parent.Maid)
+local Janitor = require(script.Parent.Janitor)
 local Signal = require(script.Parent.Signal)
 local Promise = require(script.Parent.Promise)
 local Thread = require(script.Parent.Thread)
@@ -148,8 +148,8 @@ function Component.new(tag, class, renderPriority)
 	self.Added = Signal.new()
 	self.Removed = Signal.new()
 
-	self._maid = Maid.new()
-	self._lifecycleMaid = Maid.new()
+	self._janitor = Janitor.new()
+	self._lifecycleJanitor = self._janitor:Add(Janitor.new(), "Destroy")
 	self._tag = tag
 	self._class = class
 	self._objects = {}
@@ -163,17 +163,15 @@ function Component.new(tag, class, renderPriority)
 	self._lifecycle = false
 	self._nextId = 0
 
-	self._maid:GiveTask(CollectionService:GetInstanceAddedSignal(tag):Connect(function(instance)
+	self._janitor:Add(CollectionService:GetInstanceAddedSignal(tag):Connect(function(instance)
 		if (IsDescendantOfWhitelist(instance)) then
-			self:_instanceAdded(instance)
+			self:Add(instance)
 		end
-	end))
+	end), "Disconnect")
 
-	self._maid:GiveTask(CollectionService:GetInstanceRemovedSignal(tag):Connect(function(instance)
+	self._janitor:Add(CollectionService:GetInstanceRemovedSignal(tag):Connect(function(instance)
 		self:_instanceRemoved(instance)
-	end))
-
-	self._maid:GiveTask(self._lifecycleMaid)
+	end), "Disconnect")
 
 	do
 		local b = Instance.new("BindableEvent")
@@ -190,9 +188,9 @@ function Component.new(tag, class, renderPriority)
 	end
 
 	componentsByTag[tag] = self
-	self._maid:GiveTask(function()
+	self._janitor:Add(function()
 		componentsByTag[tag] = nil
-	end)
+	end, true)
 
 	return self
 
@@ -201,23 +199,21 @@ end
 
 function Component:_startHeartbeatUpdate()
 	local all = self._objects
-	self._heartbeatUpdate = RunService.Heartbeat:Connect(function(dt)
+	self._heartbeatUpdate = self._lifecycleJanitor:Add(RunService.Heartbeat:Connect(function(dt)
 		for _,v in ipairs(all) do
 			v:HeartbeatUpdate(dt)
 		end
-	end)
-	self._lifecycleMaid:GiveTask(self._heartbeatUpdate)
+	end), "Disconnect")
 end
 
 
 function Component:_startSteppedUpdate()
 	local all = self._objects
-	self._steppedUpdate = RunService.Stepped:Connect(function(_, dt)
+	self._steppedUpdate = self._lifecycleJanitor:Add(RunService.Stepped:Connect(function(_, dt)
 		for _,v in ipairs(all) do
 			v:SteppedUpdate(dt)
 		end
-	end)
-	self._lifecycleMaid:GiveTask(self._steppedUpdate)
+	end), "Disconnect")
 end
 
 
@@ -229,9 +225,9 @@ function Component:_startRenderUpdate()
 			v:RenderUpdate(dt)
 		end
 	end)
-	self._lifecycleMaid:GiveTask(function()
+	self._lifecycleJanitor:Add(function()
 		RunService:UnbindFromRenderStep(self._renderName)
-	end)
+	end, true)
 end
 
 
@@ -251,7 +247,7 @@ end
 
 function Component:_stopLifecycle()
 	self._lifecycle = false
-	self._lifecycleMaid:DoCleaning()
+	self._lifecycleJanitor:Cleanup()
 end
 
 
@@ -260,7 +256,7 @@ function Component:_instanceAdded(instance)
 	if (not self._lifecycle) then
 		self:_startLifecycle()
 	end
-	self._nextId = (self._nextId + 1)
+	self._nextId += 1
 	local id = (self._tag .. tostring(self._nextId))
 	if (IS_SERVER) then
 		local idStr = Instance.new("StringValue")
@@ -361,7 +357,7 @@ end
 
 
 function Component:Destroy()
-	self._maid:Destroy()
+	self._janitor:Destroy()
 end
 
 
