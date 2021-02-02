@@ -29,6 +29,7 @@ theme:
   palette:
     primary: indigo
     accent: light blue
+    scheme: preference
   highlightjs: true
   hljs_languages:
     - lua
