@@ -197,7 +197,7 @@ property.Changed:Connect(function(newValue) end)
 ```
 
 !!! warning "Tables"
-	When using a table in a RemoteProperty, you **_must_** call `property:Replicate()` server-side after changing a value in the table in order for the changes to replicate to the client. This is necessary because there is no way to watch for changes on a table (unless you clutter it with a bunch of metatables). Calling `Replicate` will re-serialize the value.
+	When using a table in a RemoteProperty, you **_must_** call `property:Replicate()` server-side after changing a value in the table in order for the changes to replicate to the client. This is necessary because there is no way to watch for changes on a table (unless you clutter it with a bunch of metatables). Calling `Replicate` will replicate the table to the clients.
 
 --------------------
 
@@ -209,7 +209,7 @@ Typically, developers will never need to instantiate ClientRemoteProperties, as 
 
 ```lua
 -- Client-side
-local property = RemoteProperty.new(valueBaseObject)
+local property = ClientRemoteProperty.new(valueBaseObject)
 local value = property:Get()
 property.Changed:Connect(function(newValue) end)
 ```
