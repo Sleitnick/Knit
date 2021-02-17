@@ -40,11 +40,13 @@
 		end
 
 		-- OPTIONAL LIFECYCLE HOOKS
-		function MyComponent:Init() end                     -> Called right after constructor
-		function MyComponent:Deinit() end                   -> Called right before deconstructor
-		function MyComponent:HeartbeatUpdate(dt) ... end    -> Updates every heartbeat
-		function MyComponent:SteppedUpdate(dt) ... end      -> Updates every physics step
-		function MyComponent:RenderUpdate(dt) ... end       -> Updates every render step
+		function MyComponent:Init() end                          -> Called right after constructor
+		function MyComponent:Deinit() end                        -> Called right before deconstructor
+		function MyComponent:PreAnimationUpdate(dt) ... end      -> Called before the animation step in the runtime pipeline
+		function MyComponent:PreRenderUpdate(dt) ... end         -> Called before the render step in the runtime pipeline
+		function MyComponent:PreSimulationUpdate(dt) ... end     -> Called before physics calculations in the runtime pipeline
+		function MyComponent:PostSimulationUpdate(dt) ... end    -> Called after physics calculations in the runtime pipeline
+		function MyComponent:RenderUpdate(dt)                    -> Bound to RenderStep with the given RenderPriority from the component constructor
 
 		-- DESTRUCTOR
 		function MyComponent:Destroy()
@@ -154,9 +156,11 @@ function Component.new(tag, class, renderPriority)
 	self._class = class
 	self._objects = {}
 	self._instancesToObjects = {}
-	self._hasHeartbeatUpdate = (type(class.HeartbeatUpdate) == "function")
-	self._hasSteppedUpdate = (type(class.SteppedUpdate) == "function")
-	self._hasRenderUpdate = (type(class.RenderUpdate) == "function")
+	self._hasPreAnimation = (type(class.PreAnimationUpdate) == "function")
+	self._hasPreRender = (type(class.PreRenderUpdate) == "function")
+	self._hasPreSimulation = (type(class.PreSimulationUpdate) == "function")
+	self._hasPostSimulation = (type(class.PostSimulationUpdate) == "function")
+	self._hasRender = (type(class.RenderUpdate) == "function")
 	self._hasInit = (type(class.Init) == "function")
 	self._hasDeinit = (type(class.Deinit) == "function")
 	self._renderPriority = renderPriority or Enum.RenderPriority.Last.Value
@@ -199,25 +203,43 @@ function Component.new(tag, class, renderPriority)
 end
 
 
-function Component:_startHeartbeatUpdate()
+function Component:_startPreAnimationUpdate()
 	local all = self._objects
-	self._heartbeatUpdate = RunService.Heartbeat:Connect(function(dt)
+	self._lifecycleMaid:GiveTask(RunService.PreAnimation:Connect(function(dt)
 		for _,v in ipairs(all) do
-			v:HeartbeatUpdate(dt)
+			v:PreAnimationUpdate(dt)
 		end
-	end)
-	self._lifecycleMaid:GiveTask(self._heartbeatUpdate)
+	end))
 end
 
 
-function Component:_startSteppedUpdate()
+function Component:_startPreRenderUpdate()
 	local all = self._objects
-	self._steppedUpdate = RunService.Stepped:Connect(function(_, dt)
+	self._lifecycleMaid:GiveTask(RunService.PreRender:Connect(function(dt)
 		for _,v in ipairs(all) do
-			v:SteppedUpdate(dt)
+			v:PreRenderUpdate(dt)
 		end
-	end)
-	self._lifecycleMaid:GiveTask(self._steppedUpdate)
+	end))
+end
+
+
+function Component:_startPreSimulationUpdate()
+	local all = self._objects
+	self._lifecycleMaid:GiveTask(RunService.PreSimulation:Connect(function(dt)
+		for _,v in ipairs(all) do
+			v:PreSimulationUpdate(dt)
+		end
+	end))
+end
+
+
+function Component:_startPostSimulationUpdate()
+	local all = self._objects
+	self._lifecycleMaid:GiveTask(RunService.PostSimulation:Connect(function(dt)
+		for _,v in ipairs(all) do
+			v:PostSimulationUpdate(dt)
+		end
+	end))
 end
 
 
@@ -237,13 +259,19 @@ end
 
 function Component:_startLifecycle()
 	self._lifecycle = true
-	if (self._hasHeartbeatUpdate) then
-		self:_startHeartbeatUpdate()
+	if (self._hasPreAnimation) then
+		self:_startPreAnimationUpdate()
 	end
-	if (self._hasSteppedUpdate) then
-		self:_startSteppedUpdate()
+	if (self._hasPreRender) then
+		self:_startPreRenderUpdate()
 	end
-	if (self._hasRenderUpdate) then
+	if (self._hasPreSimulation) then
+		self:_startPreSimulationUpdate()
+	end
+	if (self._hasPostSimulation) then
+		self:_startPostSimulationUpdate()
+	end
+	if (self._hasRender) then
 		self:_startRenderUpdate()
 	end
 end
