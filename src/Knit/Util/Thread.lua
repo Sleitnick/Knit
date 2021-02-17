@@ -24,8 +24,8 @@
 
 	Spawn(func: (...any) -> void [, ...args])
 
-		>	Uses RunService's Heartbeat to spawn a new
-			thread on the next heartbeat and then
+		>	Uses RunService's PostSimulation to spawn a new
+			thread on the next post-simulation event and then
 			call the given function.
 
 		>	Better performance than Thread.SpawnNow, but
@@ -38,7 +38,7 @@
 			the function until the in-game time as elapsed
 			by 'waitTime' amount.
 
-		>	Returns the connection to the Heartbeat event,
+		>	Returns the connection to the PostSimulation event,
 			so the delay can be cancelled by disconnecting
 			the returned connection.
 
@@ -47,7 +47,7 @@
 		>	The same as Thread.Delay, except it repeats
 			indefinitely.
 		
-		>	Returns the Heartbeat connection, thus the
+		>	Returns the PostSimulation connection, thus the
 			repeated delay can be stopped by disconnecting
 			the returned connection.
 
@@ -113,7 +113,7 @@ local EnumList = require(script.Parent.EnumList)
 
 local Thread = {}
 
-local heartbeat = game:GetService("RunService").Heartbeat
+local postSimulation = game:GetService("RunService").PostSimulation
 
 Thread.DelayRepeatBehavior = EnumList.new("DelayRepeatBehavior", {
 	"Delayed";
@@ -139,9 +139,9 @@ end
 
 function Thread.Spawn(func, ...)
 	local args = table.pack(...)
-	local hb
-	hb = heartbeat:Connect(function()
-		hb:Disconnect()
+	local postSimulationHandle
+	postSimulationHandle = postSimulation:Connect(function()
+		postSimulationHandle:Disconnect()
 		func(table.unpack(args, 1, args.n))
 	end)
 end
@@ -150,14 +150,14 @@ end
 function Thread.Delay(waitTime, func, ...)
 	local args = table.pack(...)
 	local executeTime = (time() + waitTime)
-	local hb
-	hb = heartbeat:Connect(function()
+	local postSimulationHandle
+	postSimulationHandle = postSimulation:Connect(function()
 		if (time() >= executeTime) then
-			hb:Disconnect()
+			postSimulationHandle:Disconnect()
 			func(table.unpack(args, 1, args.n))
 		end
 	end)
-	return hb
+	return postSimulationHandle
 end
 
 
@@ -169,14 +169,14 @@ function Thread.DelayRepeat(intervalTime, func, behavior, ...)
 	assert(Thread.DelayRepeatBehavior:Is(behavior), "Invalid behavior")
 	local immediate = (behavior == Thread.DelayRepeatBehavior.Immediate)
 	local nextExecuteTime = (time() + (immediate and 0 or intervalTime))
-	local hb
-	hb = heartbeat:Connect(function()
+	local postSimulationHandle
+	postSimulationHandle = postSimulation:Connect(function()
 		if (time() >= nextExecuteTime) then
 			nextExecuteTime = (time() + intervalTime)
 			func(table.unpack(args, 1, args.n))
 		end
 	end)
-	return hb
+	return postSimulationHandle
 end
 
 
