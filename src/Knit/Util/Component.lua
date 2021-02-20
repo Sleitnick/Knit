@@ -42,9 +42,9 @@
 		-- OPTIONAL LIFECYCLE HOOKS
 		function MyComponent:Init() end                     -> Called right after constructor
 		function MyComponent:Deinit() end                   -> Called right before deconstructor
-		function MyComponent:HeartbeatUpdate(dt) ... end    -> Updates every heartbeat
-		function MyComponent:SteppedUpdate(dt) ... end      -> Updates every physics step
-		function MyComponent:RenderUpdate(dt) ... end       -> Updates every render step
+		function MyComponent:HeartbeatUpdate(dt) ... end    -> Updates every heartbeat (PostSimulation)
+		function MyComponent:SteppedUpdate(dt) ... end      -> Updates every physics step (PreSimulation)
+		function MyComponent:RenderUpdate(dt) ... end       -> Updates every render step (PreRender)
 
 		-- DESTRUCTOR
 		function MyComponent:Destroy()
@@ -201,7 +201,7 @@ end
 
 function Component:_startHeartbeatUpdate()
 	local all = self._objects
-	self._heartbeatUpdate = RunService.Heartbeat:Connect(function(dt)
+	self._heartbeatUpdate = RunService.PostSimulation:Connect(function(dt)
 		for _,v in ipairs(all) do
 			v:HeartbeatUpdate(dt)
 		end
@@ -212,7 +212,7 @@ end
 
 function Component:_startSteppedUpdate()
 	local all = self._objects
-	self._steppedUpdate = RunService.Stepped:Connect(function(_, dt)
+	self._steppedUpdate = RunService.PreSimulation:Connect(function(_, dt)
 		for _,v in ipairs(all) do
 			v:SteppedUpdate(dt)
 		end
