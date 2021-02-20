@@ -24,7 +24,7 @@
 
 	Spawn(func: (...any) -> void [, ...args])
 
-		>	Uses RunService's Heartbeat to spawn a new
+		>	Uses RunService's PostSimulation to spawn a new
 			thread on the next heartbeat and then
 			call the given function.
 
@@ -38,7 +38,7 @@
 			the function until the in-game time as elapsed
 			by 'waitTime' amount.
 
-		>	Returns the connection to the Heartbeat event,
+		>	Returns the connection to the PostSimulation/Heartbeat event,
 			so the delay can be cancelled by disconnecting
 			the returned connection.
 
@@ -47,7 +47,7 @@
 		>	The same as Thread.Delay, except it repeats
 			indefinitely.
 		
-		>	Returns the Heartbeat connection, thus the
+		>	Returns the PostSimulation/Heartbeat connection, thus the
 			repeated delay can be stopped by disconnecting
 			the returned connection.
 
@@ -113,7 +113,7 @@ local EnumList = require(script.Parent.EnumList)
 
 local Thread = {}
 
-local heartbeat = game:GetService("RunService").Heartbeat
+local heartbeat = game:GetService("RunService").PostSimulation
 
 Thread.DelayRepeatBehavior = EnumList.new("DelayRepeatBehavior", {
 	"Delayed";
