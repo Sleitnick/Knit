@@ -213,6 +213,29 @@
 			local tbl = {1, 2, 3, 4, 5, 6, 7, 8, 9}
 			TableUtil.Shuffle(tbl)
 			print(table.concat(tbl, ", "))  -- e.g. > 3, 6, 9, 2, 8, 4, 1, 7, 5
+
+		Includes:
+
+			Returns boolean representing if the given array includes the given value.
+
+			local tbl = {"Hello", 32, true, "abc"}
+			local abcIndex = TableUtil.Includes(tbl, "abc")     -- > true
+			local helloIndex = TableUtil.Includes(tbl, "Hello") -- > true
+			local numberIndex = TableUtil.Includes(tbl, 64)     -- > false
+
+		BinarySearch:
+
+			Returns the index of the given item in the table. If not found, this
+			will return nil.
+
+			This method is similar to IndexOf() but is O(log n) as opposed to indexOf()'s O(n).
+			This method only works on sorted tables.
+
+			local tbl = {"Hello", 32, true, "abc"}
+			local abcIndex = TableUtil.IndexOf(tbl, "abc")     -- > 4
+			local helloIndex = TableUtil.IndexOf(tbl, "Hello") -- > 1
+			local numberIndex = TableUtil.IndexOf(tbl, 64)     -- > nil
+
 	
 --]]
 
@@ -366,6 +389,27 @@ local function Extend(tbl, extension)
 	end
 end
 
+local function BinarySearch(tbl, value)
+	local l = 1
+	local h = #tbl
+
+	while l <= h do
+		local m = l + math.floor((h - l) / 2)
+		local mid = tbl[m]
+		if value < mid then
+			h = m - 1
+		elseif mid < value then
+			l = m + 1
+		else
+			while m >= 1 and not (tbl[m] < value or value < tbl[m]) do
+				m -= 1
+			end
+			return m + 1
+		end
+	end
+
+	return nil
+end
 
 local function Print(tbl, label, deepPrint)
 
@@ -449,6 +493,13 @@ local function IsEmpty(tbl)
 	return (next(tbl) == nil)
 end
 
+local function Includes(tbl,item)
+	if table.find(tbl,item) then
+		return true
+	end
+
+	return false
+end
 
 local function EncodeJSON(tbl)
 	return http:JSONEncode(tbl)
@@ -487,6 +538,7 @@ TableUtil.Shuffle = Shuffle
 TableUtil.IsEmpty = IsEmpty
 TableUtil.EncodeJSON = EncodeJSON
 TableUtil.DecodeJSON = DecodeJSON
-
+TableUtil.Includes = Includes
+TableUtil.BinarySearch = BinarySearch
 
 return TableUtil
