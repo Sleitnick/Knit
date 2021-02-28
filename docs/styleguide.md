@@ -29,9 +29,9 @@ All source files should follow a similar format to this template:
 
 -- Documentation
 
--- Module requires (e.g. Module = require(somewhere.Module))
-
 -- Service refs (e.g. RunService = game:GetService("RunService"))
+
+-- Module requires (e.g. Module = require(somewhere.Module))
 
 -- Constants (e.g. MY_CONSTANT = 10)
 
@@ -114,8 +114,8 @@ local DEFAULT_TEXT = "Hello"
 Services retrieved using `game:GetService` or modules retrieved using `require` should be written in `PascalCase`.
 
 ```lua
-local Signal = require(Knit.Util.Signal)
 local RunService = game:GetService("RunService")
+local Signal = require(Knit.Util.Signal)
 ```
 
 ---------------------------
