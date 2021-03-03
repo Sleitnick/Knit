@@ -307,6 +307,26 @@ someMaid:GiveTask(observer)
 
 --------------------
 
+## [ObserverUtil](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/ObserverUtil.lua)
+
+Extra functionality for Observers. For instance, `ObserverUtil.Compound` can be used to observe multiple observers, and thus guarantee access to all instances referenced.
+
+```lua
+-- Compound Observers:
+local o1 = Observer.new(someModel, "SomeChild")
+local o2 = Observer.new(anotherModel, "AnotherChild")
+
+ObserverUtil.Compound({o1, o2}, function(observers, maid)
+	local someChild = observers[1].Instance
+	local anotherChild = observers[2].Instance
+	maid:GiveTask(function()
+		-- Cleanup (will be called if ANY observers are cleaned up)
+	end)
+end)
+```
+
+--------------------
+
 ## [Option](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Option.lua)
 
 An Option is a powerful concept taken from [Rust](https://doc.rust-lang.org/std/option/index.html) and other languages. The purpose is to represent an optional value. An option can either be `Some` or `None`. Using Options helps reduce `nil` bugs (which can cause silent bugs that can be hard to track down). Options automatically serialize/deserialize across the server/client boundary when passed through services or controllers.
