@@ -6,16 +6,15 @@
 
 	observer = Observer.new(parent: Instance, childName: string)
 	
-	observer:Observe(handler: (child: Instance, maid: Maid) -> void)
+	observer:Observe(handler: (child: Instance, maid: Maid) -> void): Connection
 	observer:Destroy()
 
 --]]
 
 
-local Knit = require(game:GetService("ReplicatedStorage").Knit)
-local Maid = require(Knit.Util.Maid)
-local Signal = require(Knit.Util.Signal)
-local Thread = require(Knit.Util.Thread)
+local Maid = require(script.Parent.Maid)
+local Signal = require(script.Parent.Signal)
+local Thread = require(script.Parent.Thread)
 
 
 local Observer = {}
@@ -48,10 +47,10 @@ end
 
 
 function Observer:Observe(handler)
-	self._shown:Connect(handler)
 	if (self.Instance) then
 		Thread.SpawnNow(handler, self.Instance, self._shownMaid)
 	end
+	return self._shown:Connect(handler)
 end
 
 
