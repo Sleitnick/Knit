@@ -246,7 +246,7 @@ For our example, let's say that we want to show the most points in the game. Fir
 ```lua
 local RemoteProperty = require(Knit.Util.Remote.RemoteProperty)
 
-PointsService.MostPoints = RemoteProperty.new(0)
+PointsService.Client.MostPoints = RemoteProperty.new(0)
 ```
 
 Now, let's change this object whenever we add points:

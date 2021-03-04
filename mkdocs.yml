@@ -2,6 +2,9 @@ site_name: Knit
 site_description: Documentation for Knit
 site_author: Stephen Leitnick
 site_url: https://sleitnick.github.io/Knit/
+repo_url: https://github.com/Sleitnick/Knit
+repo_name: Knit
+copyright: Copyright &copy; 2020 - 2021 Stephen Leitnick
 
 nav:
   - Home: index.md
@@ -17,12 +20,16 @@ nav:
   - Style Guide: styleguide.md
 
 theme:
-  logo: "img/logo_64.png"
-  favicon: "img/logo_32.png"
+  logo: "img/logo.png"
+  favicon: "img/favicon.png"
   name: material
+  font:
+    text: Ubuntu
+    code: Roboto Mono
   palette:
-    primary: brown
-    accent: brown
+    primary: indigo
+    accent: light blue
+    scheme: preference
   highlightjs: true
   hljs_languages:
     - lua
@@ -31,10 +38,15 @@ extra:
   social:
     - icon: fontawesome/brands/github-alt
       link: https://github.com/Sleitnick/Knit
+      name: GitHub repository for Knit
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/sleitnick
+      name: Twitter for Knit's author
 
 markdown_extensions:
-  - codehilite:
+  - pymdownx.highlight:
       linenums: true
+  - pymdownx.superfences
   - admonition
   - toc:
       permalink: true

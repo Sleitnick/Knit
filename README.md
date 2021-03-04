@@ -4,13 +4,13 @@
 
 # Knit
 
-![Knit](logo/logo_256.png)
-
-**[Under Development]**
+<img align="right" src="logo/rounded/knit_logo_rounded_256.png" style="margin-left: 15px">
 
 A lightweight framework for Roblox that simplifies communication between core parts of your game and seamlessly bridges the gap between the server and the client.
 
 [Read the documentation](https://sleitnick.github.io/Knit/) for more info.
+
+**Note:** Knit is currently in alpha and should only be used for experimental projects.
 
 -------------------
 
