@@ -197,7 +197,7 @@ property.Changed:Connect(function(newValue) end)
 ```
 
 !!! warning "Tables"
-	When using a table in a RemoteProperty, you **_must_** call `property:Replicate()` server-side after changing a value in the table in order for the changes to replicate to the client. This is necessary because there is no way to watch for changes on a table (unless you clutter it with a bunch of metatables). Calling `Replicate` will re-serialize the value.
+	When using a table in a RemoteProperty, you **_must_** call `property:Replicate()` server-side after changing a value in the table in order for the changes to replicate to the client. This is necessary because there is no way to watch for changes on a table (unless you clutter it with a bunch of metatables). Calling `Replicate` will replicate the table to the clients.
 
 --------------------
 
@@ -209,7 +209,7 @@ Typically, developers will never need to instantiate ClientRemoteProperties, as 
 
 ```lua
 -- Client-side
-local property = RemoteProperty.new(valueBaseObject)
+local property = ClientRemoteProperty.new(valueBaseObject)
 local value = property:Get()
 property.Changed:Connect(function(newValue) end)
 ```
@@ -268,6 +268,62 @@ The full API for components is listed within the [Component](https://github.com/
 
 !!! note
 	If a component needs to be used on both the server and the client, it is recommended to make two separate component modules for each environment. In the above example, we made a DanceFloor. Ideally, such a module should only run on the client, since it is rapidly changing the color of the part at random. Another DanceFloor component could also be created for the server if desired.
+
+--------------------
+
+## [Streamable](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Streamable.lua)
+
+Streamables allow developers to observe the existence of an instance. This is very useful for watching parts within a model in a game that has StreamingEnabled on. Streamables allow clean setup and teardown of streamed instances. In just about all cases, streamables should be attached to a model somewhere within the workspace and observe a BasePart child within the model.
+
+Streamables can be paired with Components. If a component is attached to a model and the component needs to access the model's children, a streamable can guarantee safe access to those children. When using a streamable within a component, be sure to pass the streamable to the component's maid for automatic cleanup.
+
+Check out Roblox's [Content Streaming](https://developer.roblox.com/en-us/articles/content-streaming) developer documentation for more information on how content is streamed into and out of games during runtime.
+
+```lua
+local Streamable = require(Knit.Util.Streamable)
+
+local streamable = Streamable.new(workspace.MyModel, "SomePart") -- Expects "SomePart" to be a direct child of MyModel
+
+streamable:Observe(function(part, maid)
+	-- This function is called every time 'SomePart' comes into existence.
+	-- The 'maid' is cleaned up when 'SomePart' is removed from existence.
+	print(part.Name .. " exists")
+	maid:GiveTask(function()
+		print(part.Name .. " no longer exists")
+	end)
+end)
+
+-- Multiple functions can be attached to the streamable:
+streamable:Observe(function(part, maid)
+	print("Another one!")
+end)
+
+-- Streamables should be destroyed when no longer needed:
+streamable:Destroy()
+
+-- Streamables are often passed to maids instead of explicitly calling Destroy:
+someMaid:GiveTask(streamable)
+```
+
+--------------------
+
+## [StreamableUtil](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/StreamableUtil.lua)
+
+Extra functionality for Streamables. For instance, `StreamableUtil.Compound` can be used to observe multiple streamables, and thus guarantee access to all instances referenced.
+
+```lua
+-- Compound Streamables:
+local s1 = Streamable.new(someModel, "SomeChild")
+local s2 = Streamable.new(anotherModel, "AnotherChild")
+
+StreamableUtil.Compound({s1, s2}, function(streamables, maid)
+	local someChild = streamables[1].Instance
+	local anotherChild = streamables[2].Instance
+	maid:GiveTask(function()
+		-- Cleanup (will be called if ANY streamables are cleaned up)
+	end)
+end)
+```
 
 --------------------
 

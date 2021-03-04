@@ -83,6 +83,7 @@ local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 
 local IS_SERVER = RunService:IsServer()
+local DEFAULT_WAIT_FOR_TIMEOUT = 60
 
 -- Components will only work on instances parented under these descendants:
 local DESCENDANT_WHITELIST = {workspace, Players}
@@ -333,30 +334,22 @@ end
 
 
 function Component:WaitFor(instance, timeout)
-	timeout = (timeout or 60)
 	local isName = (type(instance) == "string")
-	for _,v in ipairs(self._objects) do
-		if ((isName and v._instance.Name == instance) or ((not isName) and v._instance == instance)) then
-			return Promise.Resolve(v)
+	local function IsInstanceValid(obj)
+		return ((isName and obj._instance.Name == instance) or ((not isName) and obj._instance == instance))
+	end
+	for _,obj in ipairs(self._objects) do
+		if (IsInstanceValid(obj)) then
+			return Promise.resolve(obj)
 		end
 	end
-	return Promise.new(function(resolve, reject, onCancel)
-		local added, delayer
-		delayer = Thread.Delay(timeout, function()
-			reject("Timeout")
-		end)
-		added = self.Added:Connect(function(obj)
-			if ((isName and obj._instance.Name == instance) or ((not isName) and obj._instance == instance)) then
-				added:Disconnect()
-				delayer:Disconnect()
-				resolve(obj)
-			end
-		end)
-		onCancel(function()
-			added:Disconnect()
-			delayer:Disconnect()
-		end)
-	end)
+	local lastObj = nil
+	return Promise.FromEvent(self.Added, function(obj)
+		lastObj = obj
+		return IsInstanceValid(obj)
+	end):Then(function()
+		return lastObj
+	end):Timeout(timeout or DEFAULT_WAIT_FOR_TIMEOUT)
 end
 
 
