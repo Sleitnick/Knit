@@ -271,20 +271,20 @@ The full API for components is listed within the [Component](https://github.com/
 
 --------------------
 
-## [Observer](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Observer.lua)
+## [Streamable](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Streamable.lua)
 
-Observers observe the existence of an instance. This is very useful for watching parts within a model in a game that has StreamingEnabled on. Observers allow clean setup and teardown of streamed instances. In just about all cases, observers should be attached to a Model somewhere within the workspace and observe a BasePart child within the model.
+Streamables allow developers to observe the existence of an instance. This is very useful for watching parts within a model in a game that has StreamingEnabled on. Streamables allow clean setup and teardown of streamed instances. In just about all cases, streamables should be attached to a model somewhere within the workspace and observe a BasePart child within the model.
 
-Observers can be paired with Components. If a component is attached to a model and the component needs to access the model's children, an observer can guarantee safe access to those children. When using an observer within a component, be sure to pass the observer to the component's maid for automatic cleanup.
+Streamables can be paired with Components. If a component is attached to a model and the component needs to access the model's children, a streamable can guarantee safe access to those children. When using a streamable within a component, be sure to pass the streamable to the component's maid for automatic cleanup.
 
 Check out Roblox's [Content Streaming](https://developer.roblox.com/en-us/articles/content-streaming) developer documentation for more information on how content is streamed into and out of games during runtime.
 
 ```lua
-local Observer = require(Knit.Util.Observer)
+local Streamable = require(Knit.Util.Streamable)
 
-local observer = Observer.new(workspace.MyModel, "SomePart") -- Expects "SomePart" to be a direct child of MyModel
+local streamable = Streamable.new(workspace.MyModel, "SomePart") -- Expects "SomePart" to be a direct child of MyModel
 
-observer:Observe(function(part, maid)
+streamable:Observe(function(part, maid)
 	-- This function is called every time 'SomePart' comes into existence.
 	-- The 'maid' is cleaned up when 'SomePart' is removed from existence.
 	print(part.Name .. " exists")
@@ -293,34 +293,34 @@ observer:Observe(function(part, maid)
 	end)
 end)
 
--- Multiple functions can be attached to the observer:
-observer:Observe(function(part, maid)
+-- Multiple functions can be attached to the streamable:
+streamable:Observe(function(part, maid)
 	print("Another one!")
 end)
 
--- Observers should be destroyed when no longer needed:
-observer:Destroy()
+-- Streamables should be destroyed when no longer needed:
+streamable:Destroy()
 
--- Observers are often passed to maids instead of explicitly calling Destroy:
-someMaid:GiveTask(observer)
+-- Streamables are often passed to maids instead of explicitly calling Destroy:
+someMaid:GiveTask(streamable)
 ```
 
 --------------------
 
-## [ObserverUtil](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/ObserverUtil.lua)
+## [StreamableUtil](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/StreamableUtil.lua)
 
-Extra functionality for Observers. For instance, `ObserverUtil.Compound` can be used to observe multiple observers, and thus guarantee access to all instances referenced.
+Extra functionality for Streamables. For instance, `StreamableUtil.Compound` can be used to observe multiple streamables, and thus guarantee access to all instances referenced.
 
 ```lua
--- Compound Observers:
-local o1 = Observer.new(someModel, "SomeChild")
-local o2 = Observer.new(anotherModel, "AnotherChild")
+-- Compound Streamables:
+local s1 = Streamable.new(someModel, "SomeChild")
+local s2 = Streamable.new(anotherModel, "AnotherChild")
 
-ObserverUtil.Compound({o1, o2}, function(observers, maid)
-	local someChild = observers[1].Instance
-	local anotherChild = observers[2].Instance
+StreamableUtil.Compound({s1, s2}, function(streamables, maid)
+	local someChild = streamables[1].Instance
+	local anotherChild = streamables[2].Instance
 	maid:GiveTask(function()
-		-- Cleanup (will be called if ANY observers are cleaned up)
+		-- Cleanup (will be called if ANY streamables are cleaned up)
 	end)
 end)
 ```

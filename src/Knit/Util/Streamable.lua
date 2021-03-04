@@ -1,13 +1,13 @@
--- Observer
+-- Streamable
 -- Stephen Leitnick
 -- March 03, 2021
 
 --[[
 
-	observer = Observer.new(parent: Instance, childName: string)
+	streamable = Streamable.new(parent: Instance, childName: string)
 	
-	observer:Observe(handler: (child: Instance, maid: Maid) -> void): Connection
-	observer:Destroy()
+	streamable:Observe(handler: (child: Instance, maid: Maid) -> void): Connection
+	streamable:Destroy()
 
 --]]
 
@@ -17,12 +17,12 @@ local Signal = require(script.Parent.Signal)
 local Thread = require(script.Parent.Thread)
 
 
-local Observer = {}
-Observer.__index = Observer
+local Streamable = {}
+Streamable.__index = Streamable
 
 
-function Observer.new(parent, childName)
-	local self = setmetatable({}, Observer)
+function Streamable.new(parent, childName)
+	local self = setmetatable({}, Streamable)
 	self._maid = Maid.new()
 	self._shown = Signal.new(self._maid)
 	self._shownMaid = Maid.new()
@@ -46,7 +46,7 @@ function Observer.new(parent, childName)
 end
 
 
-function Observer:Observe(handler)
+function Streamable:Observe(handler)
 	if (self.Instance) then
 		Thread.SpawnNow(handler, self.Instance, self._shownMaid)
 	end
@@ -54,9 +54,9 @@ function Observer:Observe(handler)
 end
 
 
-function Observer:Destroy()
+function Streamable:Destroy()
 	self._maid:Destroy()
 end
 
 
-return Observer
+return Streamable
