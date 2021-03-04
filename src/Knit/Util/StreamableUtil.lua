@@ -34,7 +34,7 @@ function StreamableUtil.Compound(streamables, handler)
 	local allAvailable = false
 	local function Check()
 		if (allAvailable) then return end
-		for _,streamable in ipairs(streamables) do
+		for _,streamable in pairs(streamables) do
 			if (not streamable.Instance) then
 				return
 			end
@@ -47,7 +47,7 @@ function StreamableUtil.Compound(streamables, handler)
 		allAvailable = false
 		observeAllMaid:DoCleaning()
 	end
-	for _,streamable in ipairs(streamables) do
+	for _,streamable in pairs(streamables) do
 		compoundMaid:GiveTask(streamable:Observe(function(_child, maid)
 			Check()
 			maid:GiveTask(function()
