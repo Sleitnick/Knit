@@ -133,6 +133,8 @@ function Maid:DoCleaning()
 			task:Disconnect()
 		elseif (task.Destroy) then
 			task:Destroy()
+		elseif (Promise.Is(task)) then
+			task:Cancel()
 		end
 		index, task = next(tasks)
 	end
