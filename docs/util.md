@@ -238,7 +238,7 @@ end
 function DanceFloor:HeartbeatUpdate(dt)
 	if (time() > self._nextUpdate) then
 		-- Set the assigned instance to a random color:
-		self._instance.Color = Color3.new(
+		self.Instance.Color = Color3.new(
 			math.random(),
 			math.random(),
 			math.random()
