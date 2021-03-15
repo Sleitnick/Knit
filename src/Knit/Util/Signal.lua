@@ -86,9 +86,11 @@ end
 
 
 function Signal:Fire(...)
+	local totalListeners = (#self._connections + self._threads)
+	if (totalListeners == 0) then return end
 	local id = self._id
 	self._id += 1
-	self._args[id] = {#self._connections + self._threads, {n = select("#", ...), ...}}
+	self._args[id] = {totalListeners, {n = select("#", ...), ...}}
 	self._threads = 0
 	self._bindable:Fire(id)
 end
