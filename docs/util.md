@@ -25,6 +25,12 @@ connection:Disconnect()
 
 The Connection object internal to the Signal module also has a Destroy method associated with it, so it will still play nicely with the Maid module.
 
+It is possible to wrap an existing RBXScriptSignal (e.g. `BasePart.Touched`) using `Signal.Proxy`, which is useful when creating abstractions that utilize existing built-in signals:
+
+```lua
+local touchTap = Signal.Proxy(UserInputService.TouchTap)
+```
+
 --------------------
 
 ## [Thread](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Thread.lua)
@@ -101,6 +107,9 @@ local maid = Maid.new()
 maid:GiveTask(somePart)
 maid:GiveTask(something.SomeEvent:Connect(function() end))
 maid:GiveTask(function() end)
+
+-- Give promises, which will have 'Cancel' called if the maid is cleaned up:
+maid:GivePromise(somePromise)
 
 -- Both Destroy and DoCleaning do the same thing:
 maid:Destroy()
@@ -238,7 +247,7 @@ end
 function DanceFloor:HeartbeatUpdate(dt)
 	if (time() > self._nextUpdate) then
 		-- Set the assigned instance to a random color:
-		self._instance.Color = Color3.new(
+		self.Instance.Color = Color3.new(
 			math.random(),
 			math.random(),
 			math.random()
