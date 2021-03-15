@@ -39,6 +39,9 @@
 			return self
 		end
 
+		-- FIELDS AFTER CONSTRUCTOR COMPLETES
+		MyComponent.Instance: Instance
+
 		-- OPTIONAL LIFECYCLE HOOKS
 		function MyComponent:Init() end                     -> Called right after constructor
 		function MyComponent:Deinit() end                   -> Called right before deconstructor
@@ -270,7 +273,7 @@ function Component:_instanceAdded(instance)
 		idStr.Parent = instance
 	end
 	local obj = self._class.new(instance)
-	obj._instance = instance
+	obj.Instance = instance
 	obj._id = id
 	self._instancesToObjects[instance] = obj
 	table.insert(self._objects, obj)
@@ -288,7 +291,7 @@ end
 function Component:_instanceRemoved(instance)
 	self._instancesToObjects[instance] = nil
 	for i,obj in ipairs(self._objects) do
-		if (obj._instance == instance) then
+		if (obj.Instance == instance) then
 			if (self._hasDeinit) then
 				obj:Deinit()
 			end
@@ -336,7 +339,7 @@ end
 function Component:WaitFor(instance, timeout)
 	local isName = (type(instance) == "string")
 	local function IsInstanceValid(obj)
-		return ((isName and obj._instance.Name == instance) or ((not isName) and obj._instance == instance))
+		return ((isName and obj.Instance.Name == instance) or ((not isName) and obj.Instance == instance))
 	end
 	for _,obj in ipairs(self._objects) do
 		if (IsInstanceValid(obj)) then
