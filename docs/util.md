@@ -108,6 +108,9 @@ maid:GiveTask(somePart)
 maid:GiveTask(something.SomeEvent:Connect(function() end))
 maid:GiveTask(function() end)
 
+-- Give promises, which will have 'Cancel' called if the maid is cleaned up:
+maid:GivePromise(somePromise)
+
 -- Both Destroy and DoCleaning do the same thing:
 maid:Destroy()
 maid:DoCleaning()
