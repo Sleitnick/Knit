@@ -87,6 +87,7 @@ local Players = game:GetService("Players")
 
 local IS_SERVER = RunService:IsServer()
 local DEFAULT_WAIT_FOR_TIMEOUT = 60
+local ATTRIBUTE_ID_NAME = "ComponentServerId"
 
 -- Components will only work on instances parented under these descendants:
 local DESCENDANT_WHITELIST = {workspace, Players}
@@ -267,10 +268,7 @@ function Component:_instanceAdded(instance)
 	self._nextId = (self._nextId + 1)
 	local id = (self._tag .. tostring(self._nextId))
 	if (IS_SERVER) then
-		local idStr = Instance.new("StringValue")
-		idStr.Name = "ServerID"
-		idStr.Value = id
-		idStr.Parent = instance
+		instance:SetAttribute(ATTRIBUTE_ID_NAME, id)
 	end
 	local obj = self._class.new(instance)
 	obj.Instance = instance
@@ -295,8 +293,8 @@ function Component:_instanceRemoved(instance)
 			if (self._hasDeinit) then
 				obj:Deinit()
 			end
-			if (IS_SERVER and instance:FindFirstChild("ServerID")) then
-				instance.ServerID:Destroy()
+			if (IS_SERVER and instance.Parent and instance:GetAttribute(ATTRIBUTE_ID_NAME) ~= nil) then
+				instance:SetAttribute(ATTRIBUTE_ID_NAME, nil)
 			end
 			self.Removed:Fire(obj)
 			obj:Destroy()
