@@ -11,9 +11,9 @@
 		local streamable1 = Streamable.new(someModel, "SomeChild")
 		local streamable2 = Streamable.new(anotherModel, "AnotherChild")
 		
-		StreamableUtil.Compound({streamable1, streamable2}, function(streamables, maid)
-			local someChild = streamables[1].Instance
-			local anotherChild = streamables[2].Instance
+		StreamableUtil.Compound({S1 = streamable1, S2 = streamable2}, function(streamables, maid)
+			local someChild = streamables.S1.Instance
+			local anotherChild = streamables.S2.Instance
 			maid:GiveTask(function()
 				-- Cleanup
 			end)
