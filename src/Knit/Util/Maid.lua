@@ -10,6 +10,9 @@
 
 	maid:GiveTask(task)
 		> task is an event connection, function, or instance/table with a 'Destroy' method
+
+	maid:GivePromise(promise)
+		> Give the maid a promise as a task, which will call 'promise:Cancel()' on cleanup
 	
 	maid:DoCleaning()
 		> Alias for Destroy
@@ -19,18 +22,13 @@
 
 --]]
 
----	Manages the cleaning of events and other things.
--- Useful for encapsulating state and make deconstructors easy
--- @classmod Maid
--- @see Signal
+local Promise = require(script.Parent.Promise)
+
 
 local Maid = {}
 Maid.ClassName = "Maid"
 
 
---- Returns a new Maid object
--- @constructor Maid.new()
--- @treturn Maid
 function Maid.new()
 	local self = setmetatable({
 		_tasks = {};
@@ -74,6 +72,8 @@ function Maid:__newindex(index, newTask)
 			oldTask:Disconnect()
 		elseif (oldTask.Destroy) then
 			oldTask:Destroy()
+		elseif (Promise.Is(oldTask)) then
+			oldTask:Cancel()
 		end
 	end
 end
@@ -88,11 +88,25 @@ function Maid:GiveTask(task)
 	local taskId = (#self._tasks + 1)
 	self[taskId] = task
 
-	if (type(task) == "table" and (not task.Destroy)) then
+	if (type(task) == "table" and (not task.Destroy) and (not Promise.Is(task))) then
 		warn("[Maid.GiveTask] - Gave table task without .Destroy\n\n" .. debug.traceback())
 	end
 
 	return taskId
+end
+
+
+function Maid:GivePromise(promise)
+	assert(Promise.Is(promise), "Expected promise")
+	if (promise:GetStatus() ~= Promise.Status.Started) then
+		return promise
+	end
+	local newPromise = Promise.Resolve(promise)
+	local id = self:GiveTask(newPromise)
+	newPromise:Finally(function()
+		self[id] = nil
+	end)
+	return newPromise
 end
 
 
