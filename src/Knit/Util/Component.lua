@@ -39,6 +39,9 @@
 			return self
 		end
 
+		-- FIELDS AFTER CONSTRUCTOR COMPLETES
+		MyComponent.Instance: Instance
+
 		-- OPTIONAL LIFECYCLE HOOKS
 		function MyComponent:Init() end                          -> Called right after constructor
 		function MyComponent:Deinit() end                        -> Called right before deconstructor
@@ -85,6 +88,8 @@ local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 
 local IS_SERVER = RunService:IsServer()
+local DEFAULT_WAIT_FOR_TIMEOUT = 60
+local ATTRIBUTE_ID_NAME = "ComponentServerId"
 
 -- Components will only work on instances parented under these descendants:
 local DESCENDANT_WHITELIST = {workspace, Players}
@@ -291,13 +296,10 @@ function Component:_instanceAdded(instance)
 	self._nextId = (self._nextId + 1)
 	local id = (self._tag .. tostring(self._nextId))
 	if (IS_SERVER) then
-		local idStr = Instance.new("StringValue")
-		idStr.Name = "ServerID"
-		idStr.Value = id
-		idStr.Parent = instance
+		instance:SetAttribute(ATTRIBUTE_ID_NAME, id)
 	end
 	local obj = self._class.new(instance)
-	obj._instance = instance
+	obj.Instance = instance
 	obj._id = id
 	self._instancesToObjects[instance] = obj
 	table.insert(self._objects, obj)
@@ -315,12 +317,12 @@ end
 function Component:_instanceRemoved(instance)
 	self._instancesToObjects[instance] = nil
 	for i,obj in ipairs(self._objects) do
-		if (obj._instance == instance) then
+		if (obj.Instance == instance) then
 			if (self._hasDeinit) then
 				obj:Deinit()
 			end
-			if (IS_SERVER and instance:FindFirstChild("ServerID")) then
-				instance.ServerID:Destroy()
+			if (IS_SERVER and instance.Parent and instance:GetAttribute(ATTRIBUTE_ID_NAME) ~= nil) then
+				instance:SetAttribute(ATTRIBUTE_ID_NAME, nil)
 			end
 			self.Removed:Fire(obj)
 			obj:Destroy()
@@ -361,30 +363,22 @@ end
 
 
 function Component:WaitFor(instance, timeout)
-	timeout = (timeout or 60)
 	local isName = (type(instance) == "string")
-	for _,v in ipairs(self._objects) do
-		if ((isName and v._instance.Name == instance) or ((not isName) and v._instance == instance)) then
-			return Promise.Resolve(v)
+	local function IsInstanceValid(obj)
+		return ((isName and obj.Instance.Name == instance) or ((not isName) and obj.Instance == instance))
+	end
+	for _,obj in ipairs(self._objects) do
+		if (IsInstanceValid(obj)) then
+			return Promise.resolve(obj)
 		end
 	end
-	return Promise.new(function(resolve, reject, onCancel)
-		local added, delayer
-		delayer = Thread.Delay(timeout, function()
-			reject("Timeout")
-		end)
-		added = self.Added:Connect(function(obj)
-			if ((isName and obj._instance.Name == instance) or ((not isName) and obj._instance == instance)) then
-				added:Disconnect()
-				delayer:Disconnect()
-				resolve(obj)
-			end
-		end)
-		onCancel(function()
-			added:Disconnect()
-			delayer:Disconnect()
-		end)
-	end)
+	local lastObj = nil
+	return Promise.FromEvent(self.Added, function(obj)
+		lastObj = obj
+		return IsInstanceValid(obj)
+	end):Then(function()
+		return lastObj
+	end):Timeout(timeout or DEFAULT_WAIT_FOR_TIMEOUT)
 end
 
 
