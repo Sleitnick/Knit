@@ -3,9 +3,12 @@
 -- January 10, 2021
 
 --[[
+
 	Loads all ModuleScripts within the given parent.
+
 	Loader.LoadChildren(parent: Instance): module[]
 	Loader.LoadDescendants(parent: Instance): module[]
+
 --]]
 
 
