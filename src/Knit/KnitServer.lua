@@ -108,6 +108,12 @@ function KnitServer.AddServicesDeep(folder)
 end
 
 
+function KnitServer.GetService(serviceName)
+	assert(type(serviceName) == "string", "ServiceName must be a string; got " .. type(serviceName))
+	return assert(KnitServer.Services[serviceName], "Could not find service \"" .. serviceName .. "\"")
+end
+
+
 function KnitServer.BindRemoteEvent(service, eventName, remoteEvent)
 	assert(service._knit_re[eventName] == nil, "RemoteEvent \"" .. eventName .. "\" already exists")
 	local re = remoteEvent._remote
