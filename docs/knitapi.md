@@ -159,7 +159,6 @@ Knit.AddControllersDeep(replicatedStorage.MyControllers)
 ```
 
 ### `Knit.GetService(serviceName: string)` -> `ServiceMirror`
-[Client-side only]
 
 Returns a [ServiceMirror](#servicemirror) table object representing the service. Service methods and events that have been exposed to the client can be used from this returned object.
 
