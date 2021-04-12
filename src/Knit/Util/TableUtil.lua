@@ -304,7 +304,7 @@ end
 
 local function Map(t, f)
 	assert(type(t) == "table", "First argument must be a table")
-	assert(type(f) == "function", "Second argument must be an array")
+	assert(type(f) == "function", "Second argument must be a function")
 	local newT = table.create(#t)
 	for k,v in pairs(t) do
 		newT[k] = f(v, k, t)
@@ -315,20 +315,18 @@ end
 
 local function Filter(t, f)
 	assert(type(t) == "table", "First argument must be a table")
-	assert(type(f) == "function", "Second argument must be an array")
+	assert(type(f) == "function", "Second argument must be a function")
 	local newT = table.create(#t)
 	if (#t > 0) then
 		local n = 0
-		for i = 1,#t do
-			local v = t[i]
-			if (f(v, i, t)) then
-				n = (n + 1)
-				newT[n] = v
+		for i,v in ipairs(t) do
+			if f(v, i, t) then
+				newT[i] = v
 			end
 		end
 	else
 		for k,v in pairs(t) do
-			if (f(v, k, t)) then
+			if f(v, k, t) then
 				newT[k] = v
 			end
 		end
@@ -339,7 +337,7 @@ end
 
 local function Reduce(t, f, init)
 	assert(type(t) == "table", "First argument must be a table")
-	assert(type(f) == "function", "Second argument must be an array")
+	assert(type(f) == "function", "Second argument must be a function")
 	assert(init == nil or type(init) == "number", "Third argument must be a number or nil")
 	local result = (init or 0)
 	for k,v in pairs(t) do
