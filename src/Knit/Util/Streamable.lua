@@ -33,14 +33,17 @@ function Streamable.new(parent, childName)
 	self.Instance = parent:FindFirstChild(childName)
 
 	local function OnInstanceSet()
-		self._shown:Fire(self.Instance, self._shownMaid)
-		self._shownMaid:GiveTask(self.Instance:GetPropertyChangedSignal("Parent"):Connect(function()
-			if (not self.Instance.Parent) then
+		local instance = self.Instance
+		self._shown:Fire(instance, self._shownMaid)
+		self._shownMaid:GiveTask(instance:GetPropertyChangedSignal("Parent"):Connect(function()
+			if (not instance.Parent) then
 				self._shownMaid:DoCleaning()
 			end
 		end))
 		self._shownMaid:GiveTask(function()
-			self.Instance = nil
+			if (self.Instance == instance) then
+				self.Instance = nil
+			end
 		end)
 	end
 
