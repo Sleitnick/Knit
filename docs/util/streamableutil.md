@@ -1,0 +1,18 @@
+
+## [StreamableUtil](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/StreamableUtil.lua)
+
+Extra functionality for Streamables. For instance, `StreamableUtil.Compound` can be used to observe multiple streamables, and thus guarantee access to all instances referenced.
+
+```lua
+-- Compound Streamables:
+local s1 = Streamable.new(someModel, "SomeChild")
+local s2 = Streamable.new(anotherModel, "AnotherChild")
+
+StreamableUtil.Compound({Stream1 = s1, Stream2 = s2}, function(streamables, maid)
+	local someChild = streamables.Stream1.Instance
+	local anotherChild = streamables.Stream2.Instance
+	maid:GiveTask(function()
+		-- Cleanup (will be called if ANY streamables are cleaned up)
+	end)
+end)
+```
