@@ -3,14 +3,14 @@
 -- March 03, 2021
 
 --[[
-	
+
 	StreamableUtil.Compound(observers: {Observer}, handler: ({[child: string]: Instance}, maid: Maid) -> void): Maid
-	
+
 	Example:
-	
+
 		local streamable1 = Streamable.new(someModel, "SomeChild")
 		local streamable2 = Streamable.new(anotherModel, "AnotherChild")
-		
+
 		StreamableUtil.Compound({S1 = streamable1, S2 = streamable2}, function(streamables, maid)
 			local someChild = streamables.S1.Instance
 			local anotherChild = streamables.S2.Instance
@@ -18,7 +18,7 @@
 				-- Cleanup
 			end)
 		end)
-	
+
 --]]
 
 
