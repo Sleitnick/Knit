@@ -4,7 +4,7 @@
 
 # Knit
 
-<img align="right" src="logo/rounded/knit_logo_rounded_256.png" style="margin-left: 15px">
+<img align="right" src="logo/rounded/knit_logo_rounded_256.png" style="margin-left: 15px; max-width: 35%">
 
 A lightweight framework for Roblox that simplifies communication between core parts of your game and seamlessly bridges the gap between the server and the client.
 
