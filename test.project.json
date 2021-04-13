@@ -1,0 +1,27 @@
+{
+	"name": "Knit-Test",
+	"tree": {
+		"$className": "DataModel",
+		"ReplicatedStorage": {
+			"$className": "ReplicatedStorage",
+			"Knit": {
+				"$path": "src"
+			},
+			"KnitTest": {
+				"$path": "test/tests"
+			}
+		},
+		"TestService": {
+			"$className": "TestService",
+			"$properties": {
+				"ExecuteWithStudioRun": true
+			},
+			"TestEZ": {
+				"$path": "test/testez/src"
+			},
+			"RunTests": {
+				"$path": "test/RunTests.server.lua"
+			}
+		}
+	}
+}
