@@ -1,0 +1,17 @@
+[[describe.args]]
+required = true
+type = "string"
+[[describe.args]]
+required = true
+type = "function"
+
+[[it.args]]
+required = true
+type = "string"
+[[it.args]]
+required = true
+type = "function"
+
+[[expect.args]]
+required = true
+type = "any"
