@@ -318,15 +318,14 @@ local function Filter(t, f)
 	assert(type(f) == "function", "Second argument must be a function")
 	local newT = table.create(#t)
 	if (#t > 0) then
-		local n = 0
 		for i,v in ipairs(t) do
-			if f(v, i, t) then
+			if (f(v, i, t)) then
 				newT[i] = v
 			end
 		end
 	else
 		for k,v in pairs(t) do
-			if f(v, k, t) then
+			if (f(v, k, t)) then
 				newT[k] = v
 			end
 		end
@@ -347,7 +346,6 @@ local function Reduce(t, f, init)
 end
 
 
--- tableUtil.Assign(Table target, ...Table sources)
 local function Assign(target, ...)
 	for _,src in ipairs({...}) do
 		for k,v in pairs(src) do
@@ -375,7 +373,6 @@ local function Print(tbl, label, deepPrint)
 	local strTbl = {}
 	local indent = " - "
 
-	-- Insert(string, indentLevel)
 	local function Insert(s, l)
 		strTbl[#strTbl + 1] = (indent:rep(l) .. s .. "\n")
 	end
