@@ -19,8 +19,7 @@ jobs:
           token: ${{ SECRETS.GITHUB_TOKEN }}
       - name: Build project
         run: |
-          cd src
-          zip -r knit.zip Knit/**
+          zip -r knit.zip src/**
       - name: Build place file
         run: |
           rojo build -o Knit.rbxlx
