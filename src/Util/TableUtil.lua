@@ -3,24 +3,28 @@
 -- September 13, 2017
 
 --[[
-	
-	TableUtil.Copy(Table tbl)
-	TableUtil.CopyShallow(Table tbl)
-	TableUtil.Sync(Table tbl, Table templateTbl)
-	TableUtil.Print(Table tbl, String label, Boolean deepPrint)
-	TableUtil.FastRemove(Table tbl, Number index)
-	TableUtil.FastRemoveFirstValue(Table tbl, Variant value)
-	TableUtil.Map(Table tbl, Function callback)
-	TableUtil.Filter(Table tbl, Function callback)
-	TableUtil.Reduce(Table tbl, Function callback [, Number initialValue])
-	TableUtil.Assign(Table target, ...Table sources)
-	TableUtil.Extend(Table target, Table extension)
-	TableUtil.IndexOf(Table tbl, Variant item)
-	TableUtil.Reverse(Table tbl)
-	TableUtil.Shuffle(Table tbl)
-	TableUtil.IsEmpty(Table tbl)
-	TableUtil.EncodeJSON(Table tbl)
-	TableUtil.DecodeJSON(String json)
+
+	TableUtil.Copy(tbl: table): table
+	TableUtil.CopyShallow(tbl: table): table
+	TableUtil.Sync(tbl: table, template: table): void
+	TableUtil.FastRemove(tbl: table, index: number): void
+	TableUtil.FastRemoveFirstValue(tbl: table, value: any): (boolean, number)
+	TableUtil.Map(tbl: table, callback: (value: any) -> any): table
+	TableUtil.Filter(tbl: table, callback: (value: any) -> boolean): table
+	TableUtil.Reduce(tbl: table, callback: (accum: number, value: number) -> number [, initialValue: number]): number
+	TableUtil.Assign(target: table, ...sources: table): void
+	TableUtil.Extend(tbl: table, extension: table): void
+	TableUtil.Reverse(tbl: table): table
+	TableUtil.Shuffle(tbl: table): void
+	TableUtil.Flat(tbl: table [, maxDepth: number = 1]): table
+	TableUtil.FlatMap(tbl: callback: (value: any) -> table): table
+	TableUtil.Keys(tbl: table): table
+	TableUtil.Find(tbl: table, callback: (value: any) -> boolean): (any, number)
+	TableUtil.Every(tbl: table, callback: (value: any) -> boolean): boolean
+	TableUtil.Some(tbl: table, callback: (value: any) -> boolean): boolean
+	TableUtil.IsEmpty(tbl: table): boolean
+	TableUtil.EncodeJSON(tbl: table): string
+	TableUtil.DecodeJSON(json: string): table
 
 	EXAMPLES:
 
@@ -56,15 +60,6 @@
 			print(tbl2.deaths)
 
 
-		Print:
-
-			Prints out the table to the output in an easy-to-read format. Good for
-			debugging tables. If deep printing, avoid cyclical references.
-
-			local tbl = {a = 32; b = 64; c = 128; d = {x = 0; y = 1; z = 2}}
-			TableUtil.Print(tbl, "My Table", true)
-
-
 		FastRemove:
 
 			Removes an item from an array at a given index. Only use this if you do
@@ -90,7 +85,7 @@
 				print("Did not find value")
 			end
 
-		
+
 		Map:
 
 			This allows you to construct a new table by calling the given function
@@ -170,32 +165,6 @@
 			car:Drive()
 			car:Teleport(Vector3.new(0, 10, 0))
 
-		
-		Extend:
-
-			Extends on all elements from one table to another.
-
-			local t1 = {"a", "b", "c"}
-			local t2 = {"d", "e", "f"}
-
-			TableUtil.Extend(t1, t2)
-			print(t1)  --> { "a", "b", "c", "d", "e", "f" }
-
-
-		IndexOf:
-
-			Returns the index of the given item in the table. If not found, this
-			will return nil.
-
-			This is the same as table.find, which Roblox added after this method
-			was written. To keep backwards compatibility, this method will continue
-			to exist, but will point directly to table.find.
-
-			local tbl = {"Hello", 32, true, "abc"}
-			local abcIndex = TableUtil.IndexOf(tbl, "abc")     -- > 4
-			local helloIndex = TableUtil.IndexOf(tbl, "Hello") -- > 1
-			local numberIndex = TableUtil.IndexOf(tbl, 64)     -- > nil
-
 
 		Reverse:
 
@@ -213,35 +182,121 @@
 			local tbl = {1, 2, 3, 4, 5, 6, 7, 8, 9}
 			TableUtil.Shuffle(tbl)
 			print(table.concat(tbl, ", "))  -- e.g. > 3, 6, 9, 2, 8, 4, 1, 7, 5
-	
+
+
+		Flat:
+
+			Flattens out an array that might have multiple nested arrays.
+
+			local tbl = {1, 2, {3, 4, {5, 6}}, {7, {8, 9}}}
+			local flat = TableUtil.Flat(tbl, 2)
+			--> {1, 2, 3, 4, 5, 6, 7, 8, 9}
+
+
+		FlatMap:
+
+			For each item in a table, calls Map on the item and then Flat
+			on whatever Map returns.
+
+			local tbl = {
+				"Flat map",
+				"is",
+				"really cool to"
+				"use"
+			}
+
+			local flatMap = TableUtil.FlatMap(tbl, function(words)
+				return words:split(" ")
+			end)
+			--> {"Flat", "map", "is", "really", "cool", "to", "use"}
+
+
+		Keys:
+
+			Returns an array of all the keys in the table.
+
+			local tbl = {hello = 32, world = 64}
+			local keys = TableUtil.Keys(tbl)
+			--> {"hello", "world"}
+
+
+		Find:
+
+			Returns the found item and its index based on the callback.
+
+			local tbl = {
+				{Name = "John", Score = 10},
+				{Name = "Jane", Score = 20},
+				{Name = "Jerry", Score = 30}
+			}
+
+			local person, index = TableUtil.Find(tbl, function(p)
+				return p.Name == "Jane"
+			end)
+
+			print(person, index) --> "Jane", 2
+
+
+		Every:
+
+			Returns true if every item in the table passes the callback condition.
+
+			local tbl = {10, 20, 30, 40}
+
+			-- Check if every item in the table is greater or equal to 10:
+			local every = TableUtil.Every(tbl, function(num)
+				return num >= 10
+			end)
+
+			if every then ... end
+
+
+		Some:
+
+			Returns true if at least one item in the table passes the callback condition.
+
+			local tbl = {10, 20, 30, 40}
+
+			-- Check if at least one item in the table is greater or equal to 40:
+			local some = TableUtil.Some(tbl, function(num)
+				return num >= 40
+			end)
+
+			if some then ... end
+
 --]]
 
 
 
 local TableUtil = {}
 
-local http = game:GetService("HttpService")
-
-local IndexOf = table.find
+local HttpService = game:GetService("HttpService")
 
 
 local function CopyTable(t)
 	assert(type(t) == "table", "First argument must be a table")
-	local tCopy = table.create(#t)
-	for k,v in pairs(t) do
-		if (type(v) == "table") then
-			tCopy[k] = CopyTable(v)
-		else
-			tCopy[k] = v
+	local function Copy(tbl)
+		local tCopy = table.create(#tbl)
+		for k,v in pairs(tbl) do
+			if (type(v) == "table") then
+				tCopy[k] = Copy(v)
+			else
+				tCopy[k] = v
+			end
 		end
+		return tCopy
 	end
-	return tCopy
+	return Copy(t)
 end
 
 
 local function CopyTableShallow(t)
 	local tCopy = table.create(#t)
-	for k,v in pairs(t) do tCopy[k] = v end
+	if (#t > 0) then
+		table.move(t, 1, #t, 1, tCopy)
+	else
+		for k,v in pairs(t) do tCopy[k] = v end
+	end
 	return tCopy
 end
 
@@ -250,18 +305,18 @@ local function Sync(tbl, templateTbl)
 
 	assert(type(tbl) == "table", "First argument must be a table")
 	assert(type(templateTbl) == "table", "Second argument must be a table")
-	
+
 	-- If 'tbl' has something 'templateTbl' doesn't, then remove it from 'tbl'
 	-- If 'tbl' has something of a different type than 'templateTbl', copy from 'templateTbl'
 	-- If 'templateTbl' has something 'tbl' doesn't, then add it to 'tbl'
 	for k,v in pairs(tbl) do
-		
+
 		local vTemplate = templateTbl[k]
-		
+
 		-- Remove keys not within template:
 		if (vTemplate == nil) then
 			tbl[k] = nil
-			
+
 		-- Synchronize data types:
 		elseif (type(v) ~= type(vTemplate)) then
 			if (type(vTemplate) == "table") then
@@ -269,19 +324,19 @@ local function Sync(tbl, templateTbl)
 			else
 				tbl[k] = vTemplate
 			end
-		
+
 		-- Synchronize sub-tables:
 		elseif (type(v) == "table") then
 			Sync(v, vTemplate)
 		end
-		
+
 	end
-	
+
 	-- Add any missing keys:
 	for k,vTemplate in pairs(templateTbl) do
-		
+
 		local v = tbl[k]
-		
+
 		if (v == nil) then
 			if (type(vTemplate) == "table") then
 				tbl[k] = CopyTable(vTemplate)
@@ -289,9 +344,9 @@ local function Sync(tbl, templateTbl)
 				tbl[k] = vTemplate
 			end
 		end
-		
+
 	end
-	
+
 end
 
 
@@ -299,6 +354,16 @@ local function FastRemove(t, i)
 	local n = #t
 	t[i] = t[n]
 	t[n] = nil
+end
+
+
+local function FastRemoveFirstValue(t, v)
+	local index = table.find(t, v)
+	if (index) then
+		FastRemove(t, index)
+		return true, index
+	end
+	return false, nil
 end
 
 
@@ -320,13 +385,14 @@ local function Filter(t, f)
 	if (#t > 0) then
 		local n = 0
 		for i,v in ipairs(t) do
-			if f(v, i, t) then
-				newT[i] = v
+			if (f(v, i, t)) then
+				n += 1
+				newT[n] = v
 			end
 		end
 	else
 		for k,v in pairs(t) do
-			if f(v, k, t) then
+			if (f(v, k, t)) then
 				newT[k] = v
 			end
 		end
@@ -347,7 +413,6 @@ local function Reduce(t, f, init)
 end
 
 
--- tableUtil.Assign(Table target, ...Table sources)
 local function Assign(target, ...)
 	for _,src in ipairs({...}) do
 		for k,v in pairs(src) do
@@ -359,67 +424,9 @@ end
 
 
 local function Extend(tbl, extension)
-	for k,v in pairs(extension) do
-		tbl[k] = v
+	for _,v in ipairs(extension) do
+		table.insert(tbl, v)
 	end
-end
-
-
-local function Print(tbl, label, deepPrint)
-
-	assert(type(tbl) == "table", "First argument must be a table")
-	assert(label == nil or type(label) == "string", "Second argument must be a string or nil")
-	
-	label = (label or "TABLE")
-	
-	local strTbl = {}
-	local indent = " - "
-	
-	-- Insert(string, indentLevel)
-	local function Insert(s, l)
-		strTbl[#strTbl + 1] = (indent:rep(l) .. s .. "\n")
-	end
-	
-	local function AlphaKeySort(a, b)
-		return (tostring(a.k) < tostring(b.k))
-	end
-	
-	local function PrintTable(t, lvl, lbl)
-		Insert(lbl .. ":", lvl - 1)
-		local nonTbls = {}
-		local tbls = {}
-		local keySpaces = 0
-		for k,v in pairs(t) do
-			if (type(v) == "table") then
-				table.insert(tbls, {k = k, v = v})
-			else
-				table.insert(nonTbls, {k = k, v = "[" .. typeof(v) .. "] " .. tostring(v)})
-			end
-			local spaces = #tostring(k) + 1
-			if (spaces > keySpaces) then
-				keySpaces = spaces
-			end
-		end
-		table.sort(nonTbls, AlphaKeySort)
-		table.sort(tbls, AlphaKeySort)
-		for _,v in ipairs(nonTbls) do
-			Insert(tostring(v.k) .. ":" .. (" "):rep(keySpaces - #tostring(v.k)) .. v.v, lvl)
-		end
-		if (deepPrint) then
-			for _,v in ipairs(tbls) do
-				PrintTable(v.v, lvl + 1, tostring(v.k) .. (" "):rep(keySpaces - #tostring(v.k)) .. " [Table]")
-			end
-		else
-			for _,v in ipairs(tbls) do
-				Insert(tostring(v.k) .. ":" .. (" "):rep(keySpaces - #tostring(v.k)) .. "[Table]", lvl)
-			end
-		end
-	end
-	
-	PrintTable(tbl, 1, label)
-	
-	print(table.concat(strTbl, ""))
-	
 end
 
 
@@ -443,28 +450,79 @@ local function Shuffle(tbl)
 end
 
 
+local function Flat(tbl, depth)
+	depth = (depth or 1)
+	local flatTbl = table.create(#tbl)
+	local function Scan(t, d)
+		for _,v in ipairs(t) do
+			if (type(v) == "table" and d < depth) then
+				Scan(v, d + 1)
+			else
+				table.insert(flatTbl, v)
+			end
+		end
+	end
+	Scan(tbl, 0)
+	return flatTbl
+end
+
+
+local function FlatMap(tbl, callback)
+	return Flat(Map(tbl, callback))
+end
+
+
+local function Keys(tbl)
+	local keys = table.create(#tbl)
+	for k in pairs(tbl) do
+		table.insert(keys, k)
+	end
+	return keys
+end
+
+
+local function Find(tbl, callback)
+	for k,v in pairs(tbl) do
+		if (callback(v, k, tbl)) then
+			return v, k
+		end
+	end
+	return nil, nil
+end
+
+
+local function Every(tbl, callback)
+	for k,v in pairs(tbl) do
+		if (not callback(v, k, tbl)) then
+			return false
+		end
+	end
+	return true
+end
+
+
+local function Some(tbl, callback)
+	for k,v in pairs(tbl) do
+		if (callback(v, k, tbl)) then
+			return true
+		end
+	end
+	return false
+end
+
+
 local function IsEmpty(tbl)
 	return (next(tbl) == nil)
 end
 
 
 local function EncodeJSON(tbl)
-	return http:JSONEncode(tbl)
+	return HttpService:JSONEncode(tbl)
 end
 
 
 local function DecodeJSON(str)
-	return http:JSONDecode(str)
-end
-
-
-local function FastRemoveFirstValue(t, v)
-	local index = IndexOf(t, v)
-	if (index) then
-		FastRemove(t, index)
-		return true, index
-	end
-	return false, nil
+	return HttpService:JSONDecode(str)
 end
 
 
@@ -473,15 +531,19 @@ TableUtil.CopyShallow = CopyTableShallow
 TableUtil.Sync = Sync
 TableUtil.FastRemove = FastRemove
 TableUtil.FastRemoveFirstValue = FastRemoveFirstValue
-TableUtil.Print = Print
 TableUtil.Map = Map
 TableUtil.Filter = Filter
 TableUtil.Reduce = Reduce
 TableUtil.Assign = Assign
 TableUtil.Extend = Extend
-TableUtil.IndexOf = IndexOf
 TableUtil.Reverse = Reverse
 TableUtil.Shuffle = Shuffle
+TableUtil.Flat = Flat
+TableUtil.FlatMap = FlatMap
+TableUtil.Keys = Keys
+TableUtil.Find = Find
+TableUtil.Every = Every
+TableUtil.Some = Some
 TableUtil.IsEmpty = IsEmpty
 TableUtil.EncodeJSON = EncodeJSON
 TableUtil.DecodeJSON = DecodeJSON

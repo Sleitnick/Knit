@@ -1,0 +1,3 @@
+[submodule "test/testez"]
+	path = test/testez
+	url = https://github.com/Roblox/testez
