@@ -13,16 +13,17 @@ nav:
   - Services: services.md
   - Controllers: controllers.md
   - Util: 
-    - Signal: util/signal.md
-    - Thread: util/thread.md
+    - Component: util/component.md
     - Maid: util/maid.md
+    - Option: util/option.md
     - Promise: util/promise.md
     - RemoteSignal: util/remotesignal.md
     - RemoteProperty: util/remoteproperty.md
-    - Component: util/component.md
+    - Signal: util/signal.md
     - Streamable: util/streamable.md
     - StreamableUtil: util/streamableutil.md
-    - Option: util/option.md
+    - TableUtil: util/tableutil.md
+    - Thread: util/thread.md
   - Knit API: knitapi.md
   - Execution Model: executionmodel.md
   - VS Code Snippets: vscodesnippets.md

@@ -1,0 +1,1 @@
+The [TableUtil](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/TableUtil.lua) module provides extra functions to deal with tables.
