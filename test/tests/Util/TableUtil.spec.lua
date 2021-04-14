@@ -40,8 +40,8 @@ return function()
 
 		it("should sync tables", function()
 			local template = {a = 32; b = 64; c = 128; e = {h = 1}}
-			local tbl = {a = 32; b = 10; d = 1; e = {h = 2; n = 2}; f = {x = 10}}
-			TableUtil.Sync(tbl, template)
+			local tblSrc = {a = 32; b = 10; d = 1; e = {h = 2; n = 2}; f = {x = 10}}
+			local tbl = TableUtil.Sync(tblSrc, template)
 			expect(tbl.a).to.equal(template.a)
 			expect(tbl.b).to.equal(10)
 			expect(tbl.c).to.equal(template.c)
@@ -131,12 +131,12 @@ return function()
 			local target = {a = 32; x = 100}
 			local t1 = {b = 64; c = 128}
 			local t2 = {a = 10; c = 100; d = 200}
-			TableUtil.Assign(target, t1, t2)
-			expect(target.a).to.equal(10)
-			expect(target.b).to.equal(64)
-			expect(target.c).to.equal(100)
-			expect(target.d).to.equal(200)
-			expect(target.x).to.equal(100)
+			local tbl = TableUtil.Assign(target, t1, t2)
+			expect(tbl.a).to.equal(10)
+			expect(tbl.b).to.equal(64)
+			expect(tbl.c).to.equal(100)
+			expect(tbl.d).to.equal(200)
+			expect(tbl.x).to.equal(100)
 		end)
 
 	end)
@@ -146,8 +146,8 @@ return function()
 		it("should extend tables", function()
 			local tbl = {"a", "b", "c"}
 			local extension = {"d", "e", "f"}
-			TableUtil.Extend(tbl, extension)
-			expect(table.concat(tbl)).to.equal("abcdef")
+			local extended = TableUtil.Extend(tbl, extension)
+			expect(table.concat(extended)).to.equal("abcdef")
 		end)
 
 	end)

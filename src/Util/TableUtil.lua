@@ -12,10 +12,10 @@
 	TableUtil.Map(tbl: table, callback: (value: any) -> any): table
 	TableUtil.Filter(tbl: table, callback: (value: any) -> boolean): table
 	TableUtil.Reduce(tbl: table, callback: (accum: number, value: number) -> number [, initialValue: number]): number
-	TableUtil.Assign(target: table, ...sources: table): void
-	TableUtil.Extend(tbl: table, extension: table): void
+	TableUtil.Assign(target: table, ...sources: table): table
+	TableUtil.Extend(tbl: table, extension: table): table
 	TableUtil.Reverse(tbl: table): table
-	TableUtil.Shuffle(tbl: table): void
+	TableUtil.Shuffle(tbl: table): table
 	TableUtil.Flat(tbl: table [, maxDepth: number = 1]): table
 	TableUtil.FlatMap(tbl: callback: (value: any) -> table): table
 	TableUtil.Keys(tbl: table): table
@@ -271,6 +271,7 @@
 local TableUtil = {}
 
 local HttpService = game:GetService("HttpService")
+local rng = Random.new()
 
 
 local function CopyTable(t)
@@ -301,10 +302,12 @@ local function CopyTableShallow(t)
 end
 
 
-local function Sync(tbl, templateTbl)
+local function Sync(srcTbl, templateTbl)
 
-	assert(type(tbl) == "table", "First argument must be a table")
+	assert(type(srcTbl) == "table", "First argument must be a table")
 	assert(type(templateTbl) == "table", "Second argument must be a table")
+
+	local tbl = CopyTable(srcTbl)
 
 	-- If 'tbl' has something 'templateTbl' doesn't, then remove it from 'tbl'
 	-- If 'tbl' has something of a different type than 'templateTbl', copy from 'templateTbl'
@@ -327,7 +330,7 @@ local function Sync(tbl, templateTbl)
 
 		-- Synchronize sub-tables:
 		elseif (type(v) == "table") then
-			Sync(v, vTemplate)
+			tbl[k] = Sync(v, vTemplate)
 		end
 
 	end
@@ -346,6 +349,8 @@ local function Sync(tbl, templateTbl)
 		end
 
 	end
+
+	return tbl
 
 end
 
@@ -414,19 +419,22 @@ end
 
 
 local function Assign(target, ...)
+	local tbl = CopyTable(target)
 	for _,src in ipairs({...}) do
 		for k,v in pairs(src) do
-			target[k] = v
+			tbl[k] = v
 		end
 	end
-	return target
+	return tbl
 end
 
 
-local function Extend(tbl, extension)
+local function Extend(target, extension)
+	local tbl = CopyTable(target)
 	for _,v in ipairs(extension) do
 		table.insert(tbl, v)
 	end
+	return tbl
 end
 
 
@@ -442,11 +450,12 @@ end
 
 local function Shuffle(tbl)
 	assert(type(tbl) == "table", "First argument must be a table")
-	local rng = Random.new()
+	local shuffled = CopyTable(tbl)
 	for i = #tbl, 2, -1 do
 		local j = rng:NextInteger(1, i)
-		tbl[i], tbl[j] = tbl[j], tbl[i]
+		shuffled[i], shuffled[j] = shuffled[j], shuffled[i]
 	end
+	return shuffled
 end
 
 
