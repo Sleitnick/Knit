@@ -1,7 +1,4 @@
-
-## [StreamableUtil](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/StreamableUtil.lua)
-
-Extra functionality for Streamables. For instance, `StreamableUtil.Compound` can be used to observe multiple streamables, and thus guarantee access to all instances referenced.
+[StreamableUtil](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/StreamableUtil.lua) offers extra functionality for Streamables. For instance, `StreamableUtil.Compound` can be used to observe multiple streamables, and thus guarantee access to all instances referenced.
 
 ```lua
 -- Compound Streamables:

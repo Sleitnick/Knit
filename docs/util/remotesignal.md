@@ -1,5 +1,3 @@
-## [RemoteSignal](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Remote/RemoteSignal.lua)
-
 The [RemoteSignal](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Remote/RemoteSignal.lua) module wraps the RemoteEvent object and is typically used within services. The only time a developer should ever have to instantiate a RemoteSignal is within the `Client` table of a service. For use on the client, see ClientRemoteSignal.
 
 ```lua
