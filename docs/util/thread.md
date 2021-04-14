@@ -1,5 +1,3 @@
-## [Thread](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Thread.lua)
-
 The [Thread](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Thread.lua) module aims to replace the somewhat-broken built-in thread functions (such as `wait`, `spawn`, and `delay`), which suffer from throttling.
 
 ```lua

@@ -1,6 +1,4 @@
-## [Option](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Option.lua)
-
-An Option is a powerful concept taken from [Rust](https://doc.rust-lang.org/std/option/index.html) and other languages. The purpose is to represent an optional value. An option can either be `Some` or `None`. Using Options helps reduce `nil` bugs (which can cause silent bugs that can be hard to track down). Options automatically serialize/deserialize across the server/client boundary when passed through services or controllers.
+An [Option](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Option.lua) is a powerful concept taken from [Rust](https://doc.rust-lang.org/std/option/index.html) and other languages. The purpose is to represent an optional value. An option can either be `Some` or `None`. Using Options helps reduce `nil` bugs (which can cause silent bugs that can be hard to track down). Options automatically serialize/deserialize across the server/client boundary when passed through services or controllers.
 
 For full documentation, check out the [LuaOption](https://github.com/Sleitnick/LuaOption) repository.
 

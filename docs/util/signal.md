@@ -1,5 +1,3 @@
-## [Signal](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Signal.lua)
-
 The [Signal](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Signal.lua) module gives basic Roblox Signal functionality. It is easy to instantiate and use a signal object.
 
 ```lua

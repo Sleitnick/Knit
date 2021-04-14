@@ -1,5 +1,3 @@
-## [Maid](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Maid.lua)
-
 The [Maid](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Maid.lua) module is a powerful tool for tracking and cleaning up your messes (hence the name). The Maid module was created by [James Onnen](https://github.com/Quenty). Read his [tutorial on Maids](https://medium.com/roblox-development/how-to-use-a-maid-class-on-roblox-to-manage-state-651bf74de98b) for a better understanding of how to use it.
 
 ```lua

@@ -1,5 +1,3 @@
-## [Component](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Component.lua)
-
 The [Component](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Component.lua) class allows developers to bind custom component classes to in-game objects based on tags provided by the [CollectionService](https://developer.roblox.com/en-us/api-reference/class/CollectionService).
 
 For instance, a component might be created called `DanceFloor`, which has the purpose of making a part flash random colors. Here's what our DanceFloor component module might look like:
