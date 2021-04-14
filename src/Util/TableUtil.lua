@@ -201,7 +201,7 @@
 			local tbl = {
 				"Flat map",
 				"is",
-				"really cool to"
+				"really cool to",
 				"use"
 			}
 
