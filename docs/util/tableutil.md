@@ -278,9 +278,9 @@ print(reversed) --> {5, 4, 3, 2, 1}
 ---------------
 
 ## `Shuffle`
-`TableUtil.Shuffle(tbl: table): table`
+`TableUtil.Shuffle(tbl: table [, rng: Random]): table`
 
-Creates a shallow copy of the given table and shuffles it using the [Fisher-Yates shuffle](https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle) algorithm.
+Creates a shallow copy of the given table and shuffles it using the [Fisher-Yates shuffle](https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle) algorithm. If desired, a [Random](https://developer.roblox.com/en-us/api-reference/datatype/Random) object can be passed as a second argument to override the default RNG in TableUtil.
 
 ```lua
 local music = {"Song1", "Song2", "Song3", "Song4", "Song5"}

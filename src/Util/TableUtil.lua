@@ -15,7 +15,7 @@
 	TableUtil.Assign(target: table, ...sources: table): table
 	TableUtil.Extend(tbl: table, extension: table): table
 	TableUtil.Reverse(tbl: table): table
-	TableUtil.Shuffle(tbl: table): table
+	TableUtil.Shuffle(tbl: table [, rng: Random]): table
 	TableUtil.Flat(tbl: table [, maxDepth: number = 1]): table
 	TableUtil.FlatMap(tbl: callback: (value: any) -> table): table
 	TableUtil.Keys(tbl: table): table
@@ -26,246 +26,7 @@
 	TableUtil.EncodeJSON(tbl: table): string
 	TableUtil.DecodeJSON(json: string): table
 
-	EXAMPLES:
-
-		Copy:
-
-			Performs a deep copy of the given table. In other words,
-			all nested tables will also get copied.
-
-			local tbl = {"a", "b", "c"}
-			local tblCopy = TableUtil.Copy(tbl)
-
-
-		CopyShallow:
-
-			Performs a shallow copy of the given table. In other words,
-			all nested tables will not be copied, but only moved by
-			reference. Thus, a nested table in both the original and
-			the copy will be the same.
-
-			local tbl = {"a", "b", "c"}
-			local tblCopy = TableUtil.CopyShallow(tbl)
-
-
-		Sync:
-
-			Synchronizes a table to a template table. If the table does not have an
-			item that exists within the template, it gets added. If the table has
-			something that the template does not have, it gets removed.
-
-			local tbl1 = {kills = 0; deaths = 0; points = 0}
-			local tbl2 = {points = 0}
-			TableUtil.Sync(tbl2, tbl1)  -- In words: "Synchronize table2 to table1"
-			print(tbl2.deaths)
-
-
-		FastRemove:
-
-			Removes an item from an array at a given index. Only use this if you do
-			NOT care about the order of your array. This works by simply popping the
-			last item in the array and overwriting the given index with the last
-			item. This is O(1), compared to table.remove's O(n) speed.
-
-			local tbl = {"hello", "there", "this", "is", "a", "test"}
-			TableUtil.FastRemove(tbl, 2)   -- Remove "there" in the array
-			print(table.concat(tbl, " "))  -- > hello test is a
-
-
-		FastRemoveFirstValue:
-
-			Calls FastRemove on the first index that holds the given value.
-
-			local tbl = {"abc", "hello", "hi", "goodbye", "hello", "hey"}
-			local removed, atIndex = TableUtil.FastRemoveFirstValue(tbl, "hello")
-			if (removed) then
-				print("Removed at index " .. atIndex)
-				print(table.concat(tbl, " "))  -- > abc hi goodbye hello hey
-			else
-				print("Did not find value")
-			end
-
-
-		Map:
-
-			This allows you to construct a new table by calling the given function
-			on each item in the table.
-
-			local peopleData = {
-				{firstName = "Bob"; lastName = "Smith"};
-				{firstName = "John"; lastName = "Doe"};
-				{firstName = "Jane"; lastName = "Doe"};
-			}
-
-			local people = TableUtil.Map(peopleData, function(item)
-				return {Name = item.firstName .. " " .. item.lastName}
-			end)
-
-			-- 'people' is now an array that looks like: { {Name = "Bob Smith"}; ... }
-
-
-		Filter:
-
-			This allows you to create a table based on the given table and a filter
-			function. If the function returns 'true', the item remains in the new
-			table; if the function returns 'false', the item is discluded from the
-			new table.
-
-			local people = {
-				{Name = "Bob Smith"; Age = 42};
-				{Name = "John Doe"; Age = 34};
-				{Name = "Jane Doe"; Age = 37};
-			}
-
-			local peopleUnderForty = TableUtil.Filter(people, function(item)
-				return item.Age < 40
-			end)
-
-
-		Reduce:
-
-			This allows you to reduce an array to a single value. Useful for quickly
-			summing up an array.
-
-			local tbl = {40, 32, 9, 5, 44}
-			local tblSum = TableUtil.Reduce(tbl, function(accumulator, value)
-				return accumulator + value
-			end)
-			print(tblSum)  -- > 130
-
-
-		Assign:
-
-			This allows you to assign values from multiple tables into one. The
-			Assign function is very similar to JavaScript's Object.Assign() and
-			is useful for things such as composition-designed systems.
-
-			local function Driver()
-				return {
-					Drive = function(self) self.Speed = 10 end;
-				}
-			end
-
-			local function Teleporter()
-				return {
-					Teleport = function(self, pos) self.Position = pos end;
-				}
-			end
-
-			local function CreateCar()
-				local state = {
-					Speed = 0;
-					Position = Vector3.new();
-				}
-				-- Assign the Driver and Teleporter components to the car:
-				return TableUtil.Assign({}, Driver(), Teleporter())
-			end
-
-			local car = CreateCar()
-			car:Drive()
-			car:Teleport(Vector3.new(0, 10, 0))
-
-
-		Reverse:
-
-			Creates a reversed version of the array. Note: This is a shallow
-			copy, so existing references will remain within the new table.
-
-			local tbl = {2, 4, 6, 8}
-			local rblReversed = TableUtil.Reverse(tbl)  -- > {8, 6, 4, 2}
-
-
-		Shuffle:
-
-			Shuffles (i.e. randomizes) an array. This uses the Fisher-Yates algorithm.
-
-			local tbl = {1, 2, 3, 4, 5, 6, 7, 8, 9}
-			TableUtil.Shuffle(tbl)
-			print(table.concat(tbl, ", "))  -- e.g. > 3, 6, 9, 2, 8, 4, 1, 7, 5
-
-
-		Flat:
-
-			Flattens out an array that might have multiple nested arrays.
-
-			local tbl = {1, 2, {3, 4, {5, 6}}, {7, {8, 9}}}
-			local flat = TableUtil.Flat(tbl, 2)
-			--> {1, 2, 3, 4, 5, 6, 7, 8, 9}
-
-
-		FlatMap:
-
-			For each item in a table, calls Map on the item and then Flat
-			on whatever Map returns.
-
-			local tbl = {
-				"Flat map",
-				"is",
-				"really cool to",
-				"use"
-			}
-
-			local flatMap = TableUtil.FlatMap(tbl, function(words)
-				return words:split(" ")
-			end)
-			--> {"Flat", "map", "is", "really", "cool", "to", "use"}
-
-
-		Keys:
-
-			Returns an array of all the keys in the table.
-
-			local tbl = {hello = 32, world = 64}
-			local keys = TableUtil.Keys(tbl)
-			--> {"hello", "world"}
-
-
-		Find:
-
-			Returns the found item and its index based on the callback.
-
-			local tbl = {
-				{Name = "John", Score = 10},
-				{Name = "Jane", Score = 20},
-				{Name = "Jerry", Score = 30}
-			}
-
-			local person, index = TableUtil.Find(tbl, function(p)
-				return p.Name == "Jane"
-			end)
-
-			print(person, index) --> "Jane", 2
-
-
-		Every:
-
-			Returns true if every item in the table passes the callback condition.
-
-			local tbl = {10, 20, 30, 40}
-
-			-- Check if every item in the table is greater or equal to 10:
-			local every = TableUtil.Every(tbl, function(num)
-				return num >= 10
-			end)
-
-			if every then ... end
-
-
-		Some:
-
-			Returns true if at least one item in the table passes the callback condition.
-
-			local tbl = {10, 20, 30, 40}
-
-			-- Check if at least one item in the table is greater or equal to 40:
-			local some = TableUtil.Some(tbl, function(num)
-				return num >= 40
-			end)
-
-			if some then ... end
-
 --]]
-
 
 
 local TableUtil = {}
@@ -448,11 +209,12 @@ local function Reverse(tbl)
 end
 
 
-local function Shuffle(tbl)
+local function Shuffle(tbl, rngOverride)
 	assert(type(tbl) == "table", "First argument must be a table")
 	local shuffled = CopyTable(tbl)
+	local random = (rngOverride or rng)
 	for i = #tbl, 2, -1 do
-		local j = rng:NextInteger(1, i)
+		local j = random:NextInteger(1, i)
 		shuffled[i], shuffled[j] = shuffled[j], shuffled[i]
 	end
 	return shuffled
