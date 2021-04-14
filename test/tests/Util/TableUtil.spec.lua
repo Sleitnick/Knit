@@ -162,6 +162,15 @@ return function()
 
 	end)
 
+	describe("Shuffle", function()
+
+		it("should shuffle a table", function()
+			local tbl = {1, 2, 3, 4, 5}
+			expect(function() TableUtil.Shuffle(tbl) end).never.to.throw()
+		end)
+
+	end)
+
 	describe("Flat", function()
 
 		it("should flatten table", function()
