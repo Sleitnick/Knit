@@ -74,7 +74,7 @@ function KnitClient.CreateController(controller)
 	assert(type(controller.Name) == "string", "Controller.Name must be a string; got " .. type(controller.Name))
 	assert(#controller.Name > 0, "Controller.Name must be a non-empty string")
 	assert(KnitClient.Controllers[controller.Name] == nil, "Service \"" .. controller.Name .. "\" already exists")
-	TableUtil.Extend(controller, {
+	controller = TableUtil.Assign(controller, {
 		_knit_is_controller = true;
 	})
 	KnitClient.Controllers[controller.Name] = controller
@@ -106,15 +106,15 @@ end
 
 
 function KnitClient.Start()
-	
+
 	if (started) then
 		return Promise.Reject("Knit already started")
 	end
-	
+
 	started = true
 
 	local controllers = KnitClient.Controllers
-	
+
 	return Promise.new(function(resolve)
 
 		-- Init:
@@ -138,16 +138,16 @@ function KnitClient.Start()
 				Thread.SpawnNow(controller.KnitStart, controller)
 			end
 		end
-		
+
 		startedComplete = true
 		onStartedComplete:Fire()
 
 		Thread.Spawn(function()
 			onStartedComplete:Destroy()
 		end)
-		
+
 	end)
-	
+
 end
 
 
