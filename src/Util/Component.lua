@@ -55,7 +55,7 @@
 
 
 	A component is then registered like so:
-		
+
 		local Component = require(Knit.Util.Component)
 		local MyComponent = require(somewhere.MyComponent)
 		local tag = "MyComponent"
