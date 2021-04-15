@@ -14,6 +14,8 @@ return function()
 	local function CreateTaggedInstance()
 		local folder = Instance.new("Folder")
 		CollectionService:AddTag(folder, TAG)
+		folder.Name = "ComponentTest"
+		folder.Archivable = false
 		folder.Parent = taggedInstanceFolder
 		return folder
 	end
@@ -48,6 +50,8 @@ return function()
 	beforeAll(function()
 		Component.new(TAG, TestComponentMain)
 		taggedInstanceFolder = Instance.new("Folder")
+		taggedInstanceFolder.Name = "KnitComponentTest"
+		taggedInstanceFolder.Archivable = false
 		taggedInstanceFolder.Parent = workspace
 	end)
 

@@ -50,9 +50,7 @@ function StreamableUtil.Compound(streamables, handler)
 	for _,streamable in pairs(streamables) do
 		compoundMaid:GiveTask(streamable:Observe(function(_child, maid)
 			Check()
-			maid:GiveTask(function()
-				Cleanup()
-			end)
+			maid:GiveTask(Cleanup)
 		end))
 	end
 	compoundMaid:GiveTask(Cleanup)
