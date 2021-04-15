@@ -22,7 +22,7 @@ jobs:
           zip -r knit.zip src/**
       - name: Build place file
         run: |
-          rojo build -o Knit.rbxlx
+          rojo build publish.project.json -o Knit.rbxlx
       - name: Publish Knit to Roblox
         shell: bash
         env:
