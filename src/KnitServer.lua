@@ -211,14 +211,7 @@ function KnitServer.OnStart()
 	if (startedComplete) then
 		return Promise.Resolve()
 	else
-		return Promise.new(function(resolve)
-			if (startedComplete) then
-				resolve()
-				return
-			end
-			onStartedComplete.Event:Wait()
-			resolve()
-		end)
+		return Promise.FromEvent(onStartedComplete.Event)
 	end
 end
 
