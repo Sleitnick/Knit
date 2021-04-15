@@ -17,7 +17,7 @@
 				"ExecuteWithStudioRun": true
 			},
 			"TestEZ": {
-				"$path": "test/testez/src"
+				"$path": "test/testez/default.project.json"
 			},
 			"RunTests": {
 				"$path": "test/RunTests.server.lua"
