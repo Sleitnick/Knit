@@ -15,15 +15,15 @@
 	component = Component.new(tag, class [, renderPriority])
 		-> Creates a new component from the tag name, class module, and optional render priority
 
-	component:GetAll()
-	component:GetFromInstance(instance)
-	component:GetFromID(id)
-	component:Filter(filterFunc)
-	component:WaitFor(instanceOrName)
+	component:GetAll(): ComponentInstance[]
+	component:GetFromInstance(instance): ComponentInstance | nil
+	component:GetFromID(id): ComponentInstance | nil
+	component:Filter(filterFunc): ComponentInstance[]
+	component:WaitFor(instanceOrName: Instance | string [, timeout: number = 60]): Promise<ComponentInstance>
 	component:Destroy()
 
-	component.Added(obj)
-	component.Removed(obj)
+	component.Added(obj: ComponentInstance)
+	component.Removed(obj: ComponentInstance)
 
 	-----------------------------------------------------------------------
 
@@ -55,7 +55,7 @@
 
 
 	A component is then registered like so:
-		
+
 		local Component = require(Knit.Util.Component)
 		local MyComponent = require(somewhere.MyComponent)
 		local tag = "MyComponent"
@@ -96,13 +96,6 @@ local Component = {}
 Component.__index = Component
 
 local componentsByTag = {}
-
-
-local function FastRemove(tbl, i)
-	local n = #tbl
-	tbl[i] = tbl[n]
-	tbl[n] = nil
-end
 
 
 local function IsDescendantOfWhitelist(instance)
@@ -299,7 +292,7 @@ function Component:_instanceRemoved(instance)
 			self.Removed:Fire(obj)
 			obj:Destroy()
 			obj._destroyed = true
-			FastRemove(self._objects, i)
+			TableUtil.FastRemove(self._objects, i)
 			break
 		end
 	end
@@ -341,7 +334,7 @@ function Component:WaitFor(instance, timeout)
 	end
 	for _,obj in ipairs(self._objects) do
 		if (IsInstanceValid(obj)) then
-			return Promise.resolve(obj)
+			return Promise.Resolve(obj)
 		end
 	end
 	local lastObj = nil

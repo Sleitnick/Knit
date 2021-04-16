@@ -14,7 +14,7 @@
 	signal:WaitPromise()
 	signal:Destroy()
 	signal:DisconnectAll()
-	
+
 	connection = signal:Connect((...) -> void)
 
 	connection:Disconnect()

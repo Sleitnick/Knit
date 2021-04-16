@@ -13,10 +13,10 @@
 
 	maid:GivePromise(promise)
 		> Give the maid a promise as a task, which will call 'promise:Cancel()' on cleanup
-	
+
 	maid:DoCleaning()
 		> Alias for Destroy
-	
+
 	maid:Destroy()
 		> Goes through each task & disconnects events, destroys instances, and calls functions
 
