@@ -1,4 +1,4 @@
-The [Component](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Component.lua) class allows developers to bind custom component classes to in-game objects based on tags provided by the [CollectionService](https://developer.roblox.com/en-us/api-reference/class/CollectionService).
+The [Component](https://github.com/Sleitnick/Knit/blob/main/src/Util/Component.lua) class allows developers to bind custom component classes to in-game objects based on tags provided by the [CollectionService](https://developer.roblox.com/en-us/api-reference/class/CollectionService).
 
 For instance, a component might be created called `DanceFloor`, which has the purpose of making a part flash random colors. Here's what our DanceFloor component module might look like:
 
@@ -44,7 +44,7 @@ local danceFloor = Component.new("DanceFloor", DanceFloor)
 
 Lastly, simply assign parts within the game with the `DanceFloor` tag, and the DanceFloor component will automatically be instantiated for those objects. For editing tags within Studio, check out the [Tag Editor](https://www.roblox.com/library/948084095/Tag-Editor) plugin.
 
-The full API for components is listed within the [Component](https://github.com/Sleitnick/Knit/blob/main/src/Knit/Util/Component.lua) module.
+The full API for components is listed within the [Component](https://github.com/Sleitnick/Knit/blob/main/src/Util/Component.lua) module.
 
 !!! note
 	If a component needs to be used on both the server and the client, it is recommended to make two separate component modules for each environment. In the above example, we made a DanceFloor. Ideally, such a module should only run on the client, since it is rapidly changing the color of the part at random. Another DanceFloor component could also be created for the server if desired.
