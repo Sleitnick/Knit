@@ -38,9 +38,14 @@ theme:
     text: Ubuntu
     code: Roboto Mono
   palette:
-    primary: indigo
-    accent: light blue
-    scheme: preference
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: light blue
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: light blue
   highlightjs: true
   hljs_languages:
     - lua
