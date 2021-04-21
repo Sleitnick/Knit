@@ -46,6 +46,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./src/knit.zip
+          asset_path: ./knit.zip
           asset_name: knit.zip
           asset_content_type: application/zip
