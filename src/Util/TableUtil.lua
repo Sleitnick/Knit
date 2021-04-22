@@ -68,7 +68,7 @@ local function Sync(srcTbl, templateTbl)
 	assert(type(srcTbl) == "table", "First argument must be a table")
 	assert(type(templateTbl) == "table", "Second argument must be a table")
 
-	local tbl = CopyTable(srcTbl)
+	local tbl = CopyTableShallow(srcTbl)
 
 	-- If 'tbl' has something 'templateTbl' doesn't, then remove it from 'tbl'
 	-- If 'tbl' has something of a different type than 'templateTbl', copy from 'templateTbl'
@@ -180,7 +180,7 @@ end
 
 
 local function Assign(target, ...)
-	local tbl = CopyTable(target)
+	local tbl = CopyTableShallow(target)
 	for _,src in ipairs({...}) do
 		for k,v in pairs(src) do
 			tbl[k] = v
@@ -191,7 +191,7 @@ end
 
 
 local function Extend(target, extension)
-	local tbl = CopyTable(target)
+	local tbl = CopyTableShallow(target)
 	for _,v in ipairs(extension) do
 		table.insert(tbl, v)
 	end
@@ -211,7 +211,7 @@ end
 
 local function Shuffle(tbl, rngOverride)
 	assert(type(tbl) == "table", "First argument must be a table")
-	local shuffled = CopyTable(tbl)
+	local shuffled = CopyTableShallow(tbl)
 	local random = (rngOverride or rng)
 	for i = #tbl, 2, -1 do
 		local j = random:NextInteger(1, i)
