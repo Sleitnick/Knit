@@ -3,7 +3,7 @@
 local KNIT_ASSET_ID = "5530714855"
 
 print("Loading Knit")
-local place = remodel.readPlaceFile("Knit.rbxlx")
+local place = remodel.readPlaceFile("Knit.rbxl")
 local Knit = place.ReplicatedStorage.Knit
 
 print("Writing Knit module to Roblox...")

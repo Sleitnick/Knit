@@ -4,22 +4,25 @@
 
 --[[
 
-	Component.Auto(folder)
+	Component.Auto(folder: Instance)
 		-> Create components automatically from descendant modules of this folder
 		-> Each module must have a '.Tag' string property
 		-> Each module optionally can have '.RenderPriority' number property
 
-	component = Component.FromTag(tag)
+	component = Component.FromTag(tag: string)
 		-> Retrieves an existing component from the tag name
 
-	component = Component.new(tag, class [, renderPriority])
+	Component.ObserveFromTag(tag: string, observer: (component: Component, maid: Maid) -> void): Maid
+
+	component = Component.new(tag: string, class: table [, renderPriority: RenderPriority, requireComponents: {string}])
 		-> Creates a new component from the tag name, class module, and optional render priority
 
 	component:GetAll(): ComponentInstance[]
-	component:GetFromInstance(instance): ComponentInstance | nil
-	component:GetFromID(id): ComponentInstance | nil
-	component:Filter(filterFunc): ComponentInstance[]
+	component:GetFromInstance(instance: Instance): ComponentInstance | nil
+	component:GetFromID(id: number): ComponentInstance | nil
+	component:Filter(filterFunc: (comp: ComponentInstance) -> boolean): ComponentInstance[]
 	component:WaitFor(instanceOrName: Instance | string [, timeout: number = 60]): Promise<ComponentInstance>
+	component:Observe(instance: Instance, observer: (component: ComponentInstance, maid: Maid) -> void): Maid
 	component:Destroy()
 
 	component.Added(obj: ComponentInstance)
@@ -97,6 +100,9 @@ Component.__index = Component
 
 local componentsByTag = {}
 
+local componentByTagCreated = Signal.new()
+local componentByTagDestroyed = Signal.new()
+
 
 local function IsDescendantOfWhitelist(instance)
 	for _,v in ipairs(DESCENDANT_WHITELIST) do
@@ -113,12 +119,38 @@ function Component.FromTag(tag)
 end
 
 
+function Component.ObserveFromTag(tag, observer)
+	local maid = Maid.new()
+	local observeMaid = Maid.new()
+	maid:GiveTask(observeMaid)
+	local function OnCreated(component)
+		if (component._tag == tag) then
+			observer(component, observeMaid)
+		end
+	end
+	local function OnDestroyed(component)
+		if (component._tag == tag) then
+			observeMaid:DoCleaning()
+		end
+	end
+	do
+		local component = Component.FromTag(tag)
+		if (component) then
+			Thread.SpawnNow(OnCreated, component)
+		end
+	end
+	maid:GiveTask(componentByTagCreated:Connect(OnCreated))
+	maid:GiveTask(componentByTagDestroyed:Connect(OnDestroyed))
+	return maid
+end
+
+
 function Component.Auto(folder)
 	local function Setup(moduleScript)
 		local m = require(moduleScript)
 		assert(type(m) == "table", "Expected table for component")
 		assert(type(m.Tag) == "string", "Expected .Tag property")
-		Component.new(m.Tag, m, m.RenderPriority)
+		Component.new(m.Tag, m, m.RenderPriority, m.RequiredComponents)
 	end
 	for _,v in ipairs(folder:GetDescendants()) do
 		if (v:IsA("ModuleScript")) then
@@ -133,7 +165,7 @@ function Component.Auto(folder)
 end
 
 
-function Component.new(tag, class, renderPriority)
+function Component.new(tag, class, renderPriority, requireComponents)
 
 	assert(type(tag) == "string", "Argument #1 (tag) should be a string; got " .. type(tag))
 	assert(type(class) == "table", "Argument #2 (class) should be a table; got " .. type(class))
@@ -142,9 +174,6 @@ function Component.new(tag, class, renderPriority)
 	assert(componentsByTag[tag] == nil, "Component already bound to this tag")
 
 	local self = setmetatable({}, Component)
-
-	self.Added = Signal.new()
-	self.Removed = Signal.new()
 
 	self._maid = Maid.new()
 	self._lifecycleMaid = Maid.new()
@@ -158,38 +187,112 @@ function Component.new(tag, class, renderPriority)
 	self._hasInit = (type(class.Init) == "function")
 	self._hasDeinit = (type(class.Deinit) == "function")
 	self._renderPriority = renderPriority or Enum.RenderPriority.Last.Value
+	self._requireComponents = requireComponents or {}
 	self._lifecycle = false
 	self._nextId = 0
 
-	self._maid:GiveTask(CollectionService:GetInstanceAddedSignal(tag):Connect(function(instance)
-		if (IsDescendantOfWhitelist(instance)) then
-			self:_instanceAdded(instance)
-		end
-	end))
+	self.Added = Signal.new(self._maid)
+	self.Removed = Signal.new(self._maid)
 
-	self._maid:GiveTask(CollectionService:GetInstanceRemovedSignal(tag):Connect(function(instance)
-		self:_instanceRemoved(instance)
-	end))
+	local observeMaid = Maid.new()
+	self._maid:GiveTask(observeMaid)
 
-	self._maid:GiveTask(self._lifecycleMaid)
+	local function ObserveTag()
 
-	do
-		local b = Instance.new("BindableEvent")
-		for _,instance in ipairs(CollectionService:GetTagged(tag)) do
-			if (IsDescendantOfWhitelist(instance)) then
-				local c = b.Event:Connect(function()
-					self:_instanceAdded(instance)
-				end)
-				b:Fire()
-				c:Disconnect()
+		local function HasRequiredComponents(instance)
+			for _,reqComp in ipairs(self._requireComponents) do
+				local comp = Component.FromTag(reqComp)
+				if (comp:GetFromInstance(instance) == nil) then
+					return false
+				end
 			end
+			return true
 		end
-		b:Destroy()
+
+		observeMaid:GiveTask(CollectionService:GetInstanceAddedSignal(tag):Connect(function(instance)
+			if (IsDescendantOfWhitelist(instance) and HasRequiredComponents(instance)) then
+				self:_instanceAdded(instance)
+			end
+		end))
+
+		observeMaid:GiveTask(CollectionService:GetInstanceRemovedSignal(tag):Connect(function(instance)
+			self:_instanceRemoved(instance)
+		end))
+
+		for _,reqComp in ipairs(self._requireComponents) do
+			local comp = Component.FromTag(reqComp)
+			observeMaid:GiveTask(comp.Added:Connect(function(obj)
+				if (CollectionService:HasTag(obj.Instance, tag) and HasRequiredComponents(obj.Instance)) then
+					self:_instanceAdded(obj.Instance)
+				end
+			end))
+			observeMaid:GiveTask(comp.Removed:Connect(function(obj)
+				if (CollectionService:HasTag(obj.Instance, tag)) then
+					self:_instanceRemoved(obj.Instance)
+				end
+			end))
+		end
+
+		observeMaid:GiveTask(function()
+			self:_stopLifecycle()
+			for instance in pairs(self._instancesToObjects) do
+				self:_instanceRemoved(instance)
+			end
+		end)
+
+		do
+			local b = Instance.new("BindableEvent")
+			for _,instance in ipairs(CollectionService:GetTagged(tag)) do
+				if (IsDescendantOfWhitelist(instance) and HasRequiredComponents(instance)) then
+					local c = b.Event:Connect(function()
+						self:_instanceAdded(instance)
+					end)
+					b:Fire()
+					c:Disconnect()
+				end
+			end
+			b:Destroy()
+		end
+
+	end
+
+	if (#self._requireComponents == 0) then
+		ObserveTag()
+	else
+		-- Only observe tag when all required components are available:
+		local tagsReady = {}
+		for _,reqComp in ipairs(self._requireComponents) do
+			tagsReady[reqComp] = false
+		end
+		local function Check()
+			for _,ready in pairs(tagsReady) do
+				if (not ready) then
+					return
+				end
+			end
+			ObserveTag()
+		end
+		local function Cleanup()
+			observeMaid:DoCleaning()
+		end
+		for _,requiredComponent in ipairs(self._requireComponents) do
+			tagsReady[requiredComponent] = false
+			self._maid:GiveTask(Component.ObserveFromTag(requiredComponent, function(_component, maid)
+				tagsReady[requiredComponent] = true
+				Check()
+				maid:GiveTask(function()
+					tagsReady[requiredComponent] = false
+					Cleanup()
+				end)
+			end))
+		end
 	end
 
 	componentsByTag[tag] = self
+	componentByTagCreated:Fire(self)
 	self._maid:GiveTask(function()
 		componentsByTag[tag] = nil
+		componentByTagDestroyed:Fire(self)
 	end)
 
 	return self
@@ -280,6 +383,7 @@ end
 
 
 function Component:_instanceRemoved(instance)
+	if (not self._instancesToObjects[instance]) then return end
 	self._instancesToObjects[instance] = nil
 	for i,obj in ipairs(self._objects) do
 		if (obj.Instance == instance) then
@@ -344,6 +448,30 @@ function Component:WaitFor(instance, timeout)
 	end):Then(function()
 		return lastObj
 	end):Timeout(timeout or DEFAULT_WAIT_FOR_TIMEOUT)
+end
+
+
+function Component:Observe(instance, observer)
+	local maid = Maid.new()
+	local observeMaid = Maid.new()
+	maid:GiveTask(observeMaid)
+	maid:GiveTask(self.Added:Connect(function(obj)
+		if (obj.Instance == instance) then
+			observer(obj, observeMaid)
+		end
+	end))
+	maid:GiveTask(self.Removed:Connect(function(obj)
+		if (obj.Instance == instance) then
+			observeMaid:DoCleaning()
+		end
+	end))
+	for _,obj in ipairs(self._objects) do
+		if (obj.Instance == instance) then
+			Thread.SpawnNow(observer, obj, observeMaid)
+			break
+		end
+	end
+	return maid
 end
 
 

@@ -44,7 +44,7 @@ theme:
       accent: light blue
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
-      primary: indigo
+      primary: blue
       accent: light blue
   highlightjs: true
   hljs_languages:
