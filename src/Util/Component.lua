@@ -175,9 +175,6 @@ function Component.new(tag, class, renderPriority, requireComponents)
 
 	local self = setmetatable({}, Component)
 
-	self.Added = Signal.new()
-	self.Removed = Signal.new()
-
 	self._maid = Maid.new()
 	self._lifecycleMaid = Maid.new()
 	self._tag = tag
@@ -194,12 +191,13 @@ function Component.new(tag, class, renderPriority, requireComponents)
 	self._lifecycle = false
 	self._nextId = 0
 
+	self.Added = Signal.new(self._maid)
+	self.Removed = Signal.new(self._maid)
+
 	local observeMaid = Maid.new()
 	self._maid:GiveTask(observeMaid)
 
 	local function ObserveTag()
-
-		print("Start observing " .. tag)
 
 		local function HasRequiredComponents(instance)
 			for _,reqComp in ipairs(self._requireComponents) do
@@ -245,7 +243,7 @@ function Component.new(tag, class, renderPriority, requireComponents)
 		do
 			local b = Instance.new("BindableEvent")
 			for _,instance in ipairs(CollectionService:GetTagged(tag)) do
-				if (IsDescendantOfWhitelist(instance)) then
+				if (IsDescendantOfWhitelist(instance) and HasRequiredComponents(instance)) then
 					local c = b.Event:Connect(function()
 						self:_instanceAdded(instance)
 					end)
@@ -263,6 +261,9 @@ function Component.new(tag, class, renderPriority, requireComponents)
 	else
 		-- Only observe tag when all required components are available:
 		local tagsReady = {}
+		for _,reqComp in ipairs(self._requireComponents) do
+			tagsReady[reqComp] = false
+		end
 		local function Check()
 			for _,ready in pairs(tagsReady) do
 				if (not ready) then
