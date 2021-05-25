@@ -147,7 +147,7 @@ end
 
 The `KnitInit` and `KnitStart` methods are optional lifecycle methods that can be added to any controller. For more info, check out the [service version](services.md#knitinit-and-knitstart) of this section (which has the same behavior) and the [execution model](executionmodel.md).
 
-These methods an be added just like any other method:
+These methods can be added just like any other method:
 
 ```lua
 function CameraController:KnitStart()
