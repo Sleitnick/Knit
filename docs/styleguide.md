@@ -64,7 +64,7 @@ Example of `MyModule.lua`:
 local Knit = require(game:GetService("ReplicatedStorage").Knit)
 local Signal = require(Knit.Util.Signal)
 
-local HttpService = require("HttpService")
+local HttpService = game:GetService("HttpService")
 
 local MESSAGE = "Hello"
 
