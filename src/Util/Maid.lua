@@ -2,7 +2,7 @@
 -- Author: Quenty
 -- Source: https://github.com/Quenty/NevermoreEngine/blob/version2/Modules/Shared/Events/Maid.lua
 -- License: MIT (https://github.com/Quenty/NevermoreEngine/blob/version2/LICENSE.md)
--- This module has been modified for use in AeroGameFramework
+-- This module has been modified for use in Knit
 
 --[[
 
