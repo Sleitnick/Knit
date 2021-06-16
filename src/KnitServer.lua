@@ -109,7 +109,7 @@ end
 
 
 function KnitServer.GetService(serviceName)
-	assert(type(serviceName) == "string", "ServiceName must be a string; got " .. type(serviceName))
+	assert(type(serviceName) == "string", "Service.Name must be a string; got " .. type(serviceName))
 	return assert(KnitServer.Services[serviceName], "Could not find service \"" .. serviceName .. "\"")
 end
 
