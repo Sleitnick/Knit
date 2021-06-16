@@ -68,7 +68,7 @@ function Maid:__newindex(index, newTask)
 	if (oldTask) then
 		if (type(oldTask) == "function") then
 			oldTask()
-		elseif (typeof(oldTask) == "RBXScriptConnection") then
+		elseif (typeof(oldTask) == "RBXScriptConnection" or oldTask.Disconnect) then
 			oldTask:Disconnect()
 		elseif (oldTask.Destroy) then
 			oldTask:Destroy()
@@ -88,8 +88,8 @@ function Maid:GiveTask(task)
 	local taskId = (#self._tasks + 1)
 	self[taskId] = task
 
-	if (type(task) == "table" and (not task.Destroy) and (not Promise.Is(task))) then
-		warn("[Maid.GiveTask] - Gave table task without .Destroy\n\n" .. debug.traceback())
+	if (type(task) == "table" and not (task.Destroy or task.Disconnect) and (not Promise.Is(task))) then
+		warn("[Maid.GiveTask] - Gave table task without .Destroy or .Disconnect\n\n" .. debug.traceback())
 	end
 
 	return taskId
@@ -116,10 +116,10 @@ function Maid:DoCleaning()
 	local tasks = self._tasks
 
 	-- Disconnect all events first as we know this is safe
-	for index, task in pairs(tasks) do
-		if (typeof(task) == "RBXScriptConnection") then
+	for index, event in pairs(tasks) do
+		if (typeof(event) == "RBXScriptConnection") then
 			tasks[index] = nil
-			task:Disconnect()
+			event:Disconnect()
 		end
 	end
 
@@ -129,7 +129,7 @@ function Maid:DoCleaning()
 		tasks[index] = nil
 		if (type(task) == "function") then
 			task()
-		elseif (typeof(task) == "RBXScriptConnection") then
+		elseif (typeof(task) == "RBXScriptConnection" or task.Disconnect) then
 			task:Disconnect()
 		elseif (task.Destroy) then
 			task:Destroy()
@@ -144,5 +144,9 @@ end
 --- Alias for DoCleaning()
 -- @function Destroy
 Maid.Destroy = Maid.DoCleaning
+
+--- Alias for DoCleaning()
+-- @function Cleanup
+Maid.Cleanup = Maid.DoCleaning
 
 return Maid
