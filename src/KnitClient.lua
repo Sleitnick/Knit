@@ -74,7 +74,7 @@ function KnitClient.CreateController(controller)
 	assert(type(controller) == "table", "Controller must be a table; got " .. type(controller))
 	assert(type(controller.Name) == "string", "Controller.Name must be a string; got " .. type(controller.Name))
 	assert(#controller.Name > 0, "Controller.Name must be a non-empty string")
-	assert(KnitClient.Controllers[controller.Name] == nil, "Service \"" .. controller.Name .. "\" already exists")
+	assert(KnitClient.Controllers[controller.Name] == nil, "Controller \"" .. controller.Name .. "\" already exists")
 	controller = TableUtil.Assign(controller, {
 		_knit_is_controller = true;
 	})
