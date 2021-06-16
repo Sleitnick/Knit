@@ -23,7 +23,7 @@ local value = DoSomething()
 
 -- Match if the value is 'some' or 'none':
 value:Match {
-	Some = function(value) print("Got value:", value),
+	Some = function(value) print("Got value:", value) end,
 	None = function() print("Got no value") end
 }
 
