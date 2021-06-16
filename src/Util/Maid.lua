@@ -72,6 +72,10 @@ function Maid:__newindex(index, newTask)
 			oldTask:Disconnect()
 		elseif (oldTask.Destroy) then
 			oldTask:Destroy()
+			
+		elseif (task.Disconnect) then
+			task:Disconnect()
+			
 		elseif (Promise.Is(oldTask)) then
 			oldTask:Cancel()
 		end
@@ -88,8 +92,8 @@ function Maid:GiveTask(task)
 	local taskId = (#self._tasks + 1)
 	self[taskId] = task
 
-	if (type(task) == "table" and (not task.Destroy) and (not Promise.Is(task))) then
-		warn("[Maid.GiveTask] - Gave table task without .Destroy\n\n" .. debug.traceback())
+	if (type(task) == "table" and not (task.Destroy or task.Disconnect) and (not Promise.Is(task))) then
+		warn("[Maid.GiveTask] - Table must have a Destroy or Disconnect method\n\n" .. debug.traceback())
 	end
 
 	return taskId
@@ -133,6 +137,8 @@ function Maid:DoCleaning()
 			task:Disconnect()
 		elseif (task.Destroy) then
 			task:Destroy()
+		elseif (task.Disconnect) then
+			task:Disconnect()	
 		elseif (Promise.Is(task)) then
 			task:Cancel()
 		end
@@ -144,5 +150,9 @@ end
 --- Alias for DoCleaning()
 -- @function Destroy
 Maid.Destroy = Maid.DoCleaning
+
+--- Alias for DoCleaning()
+-- @function Cleanup
+Maid.Cleanup = Maid.DoCleaning
 
 return Maid
