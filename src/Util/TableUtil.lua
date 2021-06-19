@@ -286,6 +286,9 @@ local function IsEmpty(tbl)
 	return (next(tbl) == nil)
 end
 
+local function Truncate(tbl, len)
+	return table.move(tbl, 1, #tbl - len, 1, table.create(#tbl - len))
+end
 
 local function EncodeJSON(tbl)
 	return HttpService:JSONEncode(tbl)
