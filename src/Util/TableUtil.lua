@@ -321,6 +321,6 @@ TableUtil.Some = Some
 TableUtil.IsEmpty = IsEmpty
 TableUtil.EncodeJSON = EncodeJSON
 TableUtil.DecodeJSON = DecodeJSON
-
+TableUtil.Truncate = Truncate
 
 return TableUtil
