@@ -160,7 +160,7 @@ function Signal:Connect(handler)
 	connection = Connection.new(self, self._bindable.Event:Connect(function(id)
 		if not connection:IsConnected() then
 			-- Deferred enabled events are queued
-			warn("ye")
+			self._handlersLeft -= 1
 			return
 		end
 		
@@ -210,21 +210,12 @@ end
 
 function Signal:Destroy()
 	-- Calling in a coroutine to prevent edge cases:
-	coroutine.wrap(function()
-		if self._threadsLeft > 0 then
-			self._threadsCompleted.Event:Wait()
-		end
-
-		if self._handlersLeft > 0 then
-			self._handlersCompleted.Event:Wait()
-		end
-
-		self._threadsCompleted:Destroy()
-		self._handlersCompleted:Destroy()
-		self:DisconnectAll()
-		self:_clearProxy()
-		self._bindable:Destroy()
-	end)()
+	
+	self:DisconnectAll()
+        self:_clearProxy()
+	self._threadsCompleted:Destroy()
+	self._handlersCompleted:Destroy()
+	self._bindable:Destroy()
 end
 
 
