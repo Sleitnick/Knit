@@ -20,6 +20,7 @@ return function()
 			Thread.SpawnNow(function(a, b, c)
 				x, y, z = a, b, c
 			end, 1, 2, 3)
+			AwaitCondition(function() return x ~= nil end, 1)
 			expect(x).to.equal(1)
 			expect(y).to.equal(2)
 			expect(z).to.equal(3)
