@@ -92,11 +92,12 @@ local IS_SERVER = RunService:IsServer()
 local DEFAULT_WAIT_FOR_TIMEOUT = 60
 local ATTRIBUTE_ID_NAME = "ComponentServerId"
 
--- Components will only work on instances parented under these descendants:
-local DESCENDANT_WHITELIST = {workspace, Players}
 
 local Component = {}
 Component.__index = Component
+
+-- Components will only work on instances parented under these descendants:
+Component.DescendantWhitelist = {workspace, Players}
 
 local componentsByTag = {}
 
@@ -105,7 +106,7 @@ local componentByTagDestroyed = Signal.new()
 
 
 local function IsDescendantOfWhitelist(instance)
-	for _,v in ipairs(DESCENDANT_WHITELIST) do
+	for _,v in ipairs(Component.DescendantWhitelist) do
 		if (instance:IsDescendantOf(v)) then
 			return true
 		end
@@ -241,17 +242,21 @@ function Component.new(tag, class, renderPriority, requireComponents)
 		end)
 
 		do
+			local instances = CollectionService:GetTagged(tag)
+			local processed = 0
 			local b = Instance.new("BindableEvent")
-			for _,instance in ipairs(CollectionService:GetTagged(tag)) do
+			b.Event:Connect(function(instance)
+				self:_instanceAdded(instance)
+				processed += 1
+				if (processed >= #instances) then
+					b:Destroy()
+				end
+			end)
+			for _,instance in ipairs(instances) do
 				if (IsDescendantOfWhitelist(instance) and HasRequiredComponents(instance)) then
-					local c = b.Event:Connect(function()
-						self:_instanceAdded(instance)
-					end)
-					b:Fire()
-					c:Disconnect()
+					b:Fire(instance)
 				end
 			end
-			b:Destroy()
 		end
 
 	end
