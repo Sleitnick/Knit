@@ -137,9 +137,9 @@ end
 
 function KnitServer.BindRemoteProperty(service, propName, prop)
 	assert(service._knit_rp[propName] == nil, "RemoteProperty \"" .. propName .. "\" already exists")
-	prop._object.Name = propName
+	prop._remote.Name = propName
 	service._knit_rp[propName] = prop
-	AddToRepFolder(service, prop._object, "RP")
+	AddToRepFolder(service, prop._remote, "RP")
 end
 
 
