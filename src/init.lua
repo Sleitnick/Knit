@@ -1,6 +1,9 @@
+local KnitServer = script:FindFirstChild("KnitServer")
 if (game:GetService("RunService"):IsServer()) then
-	return require(script.KnitServer)
+	return require(KnitServer)
 else
-	script.KnitServer:Destroy()
+	if KnitServer then
+		KnitServer:Destroy()
+	end
 	return require(script.KnitClient)
 end
