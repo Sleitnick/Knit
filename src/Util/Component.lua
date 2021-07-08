@@ -367,9 +367,9 @@ function Component:_instanceAdded(instance)
 		instance:SetAttribute(ATTRIBUTE_ID_NAME, id)
 	end
 	local obj = self._class.new(instance)
+	local parentConnectionMaid = Maid.new()
 	obj.Instance = instance
 	obj._id = id
-	obj._parentConnectionMaid = Maid.new()
 	self._instancesToObjects[instance] = obj
 	table.insert(self._objects, obj)
 	if (self._hasInit) then
@@ -378,15 +378,15 @@ function Component:_instanceAdded(instance)
 			obj:Init()
 		end)
 	end
-	obj._parentConnectionMaid:GiveTask(self.Removed:Connect(function(object)
+	parentConnectionMaid:GiveTask(self.Removed:Connect(function(object)
 		local hasTag = (instance and CollectionService:HasTag(instance, self._tag) or false)
 		if ((object.Instance == instance) and (not hasTag)) then
-			obj._parentConnectionMaid:DoCleaning()
+			parentConnectionMaid:DoCleaning()
 		end
 	end))
-	obj._parentConnectionMaid:GiveTask(instance:GetPropertyChangedSignal("Parent"):Connect(function()
+	parentConnectionMaid:GiveTask(instance:GetPropertyChangedSignal("Parent"):Connect(function()
 		if ((not instance.Parent) or (not CollectionService:HasTag(instance, self._tag))) then
-			obj._parentConnectionMaid:DoCleaning()
+			parentConnectionMaid:DoCleaning()
 			return
 		end
 		if (IsDescendantOfWhitelist(instance)) then
@@ -395,7 +395,7 @@ function Component:_instanceAdded(instance)
 			self:_instanceRemoved(instance)
 		end
 	end))
-	self._maid:GiveTask(obj._parentConnectionMaid)
+	self._maid:GiveTask(parentConnectionMaid)
 	self.Added:Fire(obj)
 	return obj
 end
