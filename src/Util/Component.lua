@@ -377,6 +377,13 @@ function Component:_instanceAdded(instance)
 			obj:Init()
 		end)
 	end
+	self._maid:GiveTask(instance:GetPropertyChangedSignal("Parent"):Connect(function()
+		if (IsDescendantOfWhitelist(instance)) then
+			self:_instanceAdded(instance)
+		else
+			self:_instanceRemoved(instance)
+		end
+	end))
 	self.Added:Fire(obj)
 	return obj
 end
