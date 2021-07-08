@@ -378,7 +378,7 @@ function Component:_instanceAdded(instance)
 		end)
 	end
 	local parentConnection; parentConnection = instance:GetPropertyChangedSignal("Parent"):Connect(function()
-		if not CollectionService:HasTag(instance, self._tag) then
+		if (not CollectionService:HasTag(instance, self._tag)) then
 			parentConnection:Disconnect()
 			return
 		end
