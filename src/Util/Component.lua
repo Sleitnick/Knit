@@ -377,13 +377,18 @@ function Component:_instanceAdded(instance)
 			obj:Init()
 		end)
 	end
-	self._maid:GiveTask(instance:GetPropertyChangedSignal("Parent"):Connect(function()
+	local parentConnection; parentConnection = instance:GetPropertyChangedSignal("Parent"):Connect(function()
+		if not CollectionService:HasTag(instance, self._tag) then
+			parentConnection:Disconnect()
+			return
+		end
 		if (IsDescendantOfWhitelist(instance)) then
 			self:_instanceAdded(instance)
 		else
 			self:_instanceRemoved(instance)
 		end
-	end))
+	end)
+	self._maid:GiveTask(parentConnection)
 	self.Added:Fire(obj)
 	return obj
 end
