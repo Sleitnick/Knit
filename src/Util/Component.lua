@@ -379,7 +379,7 @@ function Component:_instanceAdded(instance)
 		end)
 	end
 	parentConnectionMaid:GiveTask(self.Removed:Connect(function(object)
-		if (not (object.Instance == instance)) then return end
+		if (object.Instance ~= instance) then return end
 		if (not (instance and CollectionService:HasTag(instance, self._tag))) then
 			parentConnectionMaid:DoCleaning()
 		end
