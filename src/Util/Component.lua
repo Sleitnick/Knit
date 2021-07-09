@@ -379,8 +379,8 @@ function Component:_instanceAdded(instance)
 		end)
 	end
 	parentConnectionMaid:GiveTask(self.Removed:Connect(function(object)
-		local hasTag = (instance and CollectionService:HasTag(instance, self._tag) or false)
-		if ((object.Instance == instance) and (not hasTag)) then
+		if (not (object.Instance == instance)) then return end
+		if (not (instance and CollectionService:HasTag(instance, self._tag))) then
 			parentConnectionMaid:DoCleaning()
 		end
 	end))
@@ -389,10 +389,9 @@ function Component:_instanceAdded(instance)
 			parentConnectionMaid:DoCleaning()
 			return
 		end
-		if (IsDescendantOfWhitelist(instance)) then
-			self:_instanceAdded(instance)
-		else
+		if (not IsDescendantOfWhitelist(instance)) then
 			self:_instanceRemoved(instance)
+			parentConnectionMaid:DoCleaning()
 		end
 	end))
 	self._maid:GiveTask(parentConnectionMaid)
