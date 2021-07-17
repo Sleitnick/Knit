@@ -365,6 +365,7 @@ local PointsService = Knit.CreateService {
 	Client = {
 		PointsChanged = RemoteSignal.new();
 		GiveMePoints = RemoteSignal.new();
+		MostPoints = RemoteProperty.new(0);
 	};
 }
 
