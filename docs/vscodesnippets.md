@@ -127,7 +127,7 @@ return MyService
 -------------------------------------
 
 ### Knit Controller
-Reference Knit, create a service, and return the service.
+Reference Knit, create a controller, and return the controller.
 <details class="note">
 <summary>Snippet</summary>
 
