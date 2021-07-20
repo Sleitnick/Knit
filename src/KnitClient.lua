@@ -39,10 +39,10 @@ local function BuildService(serviceName, folder)
 	if (folder:FindFirstChild("RF")) then
 		for _,rf in ipairs(folder.RF:GetChildren()) do
 			if (rf:IsA("RemoteFunction")) then
-				service[rf.Name] = function(self, ...)
+				service[rf.Name] = function(_self, ...)
 					return Ser.DeserializeArgsAndUnpack(rf:InvokeServer(Ser.SerializeArgsAndUnpack(...)))
 				end
-				service[rf.Name .. "Promise"] = function(self, ...)
+				service[rf.Name .. "Promise"] = function(_self, ...)
 					local args = Ser.SerializeArgs(...)
 					return Promise.new(function(resolve)
 						resolve(Ser.DeserializeArgsAndUnpack(rf:InvokeServer(table.unpack(args, 1, args.n))))
