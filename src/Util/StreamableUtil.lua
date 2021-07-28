@@ -4,17 +4,17 @@
 
 --[[
 
-	StreamableUtil.Compound(observers: {Observer}, handler: ({[child: string]: Instance}, maid: Maid) -> void): Maid
+	StreamableUtil.Compound(observers: {Observer}, handler: ({[child: string]: Instance}, janitor: Janitor) -> void): Janitor
 
 	Example:
 
 		local streamable1 = Streamable.new(someModel, "SomeChild")
 		local streamable2 = Streamable.new(anotherModel, "AnotherChild")
 
-		StreamableUtil.Compound({S1 = streamable1, S2 = streamable2}, function(streamables, maid)
+		StreamableUtil.Compound({S1 = streamable1, S2 = streamable2}, function(streamables, janitor)
 			local someChild = streamables.S1.Instance
 			local anotherChild = streamables.S2.Instance
-			maid:GiveTask(function()
+			janitor:Add(function()
 				-- Cleanup
 			end)
 		end)
@@ -22,15 +22,15 @@
 --]]
 
 
-local Maid = require(script.Parent.Maid)
+local Janitor = require(script.Parent.Janitor)
 
 
 local StreamableUtil = {}
 
 
 function StreamableUtil.Compound(streamables, handler)
-	local compoundMaid = Maid.new()
-	local observeAllMaid = Maid.new()
+	local compoundJanitor = Janitor.new()
+	local observeAllJanitor = Janitor.new()
 	local allAvailable = false
 	local function Check()
 		if (allAvailable) then return end
@@ -40,21 +40,21 @@ function StreamableUtil.Compound(streamables, handler)
 			end
 		end
 		allAvailable = true
-		handler(streamables, observeAllMaid)
+		handler(streamables, observeAllJanitor)
 	end
 	local function Cleanup()
 		if (not allAvailable) then return end
 		allAvailable = false
-		observeAllMaid:DoCleaning()
+		observeAllJanitor:Cleanup()
 	end
 	for _,streamable in pairs(streamables) do
-		compoundMaid:GiveTask(streamable:Observe(function(_child, maid)
+		compoundJanitor:Add(streamable:Observe(function(_child, janitor)
 			Check()
-			maid:GiveTask(Cleanup)
+			janitor:GiveTask(Cleanup)
 		end))
 	end
-	compoundMaid:GiveTask(Cleanup)
-	return compoundMaid
+	compoundJanitor:GiveTask(Cleanup)
+	return compoundJanitor
 end
 
 

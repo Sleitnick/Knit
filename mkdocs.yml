@@ -14,7 +14,7 @@ nav:
   - Controllers: controllers.md
   - Util: 
     - Component: util/component.md
-    - Maid: util/maid.md
+    - Janitor: util/janitor.md
     - Option: util/option.md
     - Promise: util/promise.md
     - RemoteSignal: util/remotesignal.md

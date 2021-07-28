@@ -2,7 +2,7 @@ return function()
 
 	local Knit = require(game:GetService("ReplicatedStorage").Knit)
 	local Component = require(Knit.Util.Component)
-	local Maid = require(Knit.Util.Maid)
+	local Janitor = require(Knit.Util.Janitor)
 	local Promise = require(Knit.Util.Promise)
 
 	local CollectionService = game:GetService("CollectionService")
@@ -25,7 +25,7 @@ return function()
 	TestComponentMain.Tag = TAG
 	function TestComponentMain.new(_instance)
 		local self = setmetatable({}, TestComponentMain)
-		self._maid = Maid.new()
+		self._janitor = Janitor.new()
 		return self
 	end
 	function TestComponentMain:HeartbeatUpdate()
@@ -44,7 +44,7 @@ return function()
 		self.DidDeinit = true
 	end
 	function TestComponentMain:Destroy()
-		self._maid:Destroy()
+		self._janitor:Destroy()
 	end
 
 	beforeAll(function()

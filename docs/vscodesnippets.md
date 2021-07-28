@@ -191,7 +191,7 @@ Create a Knit component.
 	"prefix": ["knitcomponent"],
 	"body": [
 		"local Knit = require(game:GetService(\"ReplicatedStorage\").Knit)",
-		"local Maid = require(Knit.Util.Maid)",
+		"local Janitor = require(Knit.Util.Janitor)",
 		"",
 		"local ${0:$TM_FILENAME_BASE} = {}",
 		"${0:$TM_FILENAME_BASE}.__index = ${0:$TM_FILENAME_BASE}",
@@ -203,7 +203,7 @@ Create a Knit component.
 		"\t",
 		"\tlocal self = setmetatable({}, ${0:$TM_FILENAME_BASE})",
 		"\t",
-		"\tself._maid = Maid.new()",
+		"\tself._janitor = Janitor.new()",
 		"\t",
 		"\treturn self",
 		"\t",
@@ -219,7 +219,7 @@ Create a Knit component.
 		"",
 		"",
 		"function ${0:$TM_FILENAME_BASE}:Destroy()",
-		"\tself._maid:Destroy()",
+		"\tself._janitor:Destroy()",
 		"end",
 		"",
 		"",
@@ -235,7 +235,7 @@ Create a Knit component.
 
 ```lua
 local Knit = require(game:GetService("ReplicatedStorage").Knit)
-local Maid = require(Knit.Util.Maid)
+local Janitor = require(Knit.Util.Janitor)
 
 local MyComponent = {}
 MyComponent.__index = MyComponent
@@ -244,7 +244,7 @@ MyComponent.Tag = "MyComponent"
 
 function MyComponent.new(instance)
 	local self = setmetatable({}, MyComponent)
-	self._maid = Maid.new()
+	self._janitor = Janitor.new()
 	return self
 end
 
@@ -255,7 +255,7 @@ function MyComponent:Deinit()
 end
 
 function MyComponent:Destroy()
-	self._maid:Destroy()
+	self._janitor:Destroy()
 end
 
 return MyComponent
@@ -283,7 +283,7 @@ Require a module within Knit.
 <summary>Code Result</summary>
 
 ```lua
-local Maid = require(Knit.Util.Maid)
+local Janitor = require(Knit.Util.Janitor)
 
 local MyComponent = {}
 MyComponent.__index = MyComponent
@@ -292,7 +292,7 @@ MyComponent.Tag = "MyComponent"
 
 function MyComponent.new(instance)
 	local self = setmetatable({}, MyComponent)
-	self._maid = Maid.new()
+	self._janitor = Janitor.new()
 	return self
 end
 
@@ -303,7 +303,7 @@ function MyComponent:Deinit()
 end
 
 function MyComponent:Destroy()
-	self._maid:Destroy()
+	self._janitor:Destroy()
 end
 
 return MyComponent
@@ -416,7 +416,7 @@ All the above snippets together.
 		"prefix": ["knitcomponent"],
 		"body": [
 			"local Knit = require(game:GetService(\"ReplicatedStorage\").Knit)",
-			"local Maid = require(Knit.Util.Maid)",
+			"local Janitor = require(Knit.Util.Janitor)",
 			"",
 			"local ${0:$TM_FILENAME_BASE} = {}",
 			"${0:$TM_FILENAME_BASE}.__index = ${0:$TM_FILENAME_BASE}",
@@ -428,7 +428,7 @@ All the above snippets together.
 			"\t",
 			"\tlocal self = setmetatable({}, ${0:$TM_FILENAME_BASE})",
 			"\t",
-			"\tself._maid = Maid.new()",
+			"\tself._janitor = Janitor.new()",
 			"\t",
 			"\treturn self",
 			"\t",
@@ -444,7 +444,7 @@ All the above snippets together.
 			"",
 			"",
 			"function ${0:$TM_FILENAME_BASE}:Destroy()",
-			"\tself._maid:Destroy()",
+			"\tself._janitor:Destroy()",
 			"end",
 			"",
 			"",

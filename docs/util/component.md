@@ -106,17 +106,17 @@ Components have special "lifecycle methods" which will automatically fire during
 1. The bound instance no longer has the component tag anymore
 1. The bound instance no longer has the required components attached anymore (see section on [Required Components](#required-components))
 
-It is recommended to use maids in components and to only have the maid cleanup within the `Destroy` method. Any other cleanup logic should just be added to the maid:
+It is recommended to use janitors in components and to only have the janitor cleanup within the `Destroy` method. Any other cleanup logic should just be added to the janitor:
 
 ```lua
 function MyComponent.new(instance)
 	local self = setmetatable({}, MyComponent)
-	self._maid = Maid.new()
+	self._janitor = Janitor.new()
 	return self
 end
 
 function MyComponent:Destroy()
-	self._maid:Destroy()
+	self._janitor:Destroy()
 end
 ```
 
@@ -191,7 +191,7 @@ end
 ```
 Component.Auto(folder: Instance): void
 Component.FromTag(tag: string): ComponentInstance | nil
-Component.ObserveFromTag(tag: string, observer: (component: Component, maid: Maid) -> void): Maid
+Component.ObserveFromTag(tag: string, observer: (component: Component, janitor: Janitor) -> void): Janitor
 ```
 
 #### `Auto`
@@ -215,7 +215,7 @@ local MyComponent = Component.FromTag("MyComponent")
 Observe a component with the given tag name. Unless component classes will be destroyed and reconstructed often, this method is most likely not going to be needed in your code.
 
 ```lua
-Component.ObserveFromTag("MyComponent", function(MyComponent, maid)
+Component.ObserveFromTag("MyComponent", function(MyComponent, janitor)
 	-- Use MyComponent
 end)
 ```
@@ -246,7 +246,7 @@ component:GetAll(): ComponentInstance[]
 component:GetFromInstance(instance: Instance): ComponentInstance | nil
 component:Filter(filterFunc: (comp: ComponentInstance) -> boolean): ComponentInstance[]
 component:WaitFor(instance: Instance [, timeout: number = 60]): Promise<ComponentInstance>
-component:Observe(instance: Instance, observer: (component: ComponentInstance, maid: Maid) -> void): Maid
+component:Observe(instance: Instance, observer: (component: ComponentInstance, janitor: Janitor) -> void): Janitor
 component:Destroy()
 ```
 
@@ -289,13 +289,13 @@ end):Catch(warn)
 ```
 
 #### `Observe`
-Observes when a component is bound to a given instance. Returns a maid that can be destroyed.
+Observes when a component is bound to a given instance. Returns a janitor that can be destroyed.
 
 ```lua
 local MyComponent = Component.FromTag("MyComponent")
-local observeMaid = MyComponent:Observe(workspace.SomePart, function(component, maid)
+local observeJanitor = MyComponent:Observe(workspace.SomePart, function(component, janitor)
 	-- Do something
-	maid:GiveTask(function()
+	janitor:Add(function()
 		-- Cleanup
 	end)
 end)
@@ -321,10 +321,10 @@ component.Removed(obj: ComponentInstance)
 
 ## Boilerplate Examples
 
-Here is the most basic component with the recommended Maid pattern:
+Here is the most basic component with the recommended Janitor pattern:
 ```lua
 local Knit = require(game:GetService("ReplicatedStorage").Knit)
-local Maid = require(Knit.Util.Maid)
+local Janitor = require(Knit.Util.Janitor)
 
 local MyComponent = {}
 MyComponent.__index = MyComponent
@@ -333,12 +333,12 @@ MyComponent.Tag = "MyComponent"
 
 function MyComponent.new(instance)
 	local self = setmetatable({}, MyComponent)
-	self._maid = Maid.new()
+	self._janitor = Janitor.new()
 	return self
 end
 
 function MyComponent:Destroy()
-	self._maid:Destroy()
+	self._janitor:Destroy()
 end
 
 return MyComponent
@@ -347,7 +347,7 @@ return MyComponent
 Here is a more robust example with lifecycles and required components:
 ```lua
 local Knit = require(game:GetService("ReplicatedStorage").Knit)
-local Maid = require(Knit.Util.Maid)
+local Janitor = require(Knit.Util.Janitor)
 
 local MyComponent = {}
 MyComponent.__index = MyComponent
@@ -358,7 +358,7 @@ MyComponent.RequiredComponents = {"AnotherComponent", "YetAnotherComponent"}
 
 function MyComponent.new(instance)
 	local self = setmetatable({}, MyComponent)
-	self._maid = Maid.new()
+	self._janitor = Janitor.new()
 	return self
 end
 
@@ -383,7 +383,7 @@ function MyComponent:RenderUpdate(dt)
 end
 
 function MyComponent:Destroy()
-	self._maid:Destroy()
+	self._janitor:Destroy()
 end
 
 return MyComponent
