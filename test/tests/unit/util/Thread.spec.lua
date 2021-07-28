@@ -4,7 +4,7 @@ local function AwaitCondition(predicate, timeout)
 	while (true) do
 		if (predicate()) then return true end
 		if ((os.clock() - start) > timeout) then return false end
-		wait()
+		task.wait()
 	end
 end
 
@@ -12,50 +12,6 @@ return function()
 
 	local Knit = require(game:GetService("ReplicatedStorage").Knit)
 	local Thread = require(Knit.Util.Thread)
-
-	describe("SpawnNow", function()
-
-		it("should spawn now and pass arguments", function()
-			local x, y, z
-			Thread.SpawnNow(function(a, b, c)
-				x, y, z = a, b, c
-			end, 1, 2, 3)
-			expect(x).to.equal(1)
-			expect(y).to.equal(2)
-			expect(z).to.equal(3)
-		end)
-
-	end)
-
-	describe("Spawn", function()
-
-		it("should spawn and pass arguments", function()
-			local x, y, z
-			local done = false
-			Thread.Spawn(function(a, b, c)
-				x, y, z = a, b, c
-				done = true
-			end, 1, 2, 3)
-			expect(AwaitCondition(function()
-				return done
-			end, 1)).to.equal(true)
-			expect(x).to.equal(1)
-			expect(y).to.equal(2)
-			expect(z).to.equal(3)
-		end)
-
-		it("should cancel spawn", function()
-			local done = false
-			local handle = Thread.Spawn(function()
-				done = true
-			end)
-			handle:Disconnect()
-			expect(AwaitCondition(function()
-				return done
-			end, 0.1)).to.equal(false)
-		end)
-
-	end)
 
 	describe("Delay", function()
 

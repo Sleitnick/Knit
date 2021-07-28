@@ -6,20 +6,8 @@
 
 	Thread.DelayRepeatBehavior { Delayed, Immediate }
 
-	Thread.Spawn(func: (...any): void [, ...any]): void
-	Thread.Defer(func: (...any): void [, ...any]): void
 	Thread.Delay(waitTime: number, func: (...any): void [, ...any]): Connection
 	Thread.DelayRepeat(waitTime: number, func: (...any): void [, behavior: DelayRepeatBehavior, ...any]): Connection
-
-	Spawn(func: (...any): void [, ...args])
-
-		>	Alias for task.spawn(). Runs the given function
-			immediately as a separate thread/task.
-
-	Defer(func: (...any): void, [, ...args])
-
-		>	Alias for task.defer(). Runs the given function
-			at the end of the current resumption cycle.
 
 	Delay(waitTime: number, func: (...any): void [, ...args])
 
@@ -50,16 +38,8 @@
 
 	Examples:
 
-		Thread.Spawn(function()
-			print("Hello from Spawn")
-		end)
-
 		Thread.Delay(1, function()
 			print("Hello from Delay")
-		end)
-
-		Thread.Defer(function()
-			print("Hello from Defer")
 		end)
 
 		local delayConnection = Thread.Delay(5, function()
@@ -70,7 +50,7 @@
 		local repeatConnection = Thread.DelayRepeat(1, function()
 			print("Hello again", time())
 		end, Thread.DelayRepeatBehavior.Delayed)
-		wait(5)
+		task.wait(5)
 		repeatConnection:Disconnect()
 
 --]]
@@ -86,10 +66,6 @@ Thread.DelayRepeatBehavior = EnumList.new("DelayRepeatBehavior", {
 	"Delayed";
 	"Immediate";
 })
-
-
-Thread.Spawn = task.spawn
-Thread.Defer = task.defer
 
 
 function Thread.Delay(waitTime, func, ...)

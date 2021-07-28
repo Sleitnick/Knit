@@ -90,6 +90,8 @@ function Connection:Disconnect()
 	end
 end
 
+Connection.Destroy = Connection.Disconnect
+
 
 local Signal = {}
 Signal.__index = Signal
