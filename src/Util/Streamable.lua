@@ -14,7 +14,6 @@
 
 local Maid = require(script.Parent.Maid)
 local Signal = require(script.Parent.Signal)
-local Thread = require(script.Parent.Thread)
 
 
 local Streamable = {}
@@ -66,7 +65,7 @@ end
 
 function Streamable:Observe(handler)
 	if (self.Instance) then
-		Thread.SpawnNow(handler, self.Instance, self._shownMaid)
+		task.spawn(handler, self.Instance, self._shownMaid)
 	end
 	return self._shown:Connect(handler)
 end
