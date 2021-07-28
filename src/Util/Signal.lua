@@ -1,81 +1,105 @@
 -- Signal
 -- Stephen Leitnick
--- Based off of Anaminus' Signal class: https://gist.github.com/Anaminus/afd813efc819bad8e560caea28942010
+-- July 28, 2021
+
 
 --[[
 
 	signal = Signal.new([maid: Maid])
-	signal = Signal.Proxy(rbxSignal: RBXScriptSignal [, maid: Maid])
+	signal = Signal.Wrap(rbxSignal: RBXScriptSignal [, maid: Maid])
 
-	Signal.Is(object: any): boolean
+	Signal.Is(obj: any): boolean
 
-	signal:Fire(...)
-	signal:Wait()
-	signal:WaitPromise()
-	signal:Destroy()
-	signal:DisconnectAll()
+	signal:Connect(fn: (...any) -> void): Connection
+	signal:Fire(...): void
+	signal:FireNow(...): void
+	signal:Wait(): ...any
+	signal:Await(): Promise<...any>
+	signal:DisconnectAll(): void
+	signal:Destroy(): void
 
-	connection = signal:Connect((...) -> void)
+	connection.Connected: boolean
+	connection:Disconnect(): void
 
-	connection:Disconnect()
-	connection:IsConnected()
+	--------------------------------------------------
+
+	Connect(fn)
+	> Connects the given function to the signal. Any
+	  time the signal is fired, the function will be
+	  called. The arguments passed to the fired signal
+	  will be passed along to the connected function.
+
+	Fire(...)
+	> Fires all connections using task.defer. Because
+	  of the deferred guarantee, this is the fastest
+	  option & should be used in most cases.
+
+	FireNow(...)
+	> Fires all connections using task.spawn. Because
+	  there could be inner conflicts with connections
+	  being disconnected during the middle of this
+	  process, extra work has to be done to assure
+	  this process works properly. Due to the extra
+	  work, this will be somewhat slower than Fire().
+
+	Wait()
+	> Yields the caller's thread until the next time
+	  the signal is fired. The arguments passed to
+	  the fired signal will be returned from the
+	  Wait() method. For asynchronous programming, it
+	  is better to use Await() below, which returns
+	  a Promise version of Wait().
+
+	Await()
+	> Returns a Promise that resolves the first time
+	  the signal is fired. This signal is cancellable.
+	  The arguments passed from the fired signal are
+	  passed to the resolve handler.
+
+	DisconnectAll()
+	> Disconnects all connections to the signal.
+
+	Destroy()
+	> Destroys the signal. Internally, this disconnects
+	  all connections and clears out the wrapped proxy
+	  connection if present.
 
 --]]
 
+
 local Promise = require(script.Parent.Promise)
+
 
 local Connection = {}
 Connection.__index = Connection
 
-function Connection.new(signal, connection)
-	local self = setmetatable({
-		_signal = signal;
-		_conn = connection;
-		Connected = true;
-	}, Connection)
-	return self
-end
 
 function Connection:Disconnect()
-	if (self._conn) then
-		self._conn:Disconnect()
-		self._conn = nil
-	end
-	if (not self._signal) then return end
+	if (not self.Connected) then return end
 	self.Connected = false
-	local connections = self._signal._connections
-	local connectionIndex = table.find(connections, self)
-	if (connectionIndex) then
-		local n = #connections
-		connections[connectionIndex] = connections[n]
-		connections[n] = nil
+	if (self._signal._handlerHead == self) then
+		self._signal._handlerHead = self._next
+	else
+		local prev = self._signal._handlerHead
+		while (prev and prev._next ~= self) do
+			prev = prev._next
+		end
+		if (prev) then
+			prev._next = self._next
+		end
 	end
-	self._signal = nil
-end
-
-function Connection:IsConnected()
-	if (self._conn) then
-		return self._conn.Connected
-	end
-	return false
 end
 
 Connection.Destroy = Connection.Disconnect
 
---------------------------------------------
 
 local Signal = {}
 Signal.__index = Signal
 
 
 function Signal.new(maid)
-	local self = setmetatable({
-		_bindable = Instance.new("BindableEvent");
-		_connections = {};
-		_args = {};
-		_threads = 0;
-		_id = 0;
-	}, Signal)
+	local self = setmetatable({}, Signal)
+	self._handlerHead = nil
 	if (maid) then
 		maid:GiveTask(self)
 	end
@@ -83,10 +107,12 @@ function Signal.new(maid)
 end
 
 
-function Signal.Proxy(rbxScriptSignal, maid)
+function Signal.Wrap(rbxScriptSignal, maid)
 	assert(typeof(rbxScriptSignal) == "RBXScriptSignal", "Argument #1 must be of type RBXScriptSignal")
 	local signal = Signal.new(maid)
-	signal:_setProxy(rbxScriptSignal)
+	signal._proxyHandle = rbxScriptSignal:Connect(function(...)
+		signal:Fire(...)
+	end)
 	return signal
 end
 
@@ -96,82 +122,103 @@ function Signal.Is(obj)
 end
 
 
-function Signal:_setProxy(rbxScriptSignal)
-	assert(typeof(rbxScriptSignal) == "RBXScriptSignal", "Argument #1 must be of type RBXScriptSignal")
-	self:_clearProxy()
-	self._proxyHandle = rbxScriptSignal:Connect(function(...)
-		self:Fire(...)
-	end)
-end
-
-
-function Signal:_clearProxy()
-	if (self._proxyHandle) then
-		self._proxyHandle:Disconnect()
-		self._proxyHandle = nil
-	end
-end
-
-
-function Signal:Fire(...)
-	local totalListeners = (#self._connections + self._threads)
-	if (totalListeners == 0) then return end
-	local id = self._id
-	self._id += 1
-	self._args[id] = {totalListeners, {n = select("#", ...), ...}}
-	self._threads = 0
-	self._bindable:Fire(id)
-end
-
-
-function Signal:Wait()
-	self._threads += 1
-	local id = self._bindable.Event:Wait()
-	local args = self._args[id]
-	args[1] -= 1
-	if (args[1] <= 0) then
-		self._args[id] = nil
-	end
-	return table.unpack(args[2], 1, args[2].n)
-end
-
-
-function Signal:WaitPromise()
-	return Promise.new(function(resolve)
-		resolve(self:Wait())
-	end)
-end
-
-
-function Signal:Connect(handler)
-	local connection = Connection.new(self, self._bindable.Event:Connect(function(id)
-		local args = self._args[id]
-		args[1] -= 1
-		if (args[1] <= 0) then
-			self._args[id] = nil
-		end
-		handler(table.unpack(args[2], 1, args[2].n))
-	end))
-	table.insert(self._connections, connection)
+function Signal:Connect(fn)
+	local connection = setmetatable({
+		Connected = true;
+		_fn = fn;
+		_next = self._handlerHead;
+		_signal = self;
+	}, Connection)
+	self._handlerHead = connection
 	return connection
 end
 
 
-function Signal:DisconnectAll()
-	for _,c in ipairs(self._connections) do
-		if (c._conn) then
-			c._conn:Disconnect()
+function Signal:Fire(...)
+	local connection = self._handlerHead
+	while (connection) do
+		task.defer(connection._fn, ...)
+		connection = connection._next
+	end
+end
+
+
+function Signal:FireNow(...)
+	for _,connection in ipairs(self:_getConnections()) do
+		if (connection.Connected) then
+			task.spawn(connection._fn, ...)
 		end
 	end
-	self._connections = {}
-	self._args = {}
+end
+
+
+function Signal:_getConnections()
+	local connection = self._handlerHead
+	local connections = {}
+	while (connection) do
+		table.insert(connections, connection)
+		connection = connection._next
+	end
+	return connections
+end
+
+
+function Signal:Wait()
+	local args = nil
+	local done = false
+	local connection
+	connection = self:Connect(function(...)
+		if (done) then return end
+		connection:Disconnect()
+		args = table.pack(...)
+		done = true
+	end)
+	while (not done) do
+		task.wait()
+	end
+	return table.unpack(args, 1, args.n)
+end
+
+
+function Signal:Await()
+	return Promise.new(function(resolve, _reject, onCancel)
+		local args = nil
+		local done = false
+		local connection
+		connection = self:Connect(function(...)
+			if (done) then return end
+			connection:Disconnect()
+			args = table.pack(...)
+			done = true
+		end)
+		onCancel(function()
+			if (connection.Connected) then
+				connection:Disconnect()
+				done = true
+			end
+		end)
+		while (not done) do
+			task.wait()
+		end
+		if (args) then
+			resolve(table.unpack(args, 1, args.n))
+		end
+	end)
+end
+
+
+function Signal:DisconnectAll()
+	while (self._handlerHead) do
+		self._handlerHead:Disconnect()
+	end
 end
 
 
 function Signal:Destroy()
 	self:DisconnectAll()
-	self:_clearProxy()
-	self._bindable:Destroy()
+	if (self._proxyHandle) then
+		self._proxyHandle:Disconnect()
+	end
 end
 
 

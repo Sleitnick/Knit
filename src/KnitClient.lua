@@ -19,7 +19,6 @@ KnitClient.Controllers = {}
 KnitClient.Util = script.Parent.Util
 
 local Promise = require(KnitClient.Util.Promise)
-local Thread = require(KnitClient.Util.Thread)
 local Loader = require(KnitClient.Util.Loader)
 local Ser = require(KnitClient.Util.Ser)
 local ClientRemoteSignal = require(KnitClient.Util.Remote.ClientRemoteSignal)
@@ -136,14 +135,14 @@ function KnitClient.Start()
 		-- Start:
 		for _,controller in pairs(controllers) do
 			if (type(controller.KnitStart) == "function") then
-				Thread.SpawnNow(controller.KnitStart, controller)
+				task.spawn(controller.KnitStart, controller)
 			end
 		end
 
 		startedComplete = true
 		onStartedComplete:Fire()
 
-		Thread.Spawn(function()
+		task.defer(function()
 			onStartedComplete:Destroy()
 		end)
 

@@ -23,7 +23,7 @@ nav:
     - Streamable: util/streamable.md
     - StreamableUtil: util/streamableutil.md
     - TableUtil: util/tableutil.md
-    - Thread: util/thread.md
+    - Timer: util/timer.md
   - Knit API: knitapi.md
   - Execution Model: executionmodel.md
   - VS Code Snippets: vscodesnippets.md

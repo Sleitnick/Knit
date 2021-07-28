@@ -14,7 +14,6 @@
 
 local Janitor = require(script.Parent.Janitor)
 local Signal = require(script.Parent.Signal)
-local Thread = require(script.Parent.Thread)
 
 
 local Streamable = {}
@@ -66,7 +65,7 @@ end
 
 function Streamable:Observe(handler)
 	if (self.Instance) then
-		Thread.SpawnNow(handler, self.Instance, self._shownJanitor)
+		task.spawn(handler, self.Instance, self._shownJanitor)
 	end
 	return self._shown:Connect(handler)
 end

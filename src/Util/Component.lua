@@ -82,7 +82,6 @@
 local Janitor = require(script.Parent.Janitor)
 local Signal = require(script.Parent.Signal)
 local Promise = require(script.Parent.Promise)
-local Thread = require(script.Parent.Thread)
 local TableUtil = require(script.Parent.TableUtil)
 local CollectionService = game:GetService("CollectionService")
 local RunService = game:GetService("RunService")
@@ -136,7 +135,7 @@ function Component.ObserveFromTag(tag, observer)
 	do
 		local component = Component.FromTag(tag)
 		if (component) then
-			Thread.SpawnNow(OnCreated, component)
+			task.spawn(OnCreated, component)
 		end
 	end
 	janitor:Add(componentByTagCreated:Connect(OnCreated))
@@ -372,7 +371,7 @@ function Component:_instanceAdded(instance)
 	self._instancesToObjects[instance] = obj
 	table.insert(self._objects, obj)
 	if (self._hasInit) then
-		Thread.Spawn(function()
+		task.defer(function()
 			if (self._instancesToObjects[instance] ~= obj) then return end
 			obj:Init()
 		end)
@@ -467,7 +466,7 @@ function Component:Observe(instance, observer)
 	end))
 	for _,obj in ipairs(self._objects) do
 		if (obj.Instance == instance) then
-			Thread.SpawnNow(observer, obj, observeJanitor)
+			task.spawn(observer, obj, observeJanitor)
 			break
 		end
 	end
