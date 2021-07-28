@@ -1,0 +1,14 @@
+[[task.spawn.args]]
+type = "function"
+[[task.spawn.args]]
+required = false
+type = "..."
+
+[[task.defer.args]]
+type = "function"
+[[task.defer.args]]
+required = false
+type = "..."
+
+[[task.wait.args]]
+type = "number"
