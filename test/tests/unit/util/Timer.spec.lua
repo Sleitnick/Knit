@@ -49,7 +49,6 @@ return function()
 			local ticks = 0
 			timer.Tick:Connect(function()
 				ticks += 1
-				print("TICK", ticks)
 			end)
 			timer:StartNow()
 			timer:Stop()
