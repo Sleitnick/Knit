@@ -50,10 +50,10 @@ function StreamableUtil.Compound(streamables, handler)
 	for _,streamable in pairs(streamables) do
 		compoundJanitor:Add(streamable:Observe(function(_child, janitor)
 			Check()
-			janitor:GiveTask(Cleanup)
+			janitor:Add(Cleanup)
 		end))
 	end
-	compoundJanitor:GiveTask(Cleanup)
+	compoundJanitor:Add(Cleanup)
 	return compoundJanitor
 end
 
