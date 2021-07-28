@@ -34,7 +34,9 @@ return function()
 			local start = time()
 			local stop = nil
 			timer.Tick:Connect(function()
-				stop = time()
+				if (not stop) then
+					stop = time()
+				end
 			end)
 			timer:StartNow()
 			timer.Tick:Wait()
