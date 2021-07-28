@@ -47,9 +47,9 @@ return function()
 			local ticks = 0
 			timer.Tick:Connect(function()
 				ticks += 1
+				print("TICK", ticks)
 			end)
-			timer:Start()
-			timer.Tick:Wait()
+			timer:StartNow()
 			timer:Stop()
 			task.wait(1)
 			expect(ticks).to.equal(1)
