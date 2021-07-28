@@ -151,7 +151,7 @@ function MyClass:Destroy()
 end
 ```
 
-It is important that classes have a `Destroy` method so that they can be passed to Maids for cleanup.
+It is important that classes have a `Destroy` method so that they can be passed to Janitors for cleanup.
 
 ### Method & Field Names
 

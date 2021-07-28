@@ -6,13 +6,13 @@
 
 	streamable = Streamable.new(parent: Instance, childName: string)
 
-	streamable:Observe(handler: (child: Instance, maid: Maid) -> void): Connection
+	streamable:Observe(handler: (child: Instance, janitor: Janitor) -> void): Connection
 	streamable:Destroy()
 
 --]]
 
 
-local Maid = require(script.Parent.Maid)
+local Janitor = require(script.Parent.Janitor)
 local Signal = require(script.Parent.Signal)
 local Thread = require(script.Parent.Thread)
 
@@ -25,22 +25,22 @@ function Streamable.new(parent, childName)
 
 	local self = setmetatable({}, Streamable)
 
-	self._maid = Maid.new()
-	self._shown = Signal.new(self._maid)
-	self._shownMaid = Maid.new()
-	self._maid:GiveTask(self._shownMaid)
+	self._janitor = Janitor.new()
+	self._shown = Signal.new(self._janitor)
+	self._shownJanitor = Janitor.new()
+	self._janitor:Add(self._shownJanitor)
 
 	self.Instance = parent:FindFirstChild(childName)
 
 	local function OnInstanceSet()
 		local instance = self.Instance
-		self._shown:Fire(instance, self._shownMaid)
-		self._shownMaid:GiveTask(instance:GetPropertyChangedSignal("Parent"):Connect(function()
+		self._shown:Fire(instance, self._shownJanitor)
+		self._shownJanitor:Add(instance:GetPropertyChangedSignal("Parent"):Connect(function()
 			if (not instance.Parent) then
-				self._shownMaid:DoCleaning()
+				self._shownJanitor:Cleanup()
 			end
 		end))
-		self._shownMaid:GiveTask(function()
+		self._shownJanitor:Add(function()
 			if (self.Instance == instance) then
 				self.Instance = nil
 			end
@@ -54,7 +54,7 @@ function Streamable.new(parent, childName)
 		end
 	end
 
-	self._maid:GiveTask(parent.ChildAdded:Connect(OnChildAdded))
+	self._janitor:Add(parent.ChildAdded:Connect(OnChildAdded))
 	if (self.Instance) then
 		OnInstanceSet()
 	end
@@ -66,14 +66,14 @@ end
 
 function Streamable:Observe(handler)
 	if (self.Instance) then
-		Thread.SpawnNow(handler, self.Instance, self._shownMaid)
+		Thread.SpawnNow(handler, self.Instance, self._shownJanitor)
 	end
 	return self._shown:Connect(handler)
 end
 
 
 function Streamable:Destroy()
-	self._maid:Destroy()
+	self._janitor:Destroy()
 end
 
 

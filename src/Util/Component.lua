@@ -12,7 +12,7 @@
 	component = Component.FromTag(tag: string)
 		-> Retrieves an existing component from the tag name
 
-	Component.ObserveFromTag(tag: string, observer: (component: Component, maid: Maid) -> void): Maid
+	Component.ObserveFromTag(tag: string, observer: (component: Component, janitor: Janitor) -> void): Janitor
 
 	component = Component.new(tag: string, class: table [, renderPriority: RenderPriority, requireComponents: {string}])
 		-> Creates a new component from the tag name, class module, and optional render priority
@@ -22,7 +22,7 @@
 	component:GetFromID(id: number): ComponentInstance | nil
 	component:Filter(filterFunc: (comp: ComponentInstance) -> boolean): ComponentInstance[]
 	component:WaitFor(instanceOrName: Instance | string [, timeout: number = 60]): Promise<ComponentInstance>
-	component:Observe(instance: Instance, observer: (component: ComponentInstance, maid: Maid) -> void): Maid
+	component:Observe(instance: Instance, observer: (component: ComponentInstance, janitor: Janitor) -> void): Janitor
 	component:Destroy()
 
 	component.Added(obj: ComponentInstance)
@@ -79,7 +79,7 @@
 --]]
 
 
-local Maid = require(script.Parent.Maid)
+local Janitor = require(script.Parent.Janitor)
 local Signal = require(script.Parent.Signal)
 local Promise = require(script.Parent.Promise)
 local Thread = require(script.Parent.Thread)
@@ -120,17 +120,17 @@ end
 
 
 function Component.ObserveFromTag(tag, observer)
-	local maid = Maid.new()
-	local observeMaid = Maid.new()
-	maid:GiveTask(observeMaid)
+	local janitor = Janitor.new()
+	local observeJanitor = Janitor.new()
+	janitor:Add(observeJanitor)
 	local function OnCreated(component)
 		if (component._tag == tag) then
-			observer(component, observeMaid)
+			observer(component, observeJanitor)
 		end
 	end
 	local function OnDestroyed(component)
 		if (component._tag == tag) then
-			observeMaid:DoCleaning()
+			observeJanitor:Cleanup()
 		end
 	end
 	do
@@ -139,9 +139,9 @@ function Component.ObserveFromTag(tag, observer)
 			Thread.SpawnNow(OnCreated, component)
 		end
 	end
-	maid:GiveTask(componentByTagCreated:Connect(OnCreated))
-	maid:GiveTask(componentByTagDestroyed:Connect(OnDestroyed))
-	return maid
+	janitor:Add(componentByTagCreated:Connect(OnCreated))
+	janitor:Add(componentByTagDestroyed:Connect(OnDestroyed))
+	return janitor
 end
 
 
@@ -175,8 +175,8 @@ function Component.new(tag, class, renderPriority, requireComponents)
 
 	local self = setmetatable({}, Component)
 
-	self._maid = Maid.new()
-	self._lifecycleMaid = Maid.new()
+	self._janitor = Janitor.new()
+	self._lifecycleJanitor = Janitor.new()
 	self._tag = tag
 	self._class = class
 	self._objects = {}
@@ -191,11 +191,11 @@ function Component.new(tag, class, renderPriority, requireComponents)
 	self._lifecycle = false
 	self._nextId = 0
 
-	self.Added = Signal.new(self._maid)
-	self.Removed = Signal.new(self._maid)
+	self.Added = Signal.new(self._janitor)
+	self.Removed = Signal.new(self._janitor)
 
-	local observeMaid = Maid.new()
-	self._maid:GiveTask(observeMaid)
+	local observeJanitor = Janitor.new()
+	self._janitor:Add(observeJanitor)
 
 	local function ObserveTag()
 
@@ -209,31 +209,31 @@ function Component.new(tag, class, renderPriority, requireComponents)
 			return true
 		end
 
-		observeMaid:GiveTask(CollectionService:GetInstanceAddedSignal(tag):Connect(function(instance)
+		observeJanitor:Add(CollectionService:GetInstanceAddedSignal(tag):Connect(function(instance)
 			if (IsDescendantOfWhitelist(instance) and HasRequiredComponents(instance)) then
 				self:_instanceAdded(instance)
 			end
 		end))
 
-		observeMaid:GiveTask(CollectionService:GetInstanceRemovedSignal(tag):Connect(function(instance)
+		observeJanitor:Add(CollectionService:GetInstanceRemovedSignal(tag):Connect(function(instance)
 			self:_instanceRemoved(instance)
 		end))
 
 		for _,reqComp in ipairs(self._requireComponents) do
 			local comp = Component.FromTag(reqComp)
-			observeMaid:GiveTask(comp.Added:Connect(function(obj)
+			observeJanitor:Add(comp.Added:Connect(function(obj)
 				if (CollectionService:HasTag(obj.Instance, tag) and HasRequiredComponents(obj.Instance)) then
 					self:_instanceAdded(obj.Instance)
 				end
 			end))
-			observeMaid:GiveTask(comp.Removed:Connect(function(obj)
+			observeJanitor:Add(comp.Removed:Connect(function(obj)
 				if (CollectionService:HasTag(obj.Instance, tag)) then
 					self:_instanceRemoved(obj.Instance)
 				end
 			end))
 		end
 
-		observeMaid:GiveTask(function()
+		observeJanitor:Add(function()
 			self:_stopLifecycle()
 			for instance in pairs(self._instancesToObjects) do
 				self:_instanceRemoved(instance)
@@ -273,14 +273,14 @@ function Component.new(tag, class, renderPriority, requireComponents)
 			ObserveTag()
 		end
 		local function Cleanup()
-			observeMaid:DoCleaning()
+			observeJanitor:Cleanup()
 		end
 		for _,requiredComponent in ipairs(self._requireComponents) do
 			tagsReady[requiredComponent] = false
-			self._maid:GiveTask(Component.ObserveFromTag(requiredComponent, function(_component, maid)
+			self._janitor:Add(Component.ObserveFromTag(requiredComponent, function(_component, janitor)
 				tagsReady[requiredComponent] = true
 				Check()
-				maid:GiveTask(function()
+				janitor:Add(function()
 					tagsReady[requiredComponent] = false
 					Cleanup()
 				end)
@@ -290,7 +290,7 @@ function Component.new(tag, class, renderPriority, requireComponents)
 
 	componentsByTag[tag] = self
 	componentByTagCreated:Fire(self)
-	self._maid:GiveTask(function()
+	self._janitor:Add(function()
 		componentsByTag[tag] = nil
 		componentByTagDestroyed:Fire(self)
 	end)
@@ -307,7 +307,7 @@ function Component:_startHeartbeatUpdate()
 			v:HeartbeatUpdate(dt)
 		end
 	end)
-	self._lifecycleMaid:GiveTask(self._heartbeatUpdate)
+	self._lifecycleJanitor:Add(self._heartbeatUpdate)
 end
 
 
@@ -318,7 +318,7 @@ function Component:_startSteppedUpdate()
 			v:SteppedUpdate(dt)
 		end
 	end)
-	self._lifecycleMaid:GiveTask(self._steppedUpdate)
+	self._lifecycleJanitor:Add(self._steppedUpdate)
 end
 
 
@@ -330,7 +330,7 @@ function Component:_startRenderUpdate()
 			v:RenderUpdate(dt)
 		end
 	end)
-	self._lifecycleMaid:GiveTask(function()
+	self._lifecycleJanitor:Add(function()
 		RunService:UnbindFromRenderStep(self._renderName)
 	end)
 end
@@ -352,7 +352,7 @@ end
 
 function Component:_stopLifecycle()
 	self._lifecycle = false
-	self._lifecycleMaid:DoCleaning()
+	self._lifecycleJanitor:Cleanup()
 end
 
 
@@ -452,31 +452,31 @@ end
 
 
 function Component:Observe(instance, observer)
-	local maid = Maid.new()
-	local observeMaid = Maid.new()
-	maid:GiveTask(observeMaid)
-	maid:GiveTask(self.Added:Connect(function(obj)
+	local janitor = Janitor.new()
+	local observeJanitor = Janitor.new()
+	janitor:Add(observeJanitor)
+	janitor:Add(self.Added:Connect(function(obj)
 		if (obj.Instance == instance) then
-			observer(obj, observeMaid)
+			observer(obj, observeJanitor)
 		end
 	end))
-	maid:GiveTask(self.Removed:Connect(function(obj)
+	janitor:Add(self.Removed:Connect(function(obj)
 		if (obj.Instance == instance) then
-			observeMaid:DoCleaning()
+			observeJanitor:Cleanup()
 		end
 	end))
 	for _,obj in ipairs(self._objects) do
 		if (obj.Instance == instance) then
-			Thread.SpawnNow(observer, obj, observeMaid)
+			Thread.SpawnNow(observer, obj, observeJanitor)
 			break
 		end
 	end
-	return maid
+	return janitor
 end
 
 
 function Component:Destroy()
-	self._maid:Destroy()
+	self._janitor:Destroy()
 end
 
 

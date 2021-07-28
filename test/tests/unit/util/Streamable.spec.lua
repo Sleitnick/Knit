@@ -35,9 +35,9 @@ return function()
 			local streamable = Streamable.new(instanceFolder, "TestImmediate")
 			local observed = 0
 			local cleaned = 0
-			streamable:Observe(function(_instance, maid)
+			streamable:Observe(function(_instance, janitor)
 				observed += 1
-				maid:GiveTask(function()
+				janitor:Add(function()
 					cleaned += 1
 				end)
 			end)
@@ -56,9 +56,9 @@ return function()
 			local streamable = Streamable.new(instanceFolder, "TestImmediate")
 			local observed = 0
 			local cleaned = 0
-			streamable:Observe(function(_instance, maid)
+			streamable:Observe(function(_instance, janitor)
 				observed += 1
-				maid:GiveTask(function()
+				janitor:Add(function()
 					cleaned += 1
 				end)
 			end)

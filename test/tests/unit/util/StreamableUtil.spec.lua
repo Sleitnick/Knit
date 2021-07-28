@@ -36,9 +36,9 @@ return function()
 			local s2 = Streamable.new(instanceFolder, "XYZ")
 			local observe = 0
 			local cleaned = 0
-			StreamableUtil.Compound({S1 = s1; S2 = s2}, function(_streamables, maid)
+			StreamableUtil.Compound({S1 = s1; S2 = s2}, function(_streamables, janitor)
 				observe += 1
-				maid:GiveTask(function()
+				janitor:Add(function()
 					cleaned += 1
 				end)
 			end)

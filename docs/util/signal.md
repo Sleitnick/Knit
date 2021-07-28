@@ -15,7 +15,7 @@ connection.Connected
 connection:Disconnect()
 ```
 
-The Connection object internal to the Signal module also has a Destroy method associated with it, so it will still play nicely with the Maid module.
+The Connection object internal to the Signal module also has a Destroy method associated with it, so it will still play nicely with the Janitor module.
 
 It is possible to wrap an existing RBXScriptSignal (e.g. `BasePart.Touched`) using `Signal.Proxy`, which is useful when creating abstractions that utilize existing built-in signals:
 
