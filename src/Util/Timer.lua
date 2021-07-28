@@ -4,7 +4,7 @@
 
 --[[
 
-	timer = Timer.new(interval: number [, maid: Maid])
+	timer = Timer.new(interval: number [, janitor: Janitor])
 
 	timer.Tick: Signal
 
@@ -34,15 +34,15 @@ local Timer = {}
 Timer.__index = Timer
 
 
-function Timer.new(interval, maid)
+function Timer.new(interval, janitor)
 	assert(type(interval) == "number", "Argument #1 to Timer.new must be a number; got " .. type(interval))
 	assert(interval > 0, "Argument #1 to Timer.new must be greater than 0; got " .. tostring(interval))
 	local self = setmetatable({}, Timer)
 	self._runHandle = nil
 	self.Interval = interval
 	self.Tick = Signal.new()
-	if (maid) then
-		maid:GiveTask(self)
+	if (janitor) then
+		janitor:Add(self)
 	end
 	return self
 end

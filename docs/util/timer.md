@@ -16,7 +16,7 @@ timer:Start()
 ## Constructor
 
 ```lua
-timer = Timer.new(interval: number [, maid: Maid])
+timer = Timer.new(interval: number [, janitor: Janitor])
 ```
 
 ## Fields

@@ -5,8 +5,8 @@
 
 --[[
 
-	signal = Signal.new([maid: Maid])
-	signal = Signal.Wrap(rbxSignal: RBXScriptSignal [, maid: Maid])
+	signal = Signal.new([janitor: Janitor])
+	signal = Signal.Wrap(rbxSignal: RBXScriptSignal [, janitor: Janitor])
 
 	Signal.Is(obj: any): boolean
 
@@ -97,19 +97,19 @@ local Signal = {}
 Signal.__index = Signal
 
 
-function Signal.new(maid)
+function Signal.new(janitor)
 	local self = setmetatable({}, Signal)
 	self._handlerHead = nil
-	if (maid) then
-		maid:GiveTask(self)
+	if (janitor) then
+		janitor:Add(self)
 	end
 	return self
 end
 
 
-function Signal.Wrap(rbxScriptSignal, maid)
+function Signal.Wrap(rbxScriptSignal, janitor)
 	assert(typeof(rbxScriptSignal) == "RBXScriptSignal", "Argument #1 must be of type RBXScriptSignal")
-	local signal = Signal.new(maid)
+	local signal = Signal.new(janitor)
 	signal._proxyHandle = rbxScriptSignal:Connect(function(...)
 		signal:Fire(...)
 	end)
