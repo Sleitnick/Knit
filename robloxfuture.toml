@@ -11,4 +11,5 @@ required = false
 type = "..."
 
 [[task.wait.args]]
+required = false
 type = "number"
