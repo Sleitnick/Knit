@@ -32,16 +32,7 @@ end
 
 
 ### `Knit.Util: Folder`
-A folder containing utility modules used by Knit, but also accessible for developers to use.
-
-This folder contains the following modules:
-
-- Maid
-- Event
-- Promise
-- Thread
-
-They can be required like any other module:
+A folder containing utility modules used by Knit, but also accessible for developers to use. They can be required like any other module:
 
 ```lua
 local Signal = require(Knit.Util.Signal)
