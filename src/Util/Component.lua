@@ -186,6 +186,7 @@ function Component.new(tag, class, renderPriority, requireComponents)
 
 	local observeJanitor = Janitor.new()
 	self._janitor:Add(observeJanitor)
+	self._janitor:Add(self._lifecycleJanitor)
 
 	local function ObserveTag()
 
