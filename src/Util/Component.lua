@@ -91,26 +91,16 @@ local IS_SERVER = RunService:IsServer()
 local DEFAULT_WAIT_FOR_TIMEOUT = 60
 local ATTRIBUTE_ID_NAME = "ComponentServerId"
 
--- Components will only work on instances parented under these descendants:
-local DESCENDANT_WHITELIST = {workspace, Players}
-
 local Component = {}
 Component.__index = Component
+
+-- Components will only work on instances parented under these descendants:
+Component.DefaultDescendantWhitelist = {workspace, Players}
 
 local componentsByTag = {}
 
 local componentByTagCreated = Signal.new()
 local componentByTagDestroyed = Signal.new()
-
-
-local function IsDescendantOfWhitelist(instance)
-	for _,v in ipairs(DESCENDANT_WHITELIST) do
-		if (instance:IsDescendantOf(v)) then
-			return true
-		end
-	end
-	return false
-end
 
 
 function Component.FromTag(tag)
@@ -187,6 +177,7 @@ function Component.new(tag, class, renderPriority, requireComponents)
 	self._hasDeinit = (type(class.Deinit) == "function")
 	self._renderPriority = renderPriority or Enum.RenderPriority.Last.Value
 	self._requireComponents = requireComponents or {}
+	self._whitelist = class.DescendantWhitelist or Component.DefaultDescendantWhitelist
 	self._lifecycle = false
 	self._nextId = 0
 
@@ -209,7 +200,7 @@ function Component.new(tag, class, renderPriority, requireComponents)
 		end
 
 		observeJanitor:Add(CollectionService:GetInstanceAddedSignal(tag):Connect(function(instance)
-			if (IsDescendantOfWhitelist(instance) and HasRequiredComponents(instance)) then
+			if (self:_isDescendantOfWhitelist(instance) and HasRequiredComponents(instance)) then
 				self:_instanceAdded(instance)
 			end
 		end))
@@ -239,18 +230,12 @@ function Component.new(tag, class, renderPriority, requireComponents)
 			end
 		end)
 
-		do
-			local b = Instance.new("BindableEvent")
-			for _,instance in ipairs(CollectionService:GetTagged(tag)) do
-				if (IsDescendantOfWhitelist(instance) and HasRequiredComponents(instance)) then
-					local c = b.Event:Connect(function()
-						self:_instanceAdded(instance)
-					end)
-					b:Fire()
-					c:Disconnect()
-				end
+		for _,instance in ipairs(CollectionService:GetTagged(tag)) do
+			if (self:_isDescendantOfWhitelist(instance) and HasRequiredComponents(instance)) then
+				task.spawn(function()
+					self:_instanceAdded(instance)
+				end)
 			end
-			b:Destroy()
 		end
 
 	end
@@ -349,6 +334,16 @@ end
 function Component:_stopLifecycle()
 	self._lifecycle = false
 	self._lifecycleJanitor:Cleanup()
+end
+
+
+function Component:_isDescendantOfWhitelist(instance)
+	for _,v in ipairs(self._whitelist) do
+		if (instance:IsDescendantOf(v)) then
+			return true
+		end
+	end
+	return false
 end
 
 
