@@ -261,9 +261,6 @@ function Component.new(tag, class, renderPriority, requireComponents)
 	else
 		-- Only observe tag when all required components are available:
 		local tagsReady = {}
-		for _,reqComp in ipairs(self._requireComponents) do
-			tagsReady[reqComp] = false
-		end
 		local function Check()
 			for _,ready in pairs(tagsReady) do
 				if (not ready) then
