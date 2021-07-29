@@ -77,16 +77,12 @@ Connection.__index = Connection
 function Connection:Disconnect()
 	if (not self.Connected) then return end
 	self.Connected = false
-	if (self._signal._handlerHead == self) then
-		self._signal._handlerHead = self._next
-	else
-		local prev = self._signal._handlerHead
-		while (prev and prev._next ~= self) do
-			prev = prev._next
-		end
-		if (prev) then
-			prev._next = self._next
-		end
+	local connections = self._signal._connections
+	local index = table.find(connections, self)
+	if (index) then
+		local n = #connections
+		connections[index] = connections[n]
+		connections[n] = nil
 	end
 end
 
@@ -99,7 +95,7 @@ Signal.__index = Signal
 
 function Signal.new(janitor)
 	local self = setmetatable({}, Signal)
-	self._handlerHead = nil
+	self._connections = {}
 	if (janitor) then
 		janitor:Add(self)
 	end
@@ -126,40 +122,28 @@ function Signal:Connect(fn)
 	local connection = setmetatable({
 		Connected = true;
 		_fn = fn;
-		_next = self._handlerHead;
 		_signal = self;
 	}, Connection)
-	self._handlerHead = connection
+	table.insert(self._connections, connection)
 	return connection
 end
 
 
 function Signal:Fire(...)
-	local connection = self._handlerHead
-	while (connection) do
+	for _,connection in ipairs(self._connections) do
 		task.defer(connection._fn, ...)
-		connection = connection._next
 	end
 end
 
 
 function Signal:FireNow(...)
-	for _,connection in ipairs(self:_getConnections()) do
+	local n = #self._connections
+	local connections = table.move(self._connections, 1, n, 1, table.create(n))
+	for _,connection in ipairs(connections) do
 		if (connection.Connected) then
 			task.spawn(connection._fn, ...)
 		end
 	end
-end
-
-
-function Signal:_getConnections()
-	local connection = self._handlerHead
-	local connections = {}
-	while (connection) do
-		table.insert(connections, connection)
-		connection = connection._next
-	end
-	return connections
 end
 
 
@@ -208,9 +192,10 @@ end
 
 
 function Signal:DisconnectAll()
-	while (self._handlerHead) do
-		self._handlerHead:Disconnect()
+	for _,connection in ipairs(self._connections) do
+		connection.Connected = false
 	end
+	table.clear(self._connections)
 end
 
 
