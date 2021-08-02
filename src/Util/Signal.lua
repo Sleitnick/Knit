@@ -148,32 +148,28 @@ end
 
 
 function Signal:Wait()
-	local args = nil
+	local thread = coroutine.running()
 	local done = false
 	local connection
 	connection = self:Connect(function(...)
 		if (done) then return end
-		connection:Disconnect()
-		args = table.pack(...)
 		done = true
+		connection:Disconnect()
+		task.spawn(thread, ...)
 	end)
-	while (not done) do
-		task.wait()
-	end
-	return table.unpack(args, 1, args.n)
+	return coroutine.yield()
 end
 
 
 function Signal:Await()
 	return Promise.new(function(resolve, _reject, onCancel)
-		local args = nil
 		local done = false
 		local connection
 		connection = self:Connect(function(...)
 			if (done) then return end
-			connection:Disconnect()
-			args = table.pack(...)
 			done = true
+			connection:Disconnect()
+			resolve(...)
 		end)
 		onCancel(function()
 			if (connection.Connected) then
@@ -181,12 +177,6 @@ function Signal:Await()
 				done = true
 			end
 		end)
-		while (not done) do
-			task.wait()
-		end
-		if (args) then
-			resolve(table.unpack(args, 1, args.n))
-		end
 	end)
 end
 
