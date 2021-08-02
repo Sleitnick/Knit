@@ -99,7 +99,7 @@ if (IS_SERVER) then
 	COMPONENT_REMOTES_LOCATION = Instance.new("Folder", game:GetService("ReplicatedStorage").Knit)
 	COMPONENT_REMOTES_LOCATION.Name = COMPONENT_REMOTES_FOLDER_NAME
 else
-	game:GetService("ReplicatedStorage").Knit:WaitForChild(COMPONENT_REMOTES_FOLDER_NAME))
+	COMPONENT_REMOTES_LOCATION = game:GetService("ReplicatedStorage").Knit:WaitForChild(COMPONENT_REMOTES_FOLDER_NAME))
 end
 
 local Component = {}
