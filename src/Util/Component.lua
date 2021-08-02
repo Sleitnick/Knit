@@ -210,9 +210,11 @@ function Component.new(tag, class, renderPriority, requireComponents)
 			local function onRemoteEvent(Player, Instance, ...)
 				local ServerComponent = self:GetFromInstance(Instance)
 				if (ServerComponent) then
-					local func = ServerComponent._remoteConnections[eventName]
-					if (func) then
-						func(Player, Ser.DeserializeArgsAndUnpack(...))
+					local functions = ServerComponent._remoteConnections[eventName]
+					if (functions) then
+						for _, func in ipairs(functions) do
+							func(Player, Ser.DeserializeArgsAndUnpack(...))
+						end
 					end
 				end
 			end
@@ -426,9 +428,7 @@ function Component:_instanceAdded(instance)
 			for k,v in pairs(self._class.Client) do
 				if (RemoteSignal.Is(v)) then
 					obj.Client[k].Connect = function(_self, callback)
-						obj._remoteConnections[k] = function(...)
-							return callback(...)
-						end
+						table.insert(obj._remoteConnections[k], callback)
 					end
 				end
 			end
