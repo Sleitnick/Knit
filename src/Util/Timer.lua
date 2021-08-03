@@ -48,7 +48,7 @@ function Timer.new(interval: number, janitor)
 end
 
 
-function Timer.Is(obj: any)
+function Timer.Is(obj: any): boolean
 	return type(obj) == "table" and getmetatable(obj) == Timer
 end
 

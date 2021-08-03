@@ -110,6 +110,7 @@ Signal.__index = Signal
 function Signal.new(janitor)
 	local self = setmetatable({
 		_handlerListHead = false,
+		_proxyHandler = nil,
 	}, Signal)
 	if janitor then
 		janitor:Add(self)

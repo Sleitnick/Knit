@@ -1,4 +1,4 @@
-The [Signal](https://github.com/Sleitnick/Knit/blob/main/src/Util/Signal.lua) module gives basic Roblox Signal functionality. Signals are key to event-driven programming in Roblox.
+The [Signal](https://github.com/AtollStudios/Knit/blob/main/src/Util/Signal.lua) module gives basic Roblox Signal functionality. Signals are key to event-driven programming in Roblox.
 
 ```lua
 local Signal = require(Knit.Util.Signal)
