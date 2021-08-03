@@ -16,6 +16,11 @@ return function()
 
 	local signal
 
+	local function NumConns(sig)
+		sig = sig or signal
+		return #sig:GetConnections()
+	end
+
 	beforeEach(function()
 		signal = Signal.new()
 	end)
@@ -41,9 +46,9 @@ return function()
 			local signalJ = Signal.new(janitor)
 			expect(Signal.Is(signalJ)).to.equal(true)
 			signalJ:Connect(function() end)
-			expect(#signalJ._connections).to.equal(1)
+			expect(NumConns(signalJ)).to.equal(1)
 			janitor:Destroy()
-			expect(#signalJ._connections).to.equal(0)
+			expect(NumConns(signalJ)).to.equal(0)
 		end)
 
 		it("should create a proxy signal and connect to it", function()
@@ -59,7 +64,7 @@ return function()
 
 	end)
 
-	describe("Fire", function()
+	describe("FireDeferred", function()
 
 		it("should be able to fire primitive argument", function()
 			local send = 10
@@ -67,7 +72,7 @@ return function()
 			signal:Connect(function(v)
 				value = v
 			end)
-			signal:Fire(send)
+			signal:FireDeferred(send)
 			expect(AwaitCondition(function() return (send == value) end, 1)).to.equal(true)
 		end)
 
@@ -77,31 +82,31 @@ return function()
 			signal:Connect(function(v)
 				value = v
 			end)
-			signal:Fire(send)
+			signal:FireDeferred(send)
 			expect(AwaitCondition(function() return (send == value) end, 1)).to.equal(true)
 		end)
 
 	end)
 
-	describe("FireNow", function()
+	describe("Fire", function()
 
-		it("should be able to firenow primitive argument", function()
+		it("should be able to fire primitive argument", function()
 			local send = 10
 			local value
 			signal:Connect(function(v)
 				value = v
 			end)
-			signal:FireNow(send)
+			signal:Fire(send)
 			expect(value).to.equal(send)
 		end)
 
-		it("should be able to firenow a reference based argument", function()
+		it("should be able to fire a reference based argument", function()
 			local send = {10, 20}
 			local value
 			signal:Connect(function(v)
 				value = v
 			end)
-			signal:FireNow(send)
+			signal:Fire(send)
 			expect(value).to.equal(send)
 		end)
 
@@ -121,17 +126,24 @@ return function()
 
 	end)
 
-	describe("Await", function()
+	describe("Promise", function()
 
 		it("should wait for a signal using a promise", function()
 			task.defer(function()
 				signal:Fire(50, 80, 100)
 			end)
-			local success, n1, n2, n3 = signal:Await():Await()
+			local success, n1, n2, n3 = signal:Promise():Await()
 			expect(success).to.equal(true)
 			expect(n1).to.equal(50)
 			expect(n2).to.equal(80)
 			expect(n3).to.equal(100)
+		end)
+
+		it("should be able to cancel a promise", function()
+			local p = signal:Promise()
+			expect(NumConns()).to.equal(1)
+			p:Cancel()
+			expect(NumConns()).to.equal(0)
 		end)
 
 	end)
@@ -139,15 +151,11 @@ return function()
 	describe("DisconnectAll", function()
 
 		it("should disconnect all connections", function()
-			local con1 = signal:Connect(function() end)
-			local con2 = signal:Connect(function() end)
-			expect(#signal._connections).to.equal(2)
-			expect(con1.Connected).to.equal(true)
-			expect(con2.Connected).to.equal(true)
+			signal:Connect(function() end)
+			signal:Connect(function() end)
+			expect(NumConns()).to.equal(2)
 			signal:DisconnectAll()
-			expect(#signal._connections).to.equal(0)
-			expect(con1.Connected).to.equal(false)
-			expect(con2.Connected).to.equal(false)
+			expect(NumConns()).to.equal(0)
 		end)
 
 	end)
@@ -156,11 +164,9 @@ return function()
 
 		it("should disconnect connection", function()
 			local con = signal:Connect(function() end)
-			expect(#signal._connections).to.equal(1)
-			expect(con.Connected).to.equal(true)
+			expect(NumConns()).to.equal(1)
 			con:Disconnect()
-			expect(#signal._connections).to.equal(0)
-			expect(con.Connected).to.equal(false)
+			expect(NumConns()).to.equal(0)
 		end)
 
 		it("should still work if connections disconnected while firing", function()
@@ -170,17 +176,17 @@ return function()
 			c = signal:Connect(function() c:Disconnect() a += 1 end)
 			signal:Connect(function() a += 1 end)
 			signal:Fire()
-			expect(AwaitCondition(function() return a == 3 end)).to.equal(true)
+			expect(a).to.equal(3)
 		end)
 
-		it("should still work if connections disconnected while firing now", function()
+		it("should still work if connections disconnected while firing deferred", function()
 			local a = 0
 			local c
 			signal:Connect(function() a += 1 end)
 			c = signal:Connect(function() c:Disconnect() a += 1 end)
 			signal:Connect(function() a += 1 end)
-			signal:FireNow()
-			expect(a).to.equal(3)
+			signal:FireDeferred()
+			expect(AwaitCondition(function() return a == 3 end)).to.equal(true)
 		end)
 
 	end)
