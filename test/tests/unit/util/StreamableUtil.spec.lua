@@ -36,24 +36,24 @@ return function()
 			local s2 = Streamable.new(instanceFolder, "XYZ")
 			local observe = 0
 			local cleaned = 0
-			StreamableUtil.Compound({S1 = s1; S2 = s2}, function(_streamables, maid)
+			StreamableUtil.Compound({S1 = s1; S2 = s2}, function(_streamables, janitor)
 				observe += 1
-				maid:GiveTask(function()
+				janitor:Add(function()
 					cleaned += 1
 				end)
 			end)
 			local i1 = CreateInstance("ABC")
 			local i2 = CreateInstance("XYZ")
-			wait()
+			task.wait()
 			i1.Parent = nil
-			wait()
+			task.wait()
 			i1.Parent = instanceFolder
-			wait()
+			task.wait()
 			i1.Parent = nil
 			i2.Parent = nil
-			wait()
+			task.wait()
 			i2.Parent = instanceFolder
-			wait()
+			task.wait()
 			expect(observe).to.equal(2)
 			expect(cleaned).to.equal(2)
 			s1:Destroy()

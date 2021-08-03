@@ -20,7 +20,6 @@ local knitRepServiceFolder = Instance.new("Folder")
 knitRepServiceFolder.Name = "Services"
 
 local Promise = require(KnitServer.Util.Promise)
-local Thread = require(KnitServer.Util.Thread)
 local Signal = require(KnitServer.Util.Signal)
 local Loader = require(KnitServer.Util.Loader)
 local Ser = require(KnitServer.Util.Ser)
@@ -188,14 +187,14 @@ function KnitServer.Start()
 		-- Start:
 		for _,service in pairs(services) do
 			if (type(service.KnitStart) == "function") then
-				Thread.SpawnNow(service.KnitStart, service)
+				task.spawn(service.KnitStart, service)
 			end
 		end
 
 		startedComplete = true
 		onStartedComplete:Fire()
 
-		Thread.Spawn(function()
+		task.defer(function()
 			onStartedComplete:Destroy()
 		end)
 

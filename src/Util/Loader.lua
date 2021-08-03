@@ -1,3 +1,5 @@
+--!strict
+
 -- Loader
 -- Stephen Leitnick
 -- January 10, 2021
@@ -14,9 +16,12 @@
 
 local Loader = {}
 
+type Module = {}
+type Modules = {Module}
 
-function Loader.LoadChildren(parent)
-	local modules = {}
+
+function Loader.LoadChildren(parent: Instance): Modules
+	local modules: Modules = {}
 	for _,child in ipairs(parent:GetChildren()) do
 		if (child:IsA("ModuleScript")) then
 			local m = require(child)
@@ -27,8 +32,8 @@ function Loader.LoadChildren(parent)
 end
 
 
-function Loader.LoadDescendants(parent)
-	local modules = {}
+function Loader.LoadDescendants(parent: Instance): Modules
+	local modules: Modules = {}
 	for _,descendant in ipairs(parent:GetDescendants()) do
 		if (descendant:IsA("ModuleScript")) then
 			local m = require(descendant)
