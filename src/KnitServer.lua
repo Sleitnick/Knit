@@ -13,6 +13,7 @@
 
 type ServiceDef = {
 	Name: string,
+	Client: {[any]: any}?,
 	[any]: any,
 }
 
