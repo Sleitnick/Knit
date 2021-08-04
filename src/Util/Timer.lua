@@ -55,7 +55,7 @@ end
 
 function Timer:Start()
 	if self._runHandle then return end
-	local n = 0
+	local n = 1
 	local start = time()
 	local nextTick = start + self.Interval
 	self._runHandle = RunService.Heartbeat:Connect(function()

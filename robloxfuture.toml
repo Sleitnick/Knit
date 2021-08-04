@@ -13,3 +13,11 @@ type = "..."
 [[task.wait.args]]
 required = false
 type = "number"
+
+[[task.delay.args]]
+type = "number"
+[[task.delay.args]]
+type = "function"
+[[task.delay.args]]
+required = false
+type = "..."

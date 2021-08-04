@@ -1,5 +1,6 @@
 local Knit = require(game:GetService("ReplicatedStorage").Knit)
 local Option = require(Knit.Util.Option)
+local Timer = require(Knit.Util.Timer)
 
 
 local MyService = Knit.CreateService {
@@ -26,6 +27,14 @@ end
 
 function MyService:KnitStart()
 	print(self.Name .. " started")
+	local timer = Timer.new(1)
+	timer.Tick:Connect(function()
+		print("TICK", time())
+	end)
+	timer:Start()
+	task.delay(5, function()
+		timer:Destroy()
+	end)
 end
 
 
