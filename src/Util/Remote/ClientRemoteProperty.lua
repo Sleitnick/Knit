@@ -35,7 +35,7 @@ function ClientRemoteProperty.new(object)
 		self._value = v
 	end
 
-	if (self._isTable) then
+	if self._isTable then
 		self.Changed = Signal.new()
 		self._change = object.OnClientEvent:Connect(function(tbl)
 			SetValue(tbl)
@@ -60,7 +60,7 @@ end
 
 function ClientRemoteProperty:Destroy()
 	self._change:Disconnect()
-	if (self._isTable) then
+	if self._isTable then
 		self.Changed:Destroy()
 	end
 end

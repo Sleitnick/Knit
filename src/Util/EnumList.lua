@@ -37,9 +37,9 @@ function EnumList.new(name: string, enums: EnumNames)
 		_scope = scope;
 	}, {
 		__index = function(_t, k)
-			if (enumItems[k]) then
+			if enumItems[k] then
 				return enumItems[k]
-			elseif (EnumList[k]) then
+			elseif EnumList[k] then
 				return EnumList[k]
 			else
 				error("Unknown " .. name .. ": " .. tostring(k), 2)

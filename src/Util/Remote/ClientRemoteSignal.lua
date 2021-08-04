@@ -34,22 +34,22 @@ function Connection.new(event, connection)
 end
 
 function Connection:IsConnected()
-	if (self._conn) then
+	if self._conn then
 		return self._conn.Connected
 	end
 	return false
 end
 
 function Connection:Disconnect()
-	if (self._conn) then
+	if self._conn then
 		self._conn:Disconnect()
 		self._conn = nil
 	end
-	if (not self._event) then return end
+	if not self._event then return end
 	self.Connected = false
 	local connections = self._event._connections
 	for i,c in ipairs(connections) do
-		if (c == self) then
+		if c == self then
 			connections[i] = connections[#connections]
 			connections[#connections] = nil
 			break
@@ -69,7 +69,7 @@ ClientRemoteSignal.__index = ClientRemoteSignal
 
 
 function ClientRemoteSignal.Is(object)
-	return (type(object) == "table" and getmetatable(object) == ClientRemoteSignal)
+	return type(object) == "table" and getmetatable(object) == ClientRemoteSignal
 end
 
 
@@ -106,7 +106,7 @@ end
 
 function ClientRemoteSignal:Destroy()
 	for _,c in ipairs(self._connections) do
-		if (c._conn) then
+		if c._conn then
 			c._conn:Disconnect()
 		end
 	end

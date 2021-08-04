@@ -35,9 +35,9 @@ local onStartedComplete = Instance.new("BindableEvent")
 
 local function BuildService(serviceName, folder)
 	local service = {}
-	if (folder:FindFirstChild("RF")) then
+	if folder:FindFirstChild("RF") then
 		for _,rf in ipairs(folder.RF:GetChildren()) do
-			if (rf:IsA("RemoteFunction")) then
+			if rf:IsA("RemoteFunction") then
 				service[rf.Name] = function(_self, ...)
 					return Ser.DeserializeArgsAndUnpack(rf:InvokeServer(Ser.SerializeArgsAndUnpack(...)))
 				end
@@ -50,16 +50,16 @@ local function BuildService(serviceName, folder)
 			end
 		end
 	end
-	if (folder:FindFirstChild("RE")) then
+	if folder:FindFirstChild("RE") then
 		for _,re in ipairs(folder.RE:GetChildren()) do
-			if (re:IsA("RemoteEvent")) then
+			if re:IsA("RemoteEvent") then
 				service[re.Name] = ClientRemoteSignal.new(re)
 			end
 		end
 	end
-	if (folder:FindFirstChild("RP")) then
+	if folder:FindFirstChild("RP") then
 		for _,rp in ipairs(folder.RP:GetChildren()) do
-			if (rp:IsA("ValueBase") or rp:IsA("RemoteEvent")) then
+			if rp:IsA("ValueBase") or rp:IsA("RemoteEvent") then
 				service[rp.Name] = ClientRemoteProperty.new(rp)
 			end
 		end
@@ -107,7 +107,7 @@ end
 
 function KnitClient.Start()
 
-	if (started) then
+	if started then
 		return Promise.Reject("Knit already started")
 	end
 
@@ -120,7 +120,7 @@ function KnitClient.Start()
 		-- Init:
 		local promisesStartControllers = {}
 		for _,controller in pairs(controllers) do
-			if (type(controller.KnitInit) == "function") then
+			if type(controller.KnitInit) == "function" then
 				table.insert(promisesStartControllers, Promise.new(function(r)
 					controller:KnitInit()
 					r()
@@ -134,7 +134,7 @@ function KnitClient.Start()
 
 		-- Start:
 		for _,controller in pairs(controllers) do
-			if (type(controller.KnitStart) == "function") then
+			if type(controller.KnitStart) == "function" then
 				task.spawn(controller.KnitStart, controller)
 			end
 		end
@@ -152,7 +152,7 @@ end
 
 
 function KnitClient.OnStart()
-	if (startedComplete) then
+	if startedComplete then
 		return Promise.Resolve()
 	else
 		return Promise.FromEvent(onStartedComplete.Event)
