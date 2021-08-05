@@ -81,13 +81,24 @@
 --]]
 
 
+type SerializedOption = {
+	ClassName: string,
+	Value: any,
+}
+
+type Matches = {
+	Some: (Option) -> any,
+	None: () -> any,
+}
+
+
 local CLASSNAME = "Option"
 
 local Option = {}
 Option.__index = Option
 
 
-function Option._new(value)
+function Option._new(value: any): Option
 	local self = setmetatable({
 		ClassName = CLASSNAME;
 		_v = value;
@@ -97,13 +108,13 @@ function Option._new(value)
 end
 
 
-function Option.Some(value)
+function Option.Some(value: any): Option
 	assert(value ~= nil, "Option.Some() value cannot be nil")
 	return Option._new(value)
 end
 
 
-function Option.Wrap(value)
+function Option.Wrap(value: any): Option
 	if value == nil then
 		return Option.None
 	else
@@ -112,23 +123,23 @@ function Option.Wrap(value)
 end
 
 
-function Option.Is(obj)
+function Option.Is(obj: any): boolean
 	return type(obj) == "table" and getmetatable(obj) == Option
 end
 
 
-function Option.Assert(obj)
+function Option.Assert(obj: any)
 	assert(Option.Is(obj), "Result was not of type Option")
 end
 
 
-function Option.Deserialize(data) -- type data = {ClassName: string, Value: any}
+function Option.Deserialize(data: SerializedOption): Option
 	assert(type(data) == "table" and data.ClassName == CLASSNAME, "Invalid data for deserializing Option")
 	return data.Value == nil and Option.None or Option.Some(data.Value)
 end
 
 
-function Option:Serialize()
+function Option:Serialize(): SerializedOption
 	return {
 		ClassName = self.ClassName;
 		Value = self._v;
@@ -136,7 +147,7 @@ function Option:Serialize()
 end
 
 
-function Option:Match(matches)
+function Option:Match(matches: Matches): any
 	local onSome = matches.Some
 	local onNone = matches.None
 	assert(type(onSome) == "function", "Missing 'Some' match")
@@ -149,33 +160,33 @@ function Option:Match(matches)
 end
 
 
-function Option:IsSome()
+function Option:IsSome(): boolean
 	return self._s
 end
 
 
-function Option:IsNone()
+function Option:IsNone(): boolean
 	return (not self._s)
 end
 
 
-function Option:Expect(msg)
+function Option:Expect(msg: string): any
 	assert(self:IsSome(), msg)
 	return self._v
 end
 
 
-function Option:ExpectNone(msg)
+function Option:ExpectNone(msg: string)
 	assert(self:IsNone(), msg)
 end
 
 
-function Option:Unwrap()
+function Option:Unwrap(): any
 	return self:Expect("Cannot unwrap option of None type")
 end
 
 
-function Option:UnwrapOr(default)
+function Option:UnwrapOr(default: any): any
 	if self:IsSome() then
 		return self:Unwrap()
 	else
@@ -184,7 +195,7 @@ function Option:UnwrapOr(default)
 end
 
 
-function Option:UnwrapOrElse(defaultFunc)
+function Option:UnwrapOrElse(defaultFunc: () -> any): any
 	if self:IsSome() then
 		return self:Unwrap()
 	else
@@ -193,7 +204,7 @@ function Option:UnwrapOrElse(defaultFunc)
 end
 
 
-function Option:And(optB)
+function Option:And(optB: Option): Option
 	if self:IsSome() then
 		return optB
 	else
@@ -202,7 +213,7 @@ function Option:And(optB)
 end
 
 
-function Option:AndThen(andThenFunc)
+function Option:AndThen(andThenFunc: (any) -> Option): Option
 	if self:IsSome() then
 		local result = andThenFunc(self:Unwrap())
 		Option.Assert(result)
@@ -213,7 +224,7 @@ function Option:AndThen(andThenFunc)
 end
 
 
-function Option:Or(optB)
+function Option:Or(optB: Option): Option
 	if self:IsSome() then
 		return self
 	else
@@ -222,7 +233,7 @@ function Option:Or(optB)
 end
 
 
-function Option:OrElse(orElseFunc)
+function Option:OrElse(orElseFunc: () -> Option): Option
 	if self:IsSome() then
 		return self
 	else
@@ -233,7 +244,7 @@ function Option:OrElse(orElseFunc)
 end
 
 
-function Option:XOr(optB)
+function Option:XOr(optB: Option): Option
 	local someOptA = self:IsSome()
 	local someOptB = optB:IsSome()
 	if someOptA == someOptB then
@@ -246,7 +257,7 @@ function Option:XOr(optB)
 end
 
 
-function Option:Filter(predicate)
+function Option:Filter(predicate: (any) -> any): Option
 	if self:IsNone() or not predicate(self._v) then
 		return Option.None
 	else
@@ -255,12 +266,12 @@ function Option:Filter(predicate)
 end
 
 
-function Option:Contains(value)
+function Option:Contains(value: any): boolean
 	return self:IsSome() and self._v == value
 end
 
 
-function Option:__tostring()
+function Option:__tostring(): string
 	if self:IsSome() then
 		return ("Option<" .. typeof(self._v) .. ">")
 	else
@@ -269,7 +280,7 @@ function Option:__tostring()
 end
 
 
-function Option:__eq(opt)
+function Option:__eq(opt: Option): boolean
 	if Option.Is(opt) then
 		if self:IsSome() and opt:IsSome() then
 			return (self:Unwrap() == opt:Unwrap())
@@ -282,6 +293,9 @@ end
 
 
 Option.None = Option._new()
+
+
+export type Option = typeof(Option.Some(true))
 
 
 return Option

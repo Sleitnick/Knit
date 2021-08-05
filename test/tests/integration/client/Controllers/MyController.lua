@@ -1,4 +1,5 @@
 local Knit = require(game:GetService("ReplicatedStorage").Knit)
+local Comm = require(Knit.Util.Comm)
 
 
 local MyController = Knit.CreateController { Name = "MyController" }
@@ -18,6 +19,14 @@ function MyController:KnitStart()
 			end;
 		}
 	end
+
+	local comm = Comm.Client.ForParent(workspace)
+	local Add = comm:GetFunction("Add")
+	local a = 10
+	local b = 20
+	local c = Add(a, b)
+	print(a .. " + " .. b .. " = " .. c)
+
 end
 
 

@@ -1,6 +1,7 @@
 local Knit = require(game:GetService("ReplicatedStorage").Knit)
 local Option = require(Knit.Util.Option)
 local Timer = require(Knit.Util.Timer)
+local Comm = require(Knit.Util.Comm)
 
 
 local MyService = Knit.CreateService {
@@ -17,7 +18,7 @@ end
 function MyService.Client:MaybeGetRandomNumber(_player)
 	local rng = Random.new()
 	local num = rng:NextNumber()
-	if (num < 0.5) then
+	if num < 0.5 then
 		return Option.Some(num)
 	else
 		return Option.None
@@ -35,6 +36,14 @@ function MyService:KnitStart()
 	task.delay(5, function()
 		timer:Destroy()
 	end)
+
+	-- Comm Test:
+	local comm = Comm.Server.ForParent(workspace)
+	comm:BindFunction("Add", function(player, a, b)
+		print(player.Name .. " wants to add " .. a .. " and " .. b)
+		return a + b
+	end)
+
 end
 
 
