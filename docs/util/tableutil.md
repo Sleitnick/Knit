@@ -1,4 +1,4 @@
-The [TableUtil](https://github.com/Sleitnick/Knit/blob/main/src/Util/TableUtil.lua) module provides extra functions to deal with tables.
+The [TableUtil](https://github.com/AtollStudios/Knit/blob/main/src/Util/TableUtil.lua) module provides extra functions to deal with tables.
 
 ## `Copy`
 `TableUtil.Copy(tbl: table): table`

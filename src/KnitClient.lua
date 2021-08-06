@@ -19,7 +19,6 @@ KnitClient.Controllers = {}
 KnitClient.Util = script.Parent.Util
 
 local Promise = require(KnitClient.Util.Promise)
-local Thread = require(KnitClient.Util.Thread)
 local Loader = require(KnitClient.Util.Loader)
 local Ser = require(KnitClient.Util.Ser)
 local ClientRemoteSignal = require(KnitClient.Util.Remote.ClientRemoteSignal)
@@ -39,10 +38,10 @@ local function BuildService(serviceName, folder)
 	if (folder:FindFirstChild("RF")) then
 		for _,rf in ipairs(folder.RF:GetChildren()) do
 			if (rf:IsA("RemoteFunction")) then
-				service[rf.Name] = function(self, ...)
+				service[rf.Name] = function(_self, ...)
 					return Ser.DeserializeArgsAndUnpack(rf:InvokeServer(Ser.SerializeArgsAndUnpack(...)))
 				end
-				service[rf.Name .. "Promise"] = function(self, ...)
+				service[rf.Name .. "Promise"] = function(_self, ...)
 					local args = Ser.SerializeArgs(...)
 					return Promise.new(function(resolve)
 						resolve(Ser.DeserializeArgsAndUnpack(rf:InvokeServer(table.unpack(args, 1, args.n))))
@@ -136,14 +135,14 @@ function KnitClient.Start()
 		-- Start:
 		for _,controller in pairs(controllers) do
 			if (type(controller.KnitStart) == "function") then
-				Thread.SpawnNow(controller.KnitStart, controller)
+				task.spawn(controller.KnitStart, controller)
 			end
 		end
 
 		startedComplete = true
 		onStartedComplete:Fire()
 
-		Thread.Spawn(function()
+		task.defer(function()
 			onStartedComplete:Destroy()
 		end)
 

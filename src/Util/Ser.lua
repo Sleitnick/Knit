@@ -1,3 +1,5 @@
+--!strict
+
 -- Ser
 -- Stephen Leitnick
 -- August 28, 2020
@@ -27,6 +29,12 @@
 --]]
 
 
+type Args = {
+	n: number,
+	[any]: any,
+}
+
+
 local Option = require(script.Parent.Option)
 
 local Ser = {}
@@ -39,12 +47,12 @@ Ser.Classes = {
 }
 
 
-function Ser.SerializeArgs(...)
+function Ser.SerializeArgs(...: any): Args
 	local args = table.pack(...)
 	for i,arg in ipairs(args) do
-		if (type(arg) == "table") then
+		if type(arg) == "table" then
 			local ser = Ser.Classes[arg.ClassName]
-			if (ser) then
+			if ser then
 				args[i] = ser.Serialize(arg)
 			end
 		end
@@ -53,13 +61,13 @@ function Ser.SerializeArgs(...)
 end
 
 
-function Ser.SerializeArgsAndUnpack(...)
+function Ser.SerializeArgsAndUnpack(...: any): ...any
 	local args = Ser.SerializeArgs(...)
 	return table.unpack(args, 1, args.n)
 end
 
 
-function Ser.DeserializeArgs(...)
+function Ser.DeserializeArgs(...: any): Args
 	local args = table.pack(...)
 	for i,arg in ipairs(args) do
 		if (type(arg) == "table") then
@@ -73,13 +81,13 @@ function Ser.DeserializeArgs(...)
 end
 
 
-function Ser.DeserializeArgsAndUnpack(...)
+function Ser.DeserializeArgsAndUnpack(...: any): ...any
 	local args = Ser.DeserializeArgs(...)
 	return table.unpack(args, 1, args.n)
 end
 
 
-function Ser.Serialize(value)
+function Ser.Serialize(value: any): any
 	if (type(value) == "table") then
 		local ser = Ser.Classes[value.ClassName]
 		if (ser) then
@@ -90,7 +98,7 @@ function Ser.Serialize(value)
 end
 
 
-function Ser.Deserialize(value)
+function Ser.Deserialize(value: any): any
 	if (type(value) == "table") then
 		local ser = Ser.Classes[value.ClassName]
 		if (ser) then
@@ -101,7 +109,7 @@ function Ser.Deserialize(value)
 end
 
 
-function Ser.UnpackArgs(args)
+function Ser.UnpackArgs(args: Args): ...any
 	return table.unpack(args, 1, args.n)
 end
 

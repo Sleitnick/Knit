@@ -106,7 +106,7 @@ From the `KnitInit` method, we can guarantee that all other services have been c
 
 After all `KnitInit` methods have finished, all `KnitStart` methods are then fired. At this point, we can guarantee that all `KnitInits` are done, and thus can freely access other services.
 
-In order to maintain this pattern, be sure to set up you service in the `Init` method (or earlier; just in the ModuleScript itself). By the time `KnitStart` methods are being fired, your services should be available for use.
+In order to maintain this pattern, be sure to set up your service in the `Init` method (or earlier; just in the ModuleScript itself). By the time `KnitStart` methods are being fired, your services should be available for use.
 
 ## Cleaning Up Unused Memory
 
@@ -365,6 +365,7 @@ local PointsService = Knit.CreateService {
 	Client = {
 		PointsChanged = RemoteSignal.new();
 		GiveMePoints = RemoteSignal.new();
+		MostPoints = RemoteProperty.new(0);
 	};
 }
 

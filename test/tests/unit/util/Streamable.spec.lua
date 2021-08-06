@@ -35,19 +35,19 @@ return function()
 			local streamable = Streamable.new(instanceFolder, "TestImmediate")
 			local observed = 0
 			local cleaned = 0
-			streamable:Observe(function(_instance, maid)
+			streamable:Observe(function(_instance, janitor)
 				observed += 1
-				maid:GiveTask(function()
+				janitor:Add(function()
 					cleaned += 1
 				end)
 			end)
-			wait()
+			task.wait()
 			testInstance.Parent = nil
-			wait()
+			task.wait()
 			testInstance.Parent = instanceFolder
-			wait()
+			task.wait()
 			streamable:Destroy()
-			wait()
+			task.wait()
 			expect(observed).to.equal(2)
 			expect(cleaned).to.equal(2)
 		end)
@@ -56,21 +56,21 @@ return function()
 			local streamable = Streamable.new(instanceFolder, "TestImmediate")
 			local observed = 0
 			local cleaned = 0
-			streamable:Observe(function(_instance, maid)
+			streamable:Observe(function(_instance, janitor)
 				observed += 1
-				maid:GiveTask(function()
+				janitor:Add(function()
 					cleaned += 1
 				end)
 			end)
-			wait(0.1)
+			task.wait(0.1)
 			local testInstance = CreateInstance("TestImmediate")
-			wait()
+			task.wait()
 			testInstance.Parent = nil
-			wait()
+			task.wait()
 			testInstance.Parent = instanceFolder
-			wait()
+			task.wait()
 			streamable:Destroy()
-			wait()
+			task.wait()
 			expect(observed).to.equal(2)
 			expect(cleaned).to.equal(2)
 		end)

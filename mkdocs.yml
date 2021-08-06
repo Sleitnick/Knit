@@ -1,10 +1,10 @@
 site_name: Knit
 site_description: Documentation for Knit
-site_author: Stephen Leitnick
-site_url: https://sleitnick.github.io/Knit/
-repo_url: https://github.com/Sleitnick/Knit
+site_author: Atoll Studios
+site_url: https://atollstudios.github.io/Knit/
+repo_url: https://github.com/AtollStudios/Knit
 repo_name: Knit
-copyright: Copyright &copy; 2020 - 2021 Stephen Leitnick
+copyright: Copyright &copy; 2020 - 2021 Atoll Studios
 
 nav:
   - Home: index.md
@@ -14,7 +14,7 @@ nav:
   - Controllers: controllers.md
   - Util: 
     - Component: util/component.md
-    - Maid: util/maid.md
+    - Janitor: util/janitor.md
     - Option: util/option.md
     - Promise: util/promise.md
     - RemoteSignal: util/remotesignal.md
@@ -23,7 +23,7 @@ nav:
     - Streamable: util/streamable.md
     - StreamableUtil: util/streamableutil.md
     - TableUtil: util/tableutil.md
-    - Thread: util/thread.md
+    - Timer: util/timer.md
   - Knit API: knitapi.md
   - Execution Model: executionmodel.md
   - VS Code Snippets: vscodesnippets.md
@@ -53,10 +53,10 @@ theme:
 extra:
   social:
     - icon: fontawesome/brands/github-alt
-      link: https://github.com/Sleitnick/Knit
+      link: https://github.com/AtollStudios/Knit
       name: GitHub repository for Knit
     - icon: fontawesome/brands/twitter
-      link: https://twitter.com/sleitnick
+      link: https://twitter.com/AtollStudios
       name: Twitter for Knit's author
 
 markdown_extensions:
