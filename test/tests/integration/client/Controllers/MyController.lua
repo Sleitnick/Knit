@@ -20,12 +20,19 @@ function MyController:KnitStart()
 		}
 	end
 
-	local comm = Comm.Client.ForParent(workspace)
+	local comm = Comm.Client.ForParent(workspace, true, "TestNS")
 	local Add = comm:GetFunction("Add")
 	local a = 10
 	local b = 20
-	local c = Add(a, b)
-	print(a .. " + " .. b .. " = " .. c)
+	Add(a, b):Then(function(c)
+		print("PROMISE: " .. a .. " + " .. b .. " = " .. c)
+	end):Catch(warn)
+
+	local sig = comm:GetSignal("TestSignal")
+	sig.OnClientEvent:Connect(function(m)
+		print("Client received message: " .. m)
+	end)
+	sig:FireServer("Hello from " .. Knit.Player.Name)
 
 end
 

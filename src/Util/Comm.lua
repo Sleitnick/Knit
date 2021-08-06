@@ -11,6 +11,7 @@
 		Comm.Server.BindFunction(parent: Instance, name: string, func: (Instance, ...any) -> ...any, middleware): RemoteFunction
 		Comm.Server.WrapMethod(parent: Instance, tbl: {}, name: string, middleware: ServerMiddleware?): RemoteFunction
 		Comm.Server.CreateSignal(parent: Instance, name: string): RemoteEvent
+
 		Comm.Client.GetFunction(parent: Instance, name: string, usePromise: boolean, middleware: ClientMiddleware?): (...any) -> ...any
 		Comm.Client.GetSignal(parent: Instance, name: string): RemoteEvent
 
@@ -23,12 +24,12 @@
 		serverComm:CreateSignal(name: string): RemoteEvent
 		serverComm:Destroy()
 
-		clientComm = Comm.Client.ForParent(parent: Instance, namespace: string?, janitor: Janitor?): ClientComm
+		clientComm = Comm.Client.ForParent(parent: Instance, usePromise: boolean, namespace: string?, janitor: Janitor?): ClientComm
 		clientComm:GetFunction(name: string, usePromise: boolean, middleware: ClientMiddleware?): (...any) -> ...any
 		clientComm:GetSignal(name: string): RemoteEvent
 		clientComm:Destroy()
 
-]]
+--]]
 
 
 type FnBind = (Instance, ...any) -> ...any
@@ -105,13 +106,15 @@ end
 
 function Comm.Server.WrapMethod(parent: Instance, tbl: {}, name: string, middleware: ServerMiddleware?): RemoteFunction
 	assert(IS_SERVER, "WrapMethod must be called from the server")
-	return Comm.Server.BindFunction(parent, name, function(...) tbl[name](tbl, ...) end, middleware)
+	local fn = tbl[name]
+	assert(type(fn) == "function", "Value at index " .. name .. " must be a function; got " .. type(fn))
+	return Comm.Server.BindFunction(parent, name, function(...) return fn(tbl, ...) end, middleware)
 end
 
 
 function Comm.Server.CreateSignal(parent: Instance, name: string): RemoteEvent
 	assert(IS_SERVER, "CreateSignal must be called from the server")
-	local folder = GetCommSubFolder(parent, "RF"):Expect("Failed to get Comm RF folder")
+	local folder = GetCommSubFolder(parent, "RE"):Expect("Failed to get Comm RE folder")
 	local re = Instance.new("RemoteEvent")
 	re.Name = name
 	re.Parent = folder

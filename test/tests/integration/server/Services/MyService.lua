@@ -38,10 +38,19 @@ function MyService:KnitStart()
 	end)
 
 	-- Comm Test:
-	local comm = Comm.Server.ForParent(workspace)
-	comm:BindFunction("Add", function(player, a, b)
-		print(player.Name .. " wants to add " .. a .. " and " .. b)
+	local obj = {}
+	function obj:Add(player, a, b)
+		print(player.Name .. " from object wants to add " .. a .. " and " .. b)
 		return a + b
+	end
+	
+	local comm = Comm.Server.ForParent(workspace, "TestNS")
+	comm:WrapMethod(obj, "Add")
+
+	local sig = comm:CreateSignal("TestSignal")
+	sig.OnServerEvent:Connect(function(player, m)
+		print("Received message event from " .. player.Name .. ": " .. m)
+		sig:FireClient(player, m:upper())
 	end)
 
 end
