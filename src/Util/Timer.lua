@@ -24,8 +24,8 @@
 --]]
 
 
-local Knit = require(game:GetService("ReplicatedStorage").Knit)
-local Signal = require(Knit.Util.Signal)
+-- local Knit = require(game:GetService("ReplicatedStorage").Knit)
+local Signal = require(script.Parent.Signal)
 
 local RunService = game:GetService("RunService")
 
