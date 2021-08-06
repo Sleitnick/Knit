@@ -60,16 +60,14 @@ function Timer:Start()
 	local n = 1
 	local start = time()
 	local nextTick = start + self.Interval
-	local realIndex = 0
 	self.Index = 0
-	self.Second:Fire(self.Index, realIndex)
+	self.Second:Fire(self.Index % self.Interval, self.Index)
 	self._runHandle = RunService.Heartbeat:Connect(function()
 		local now = time()		
 
-		if now >= start + realIndex then
-			self.Index = (self.Index + 1) % self.Interval
-			realIndex += 1
-			self.Second:Fire(self.Index, realIndex)
+		if now >= start + self.Index then
+			self.Index += 1
+			self.Second:Fire(self.Index % self.Interval, self.Index)
 		end
 
 		while now >= nextTick do
