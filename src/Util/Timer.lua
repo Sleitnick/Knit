@@ -40,6 +40,8 @@ function Timer.new(interval: number, janitor)
 	local self = setmetatable({}, Timer)
 	self._runHandle = nil
 	self.Interval = interval
+	self.Index = 0
+	self.Second = Signal.new()
 	self.Tick = Signal.new()
 	if janitor then
 		janitor:Add(self)
@@ -55,11 +57,21 @@ end
 
 function Timer:Start()
 	if self._runHandle then return end
-	local n = 0
+	local n = 1
 	local start = time()
 	local nextTick = start + self.Interval
+	local realIndex = 0
+	self.Index = 0
+	self.Second:Fire(self.Index, realIndex)
 	self._runHandle = RunService.Heartbeat:Connect(function()
-		local now = time()
+		local now = time()		
+
+		if now >= start + realIndex then
+			self.Index = (self.Index + 1) % self.Interval
+			realIndex += 1
+			self.Second:Fire(self.Index, realIndex)
+		end
+
 		while now >= nextTick do
 			n += 1
 			nextTick = start + (self.Interval * n)
@@ -85,6 +97,7 @@ end
 
 function Timer:Destroy()
 	self.Tick:Destroy()
+	self.Second:Destroy()
 	self:Stop()
 end
 
