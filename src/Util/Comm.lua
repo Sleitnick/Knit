@@ -38,21 +38,19 @@ type Args = {
 	[any]: any,
 }
 
-type ServerMiddlewareContext = {
-	Name: string,
-	Parent: Instance,
-}
-type ServerMiddlewareFn = (Instance, Args, ServerMiddlewareContext) -> (boolean, ...any)
+type ServerMiddlewareFn = (Instance, Args) -> (boolean, ...any)
 type ServerMiddleware = {ServerMiddlewareFn}
 
 type ClientMiddlewareFn = (Args) -> (boolean, ...any)
 type ClientMiddleware = {ClientMiddlewareFn}
 
 
+local Signal = require(script.Parent.Signal)
 local Option = require(script.Parent.Option)
 local Promise = require(script.Parent.Promise)
 
 local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
 
 local IS_SERVER = RunService:IsServer()
 local DEFAULT_COMM_FOLDER_NAME = "__comm__"
@@ -75,6 +73,128 @@ local function GetCommSubFolder(parent: Instance, subFolderName: string): Option
 end
 
 
+local RemoteSignal = {}
+RemoteSignal.__index = RemoteSignal
+
+function RemoteSignal.new(parent: Instance, name: string, inboundMiddleware: ServerMiddleware?, outboundMiddleware: ServerMiddleware?)
+	local self = setmetatable({}, RemoteSignal)
+	self._re = Instance.new("RemoteEvent")
+	self._re.Name = name
+	self._re.Parent = parent
+	if outboundMiddleware and #outboundMiddleware > 0 then
+		self._hasOutbound = true
+		self._outbound = outboundMiddleware
+	else
+		self._hasOutbound = false
+	end
+	if inboundMiddleware and #inboundMiddleware > 0 then
+		self._directConnect = false
+		self._signal = Signal.new(nil)
+		self._re.OnServerEvent:Connect(function(player, ...)
+			local args = table.pack(...)
+			for _,middlewareFunc in ipairs(inboundMiddleware) do
+				local middlewareResult = table.pack(middlewareFunc(player, args))
+				if not middlewareResult[1] then
+					return
+				end
+			end
+			self._signal:Fire(player, table.unpack(args, 1, args.n))
+		end)
+	else
+		self._directConnect = true
+	end
+	return self
+end
+
+function RemoteSignal:Connect(fn)
+	if self._directConnect then
+		return self._re.OnServerEvent:Connect(fn)
+	else
+		return self._signal:Connect(fn)
+	end
+end
+
+function RemoteSignal:_processOutboundMiddleware(...: any)
+	if not self._hasOutbound then
+		return ...
+	end
+	local args = table.pack(...)
+	for _,middlewareFunc in ipairs(self._outbound) do
+		local middlewareResult = table.pack(middlewareFunc(args))
+		if not middlewareResult[1] then
+			return table.unpack(middlewareResult, 2, middlewareResult.n)
+		end
+	end
+	return table.unpack(args, 1, args.n)
+end
+
+function RemoteSignal:Fire(player: Player, ...: any)
+	self._re:FireClient(player, self:_processOutboundMiddleware(...))
+end
+
+function RemoteSignal:FireAll(...: any)
+	self._re:FireAllClients(self:_processOutboundMiddleware(...))
+end
+
+function RemoteSignal:FireFilter(predicate: (Player, ...any) -> boolean, ...: any)
+	for _,player in ipairs(Players:GetPlayers()) do
+		if predicate(player, ...) then
+			self._re:FireClient(player, self:_processOutboundMiddleware(...))
+		end
+	end
+end
+
+function RemoteSignal:Destroy()
+	self._re:Destroy()
+	if self._signal then
+		self._signal:Destroy()
+	end
+end
+
+
+local ClientRemoteSignal = {}
+ClientRemoteSignal.__index = ClientRemoteSignal
+
+function ClientRemoteSignal.new(re: RemoteEvent, inboundMiddleware: ClientMiddleware?, outboudMiddleware: ClientMiddleware?)
+	local self = setmetatable({}, ClientRemoteSignal)
+	self._re = re
+	if outboudMiddleware and #outboudMiddleware > 0 then
+		self._hasOutbound = true
+		self._outbound = outboudMiddleware
+	else
+		self._hasOutbound = false
+	end
+	if inboundMiddleware and #inboundMiddleware > 0 then
+		self._directConnect = false
+		self._signal = Signal.new(nil)
+		self._reConn = self._re.OnClientEvent:Connect(function(...)
+			local args = table.pack(...)
+			for _,middlewareFunc in ipairs(inboundMiddleware) do
+				local middlewareResult = table.pack(middlewareFunc(args))
+				if not middlewareResult[1] then
+					return
+				end
+			end
+			self._signal:Fire(table.unpack(args, 1, args.n))
+		end)
+	else
+		self._directConnect = true
+	end
+	return self
+end
+
+function ClientRemoteSignal:Connect(fn)
+	if self._directConnect then
+		return self._re.OnClientEvent:Connect(fn)
+	else
+		return self._signal:Connect(fn)
+	end
+end
+
+function ClientRemoteSignal:Destroy()
+end
+
+
 local Comm = {Server = {}, Client = {}}
 
 
@@ -84,11 +204,10 @@ function Comm.Server.BindFunction(parent: Instance, name: string, func: FnBind, 
 	local rf = Instance.new("RemoteFunction")
 	rf.Name = name
 	if middleware and #middleware > 0 then
-		local context: ServerMiddlewareContext = {Name = name, Parent = parent}
 		local function OnServerInvoke(player, ...)
 			local args = table.pack(...)
 			for _,middlewareFunc in ipairs(middleware) do
-				local middlewareResult = table.pack(middlewareFunc(player, args, context))
+				local middlewareResult = table.pack(middlewareFunc(player, args))
 				if not middlewareResult[1] then
 					return table.unpack(middlewareResult, 2, middlewareResult.n)
 				end
@@ -112,13 +231,14 @@ function Comm.Server.WrapMethod(parent: Instance, tbl: {}, name: string, middlew
 end
 
 
-function Comm.Server.CreateSignal(parent: Instance, name: string): RemoteEvent
+function Comm.Server.CreateSignal(parent: Instance, name: string, inboundMiddleware: ServerMiddleware?, outboundMiddleware: ServerMiddleware?)
 	assert(IS_SERVER, "CreateSignal must be called from the server")
 	local folder = GetCommSubFolder(parent, "RE"):Expect("Failed to get Comm RE folder")
-	local re = Instance.new("RemoteEvent")
-	re.Name = name
-	re.Parent = folder
-	return re
+	-- local re = Instance.new("RemoteEvent")
+	-- re.Name = name
+	-- re.Parent = folder
+	local rs = RemoteSignal.new(parent, name)
+	return rs
 end
 
 
@@ -222,7 +342,7 @@ function ServerComm:WrapMethod(tbl: {}, name: string, middleware: ServerMiddlewa
 	return Comm.Server.WrapMethod(self._instancesFolder, tbl, name, middleware)
 end
 
-function ServerComm:CreateSignal(name: string): RemoteEvent
+function ServerComm:CreateSignal(name: string)
 	return Comm.Server.CreateSignal(self._instancesFolder, name)
 end
 
