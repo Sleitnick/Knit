@@ -183,6 +183,17 @@ function ClientRemoteSignal.new(re: RemoteEvent, inboundMiddleware: ClientMiddle
 	return self
 end
 
+function ClientRemoteSignal:_processOutboundMiddleware(...: any)
+	local args = table.pack(...)
+	for _,middlewareFunc in ipairs(self._outbound) do
+		local middlewareResult = table.pack(middlewareFunc(args))
+		if not middlewareResult[1] then
+			return table.unpack(middlewareResult, 2, middlewareResult.n)
+		end
+	end
+	return table.unpack(args, 1, args.n)
+end
+
 function ClientRemoteSignal:Connect(fn)
 	if self._directConnect then
 		return self._re.OnClientEvent:Connect(fn)
@@ -191,7 +202,18 @@ function ClientRemoteSignal:Connect(fn)
 	end
 end
 
+function ClientRemoteSignal:Fire(...: any)
+	if self._hasOutbound then
+		self._re:FireServer(self:_processOutboundMiddleware(...))
+	else
+		self._re:FireServer(...)
+	end
+end
+
 function ClientRemoteSignal:Destroy()
+	if self._signal then
+		self._signal:Destroy()
+	end
 end
 
 

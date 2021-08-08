@@ -48,9 +48,9 @@ function MyService:KnitStart()
 	comm:WrapMethod(obj, "Add")
 
 	local sig = comm:CreateSignal("TestSignal")
-	sig.OnServerEvent:Connect(function(player, m)
+	sig:Connect(function(player, m)
 		print("Received message event from " .. player.Name .. ": " .. m)
-		sig:FireClient(player, m:upper())
+		sig:Fire(player, m:upper())
 	end)
 
 end

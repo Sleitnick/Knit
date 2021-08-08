@@ -29,10 +29,10 @@ function MyController:KnitStart()
 	end):Catch(warn)
 
 	local sig = comm:GetSignal("TestSignal")
-	sig.OnClientEvent:Connect(function(m)
+	sig:Connect(function(m)
 		print("Client received message: " .. m)
 	end)
-	sig:FireServer("Hello from " .. Knit.Player.Name)
+	sig:Fire("Hello from " .. Knit.Player.Name)
 
 end
 
