@@ -234,10 +234,7 @@ end
 function Comm.Server.CreateSignal(parent: Instance, name: string, inboundMiddleware: ServerMiddleware?, outboundMiddleware: ServerMiddleware?)
 	assert(IS_SERVER, "CreateSignal must be called from the server")
 	local folder = GetCommSubFolder(parent, "RE"):Expect("Failed to get Comm RE folder")
-	-- local re = Instance.new("RemoteEvent")
-	-- re.Name = name
-	-- re.Parent = folder
-	local rs = RemoteSignal.new(parent, name)
+	local rs = RemoteSignal.new(folder, name, inboundMiddleware, outboundMiddleware)
 	return rs
 end
 
@@ -304,12 +301,12 @@ function Comm.Client.GetFunction(parent: Instance, name: string, usePromise: boo
 end
 
 
-function Comm.Client.GetSignal(parent: Instance, name: string): RemoteEvent
+function Comm.Client.GetSignal(parent: Instance, name: string, inboundMiddleware: ClientMiddleware?, outboundMiddleware: ClientMiddleware?)
 	assert(not IS_SERVER, "GetSignal must be called from the client")
 	local folder = GetCommSubFolder(parent, "RE"):Expect("Failed to get Comm RE folder")
 	local re = folder:WaitForChild(name, WAIT_FOR_CHILD_TIMEOUT)
 	assert(re ~= nil, "Failed to find RemoteEvent: " .. name)
-	return re
+	return ClientRemoteSignal.new(re, inboundMiddleware, outboundMiddleware)
 end
 
 
@@ -342,8 +339,8 @@ function ServerComm:WrapMethod(tbl: {}, name: string, middleware: ServerMiddlewa
 	return Comm.Server.WrapMethod(self._instancesFolder, tbl, name, middleware)
 end
 
-function ServerComm:CreateSignal(name: string)
-	return Comm.Server.CreateSignal(self._instancesFolder, name)
+function ServerComm:CreateSignal(name: string, inboundMiddleware: ServerMiddleware?, outboundMiddleware: ServerMiddleware?)
+	return Comm.Server.CreateSignal(self._instancesFolder, name, inboundMiddleware, outboundMiddleware)
 end
 
 function ServerComm:Destroy()
@@ -376,8 +373,8 @@ function ClientComm:GetFunction(name: string, middleware: ClientMiddleware?)
 	return Comm.Client.GetFunction(self._instancesFolder, name, self._usePromise, middleware)
 end
 
-function ClientComm:GetSignal(name: string): RemoteEvent
-	return Comm.Client.GetSignal(self._instancesFolder, name)
+function ClientComm:GetSignal(name: string, inboundMiddleware: ClientMiddleware?, outboundMiddleware: ClientMiddleware?)
+	return Comm.Client.GetSignal(self._instancesFolder, name, inboundMiddleware, outboundMiddleware)
 end
 
 function ClientComm:Destroy()
