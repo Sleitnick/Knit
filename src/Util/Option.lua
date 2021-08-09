@@ -92,15 +92,13 @@ type Matches = {
 }
 
 
-local CLASSNAME = "Option"
-
 local Option = {}
 Option.__index = Option
+Option.ClassName = "Option"
 
 
 function Option._new(value: any): Option
 	local self = setmetatable({
-		ClassName = CLASSNAME;
 		_v = value;
 		_s = (value ~= nil);
 	}, Option)
@@ -134,7 +132,7 @@ end
 
 
 function Option.Deserialize(data: SerializedOption): Option
-	assert(type(data) == "table" and data.ClassName == CLASSNAME, "Invalid data for deserializing Option")
+	assert(type(data) == "table" and data.ClassName == Option.ClassName, "Invalid data for deserializing Option")
 	return data.Value == nil and Option.None or Option.Some(data.Value)
 end
 

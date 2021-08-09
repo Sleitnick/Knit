@@ -37,6 +37,8 @@ type Args = {
 
 local Option = require(script.Parent.Option)
 
+local IS_SERVER = game:GetService("RunService"):IsServer()
+
 local Ser = {}
 
 Ser.Classes = {
@@ -111,6 +113,58 @@ end
 
 function Ser.UnpackArgs(args: Args): ...any
 	return table.unpack(args, 1, args.n)
+end
+
+
+function Ser.SerializeMiddleware(...: any)
+	local classes = {}
+	for _,class in ipairs({...}) do
+		classes[class.ClassName] = class
+	end
+	local function Serialize(args)
+		for i,arg in ipairs(args) do
+			if type(arg) == "table" then
+				local ser = classes[arg.ClassName]
+				if ser then
+					args[i] = ser.Serialize(arg)
+				end
+			end
+		end
+		return true
+	end
+	if IS_SERVER then
+		return function(_player, args)
+			return Serialize(args)
+		end
+	else
+		return Serialize
+	end
+end
+
+
+function Ser.DeserializeMiddleware(...: any)
+	local classes = {}
+	for _,class in ipairs({...}) do
+		classes[class.ClassName] = class
+	end
+	local function Deserialize(args)
+		for i,arg in ipairs(args) do
+			if type(arg) == "table" then
+				local ser = classes[arg.ClassName]
+				if ser then
+					args[i] = ser.Deserialize(arg)
+				end
+			end
+		end
+		return true
+	end
+	if IS_SERVER then
+		return function(_player, args)
+			return Deserialize(args)
+		end
+	else
+		return Deserialize
+	end
 end
 
 

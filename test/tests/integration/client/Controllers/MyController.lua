@@ -1,5 +1,7 @@
 local Knit = require(game:GetService("ReplicatedStorage").Knit)
 local Comm = require(Knit.Util.Comm)
+local Option = require(Knit.Util.Option)
+local Ser = require(Knit.Util.Ser)
 
 
 local MyController = Knit.CreateController { Name = "MyController" }
@@ -9,7 +11,7 @@ function MyController:KnitStart()
 	local MyService = Knit.GetService("MyService")
 	local msg = MyService:GetMessage()
 	print("Message from MyService: " .. msg)
-	for _ = 1,10 do
+	for _ = 1,3 do
 		MyService:MaybeGetRandomNumber():Match {
 			Some = function(num)
 				print("Got random number: " .. num)
@@ -21,18 +23,18 @@ function MyController:KnitStart()
 	end
 
 	local comm = Comm.Client.ForParent(workspace, true, "TestNS")
-	local Add = comm:GetFunction("Add")
-	local a = 10
-	local b = 20
+	local Add = comm:GetFunction("Add", {Ser.DeserializeMiddleware(Option)}, {Ser.SerializeMiddleware(Option)})
+	local a = Option.Some(10)
+	local b = Option.Some(20)
 	Add(a, b):Then(function(c)
-		print("PROMISE: " .. a .. " + " .. b .. " = " .. c)
+		print("PROMISE: " .. a:Unwrap() .. " + " .. b:Unwrap() .. " = " .. c:Unwrap())
 	end):Catch(warn)
 
-	local sig = comm:GetSignal("TestSignal")
-	sig:Connect(function(m)
-		print("Client received message: " .. m)
+	local sig = comm:GetSignal("TestSignal", {Ser.DeserializeMiddleware(Option)}, {Ser.SerializeMiddleware(Option)})
+	sig:Connect(function(opt)
+		print("Client received message: " .. opt:Unwrap())
 	end)
-	sig:Fire("Hello from " .. Knit.Player.Name)
+	sig:Fire(Option.Some("Hello!"))
 
 end
 

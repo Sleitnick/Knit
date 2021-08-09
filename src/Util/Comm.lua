@@ -10,10 +10,10 @@
 
 		Comm.Server.BindFunction(parent: Instance, name: string, func: (Instance, ...any) -> ...any, middleware): RemoteFunction
 		Comm.Server.WrapMethod(parent: Instance, tbl: {}, name: string, middleware: ServerMiddleware?): RemoteFunction
-		Comm.Server.CreateSignal(parent: Instance, name: string): RemoteEvent
+		Comm.Server.CreateSignal(parent: Instance, name: string, outbound: ServerMiddleware?, inbound: ServerMiddleware?): RemoteEvent
 
 		Comm.Client.GetFunction(parent: Instance, name: string, usePromise: boolean, middleware: ClientMiddleware?): (...any) -> ...any
-		Comm.Client.GetSignal(parent: Instance, name: string): RemoteEvent
+		Comm.Client.GetSignal(parent: Instance, name: string, outbound: ClientMiddleware?, inbound: ClientMiddleware?): RemoteEvent
 
 
 	HELPER CLASSES:
@@ -114,13 +114,13 @@ function RemoteSignal:Connect(fn)
 	end
 end
 
-function RemoteSignal:_processOutboundMiddleware(...: any)
+function RemoteSignal:_processOutboundMiddleware(player: Player?, ...: any)
 	if not self._hasOutbound then
 		return ...
 	end
 	local args = table.pack(...)
 	for _,middlewareFunc in ipairs(self._outbound) do
-		local middlewareResult = table.pack(middlewareFunc(args))
+		local middlewareResult = table.pack(middlewareFunc(player, args))
 		if not middlewareResult[1] then
 			return table.unpack(middlewareResult, 2, middlewareResult.n)
 		end
@@ -129,17 +129,17 @@ function RemoteSignal:_processOutboundMiddleware(...: any)
 end
 
 function RemoteSignal:Fire(player: Player, ...: any)
-	self._re:FireClient(player, self:_processOutboundMiddleware(...))
+	self._re:FireClient(player, self:_processOutboundMiddleware(player, ...))
 end
 
 function RemoteSignal:FireAll(...: any)
-	self._re:FireAllClients(self:_processOutboundMiddleware(...))
+	self._re:FireAllClients(self:_processOutboundMiddleware(nil, ...))
 end
 
 function RemoteSignal:FireFilter(predicate: (Player, ...any) -> boolean, ...: any)
 	for _,player in ipairs(Players:GetPlayers()) do
 		if predicate(player, ...) then
-			self._re:FireClient(player, self:_processOutboundMiddleware(...))
+			self._re:FireClient(player, self:_processOutboundMiddleware(nil, ...))
 		end
 	end
 end
@@ -220,21 +220,52 @@ end
 local Comm = {Server = {}, Client = {}}
 
 
-function Comm.Server.BindFunction(parent: Instance, name: string, func: FnBind, middleware: ServerMiddleware?): RemoteFunction
+function Comm.Server.BindFunction(parent: Instance, name: string, func: FnBind, inboundMiddleware: ServerMiddleware?, outboundMiddleware: ServerMiddleware?): RemoteFunction
 	assert(IS_SERVER, "BindFunction must be called from the server")
 	local folder = GetCommSubFolder(parent, "RF"):Expect("Failed to get Comm RF folder")
 	local rf = Instance.new("RemoteFunction")
 	rf.Name = name
-	if middleware and #middleware > 0 then
+	local hasInbound = type(inboundMiddleware) == "table" and #inboundMiddleware > 0
+	local hasOutbound = type(outboundMiddleware) == "table" and #outboundMiddleware > 0
+	local function ProcessOutbound(player, ...)
+		local args = table.pack(...)
+		for _,middlewareFunc in ipairs(outboundMiddleware) do
+			local middlewareResult = table.pack(middlewareFunc(player, args))
+			if not middlewareResult[1] then
+				return table.unpack(middlewareResult, 2, middlewareResult.n)
+			end
+		end
+		return table.unpack(args, 1, args.n)
+	end
+	if hasInbound and hasOutbound then
+		print("HAS INBOUND AND OUTBOUND")
 		local function OnServerInvoke(player, ...)
 			local args = table.pack(...)
-			for _,middlewareFunc in ipairs(middleware) do
+			print("INVOKE", args)
+			for _,middlewareFunc in ipairs(inboundMiddleware) do
+				local middlewareResult = table.pack(middlewareFunc(player, args))
+				if not middlewareResult[1] then
+					return table.unpack(middlewareResult, 2, middlewareResult.n)
+				end
+			end
+			return ProcessOutbound(player, func(player, table.unpack(args, 1, args.n)))
+		end
+		rf.OnServerInvoke = OnServerInvoke
+	elseif hasInbound then
+		local function OnServerInvoke(player, ...)
+			local args = table.pack(...)
+			for _,middlewareFunc in ipairs(inboundMiddleware) do
 				local middlewareResult = table.pack(middlewareFunc(player, args))
 				if not middlewareResult[1] then
 					return table.unpack(middlewareResult, 2, middlewareResult.n)
 				end
 			end
 			return func(player, table.unpack(args, 1, args.n))
+		end
+		rf.OnServerInvoke = OnServerInvoke
+	elseif hasOutbound then
+		local function OnServerInvoke(player, ...)
+			return ProcessOutbound(player, func(player, ...))
 		end
 		rf.OnServerInvoke = OnServerInvoke
 	else
@@ -245,11 +276,11 @@ function Comm.Server.BindFunction(parent: Instance, name: string, func: FnBind, 
 end
 
 
-function Comm.Server.WrapMethod(parent: Instance, tbl: {}, name: string, middleware: ServerMiddleware?): RemoteFunction
+function Comm.Server.WrapMethod(parent: Instance, tbl: {}, name: string, inboundMiddleware: ServerMiddleware?, outboundMiddleware: ServerMiddleware?): RemoteFunction
 	assert(IS_SERVER, "WrapMethod must be called from the server")
 	local fn = tbl[name]
 	assert(type(fn) == "function", "Value at index " .. name .. " must be a function; got " .. type(fn))
-	return Comm.Server.BindFunction(parent, name, function(...) return fn(tbl, ...) end, middleware)
+	return Comm.Server.BindFunction(parent, name, function(...) return fn(tbl, ...) end, inboundMiddleware, outboundMiddleware)
 end
 
 
@@ -261,21 +292,36 @@ function Comm.Server.CreateSignal(parent: Instance, name: string, inboundMiddlew
 end
 
 
-function Comm.Client.GetFunction(parent: Instance, name: string, usePromise: boolean, middleware: ClientMiddleware?)
+function Comm.Client.GetFunction(parent: Instance, name: string, usePromise: boolean, inboundMiddleware: ClientMiddleware?, outboundMiddleware: ClientMiddleware?)
 	assert(not IS_SERVER, "GetFunction must be called from the client")
 	local folder = GetCommSubFolder(parent, "RF"):Expect("Failed to get Comm RF folder")
 	local rf = folder:WaitForChild(name, WAIT_FOR_CHILD_TIMEOUT)
 	assert(rf ~= nil, "Failed to find RemoteFunction: " .. name)
-	if middleware and #middleware > 0 then
+	local hasInbound = type(inboundMiddleware) == "table" and #inboundMiddleware > 0
+	local hasOutbound = type(outboundMiddleware) == "table" and #outboundMiddleware > 0
+	local function ProcessOutbound(args)
+		for _,middlewareFunc in ipairs(outboundMiddleware) do
+			local middlewareResult = table.pack(middlewareFunc(args))
+			if not middlewareResult[1] then
+				return table.unpack(middlewareResult, 2, middlewareResult.n)
+			end
+		end
+		return table.unpack(args, 1, args.n)
+	end
+	if hasInbound then
 		if usePromise then
 			return function(...)
 				local args = table.pack(...)
 				return Promise.new(function(resolve, reject)
 					local success, res = pcall(function()
-						return table.pack(rf:InvokeServer(table.unpack(args, 1, args.n)))
+						if hasOutbound then
+							return table.pack(rf:InvokeServer(ProcessOutbound(args)))
+						else
+							return table.pack(rf:InvokeServer(table.unpack(args, 1, args.n)))
+						end
 					end)
 					if success then
-						for _,middlewareFunc in ipairs(middleware) do
+						for _,middlewareFunc in ipairs(inboundMiddleware) do
 							local middlewareResult = table.pack(middlewareFunc(res))
 							if not middlewareResult[1] then
 								return table.unpack(middlewareResult, 2, middlewareResult.n)
@@ -289,8 +335,13 @@ function Comm.Client.GetFunction(parent: Instance, name: string, usePromise: boo
 			end
 		else
 			return function(...)
-				local res = table.pack(rf:InvokeServer(...))
-				for _,middlewareFunc in ipairs(middleware) do
+				local res
+				if hasOutbound then
+					res = table.pack(rf:InvokeServer(ProcessOutbound(table.pack(...))))
+				else
+					res = table.pack(rf:InvokeServer(...))
+				end
+				for _,middlewareFunc in ipairs(inboundMiddleware) do
 					local middlewareResult = table.pack(middlewareFunc(res))
 					if not middlewareResult[1] then
 						return table.unpack(middlewareResult, 2, middlewareResult.n)
@@ -305,7 +356,11 @@ function Comm.Client.GetFunction(parent: Instance, name: string, usePromise: boo
 				local args = table.pack(...)
 				return Promise.new(function(resolve, reject)
 					local success, res = pcall(function()
-						return table.pack(rf:InvokeServer(table.unpack(args, 1, args.n)))
+						if hasOutbound then
+							return table.pack(rf:InvokeServer(ProcessOutbound(args)))
+						else
+							return table.pack(rf:InvokeServer(table.unpack(args, 1, args.n)))
+						end
 					end)
 					if success then
 						resolve(table.unpack(res, 1, res.n))
@@ -315,8 +370,14 @@ function Comm.Client.GetFunction(parent: Instance, name: string, usePromise: boo
 				end)
 			end
 		else
-			return function(...)
-				return rf:InvokeServer(...)
+			if hasOutbound then
+				return function(...)
+					return rf:InvokeServer(ProcessOutbound(table.pack(...)))
+				end
+			else
+				return function(...)
+					return rf:InvokeServer(...)
+				end
 			end
 		end
 	end
@@ -353,12 +414,12 @@ function ServerComm.new(parent: Instance, namespace: string?, janitor)
 	return self
 end
 
-function ServerComm:BindFunction(name: string, func: FnBind, middleware: ServerMiddleware?): RemoteFunction
-	return Comm.Server.BindFunction(self._instancesFolder, name, func, middleware)
+function ServerComm:BindFunction(name: string, func: FnBind, inboundMiddleware: ServerMiddleware?, outboundMiddleware: ServerMiddleware?): RemoteFunction
+	return Comm.Server.BindFunction(self._instancesFolder, name, func, inboundMiddleware, outboundMiddleware)
 end
 
-function ServerComm:WrapMethod(tbl: {}, name: string, middleware: ServerMiddleware?): RemoteFunction
-	return Comm.Server.WrapMethod(self._instancesFolder, tbl, name, middleware)
+function ServerComm:WrapMethod(tbl: {}, name: string, inboundMiddleware: ServerMiddleware?, outboundMiddleware: ServerMiddleware?): RemoteFunction
+	return Comm.Server.WrapMethod(self._instancesFolder, tbl, name, inboundMiddleware, outboundMiddleware)
 end
 
 function ServerComm:CreateSignal(name: string, inboundMiddleware: ServerMiddleware?, outboundMiddleware: ServerMiddleware?)
@@ -391,8 +452,8 @@ function ClientComm.new(parent: Instance, usePromise: boolean, namespace: string
 	return self
 end
 
-function ClientComm:GetFunction(name: string, middleware: ClientMiddleware?)
-	return Comm.Client.GetFunction(self._instancesFolder, name, self._usePromise, middleware)
+function ClientComm:GetFunction(name: string, inboundMiddleware: ClientMiddleware?, outboundMiddleware: ClientMiddleware?)
+	return Comm.Client.GetFunction(self._instancesFolder, name, self._usePromise, inboundMiddleware, outboundMiddleware)
 end
 
 function ClientComm:GetSignal(name: string, inboundMiddleware: ClientMiddleware?, outboundMiddleware: ClientMiddleware?)

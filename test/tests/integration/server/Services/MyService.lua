@@ -2,6 +2,7 @@ local Knit = require(game:GetService("ReplicatedStorage").Knit)
 local Option = require(Knit.Util.Option)
 local Timer = require(Knit.Util.Timer)
 local Comm = require(Knit.Util.Comm)
+local Ser = require(Knit.Util.Ser)
 
 
 local MyService = Knit.CreateService {
@@ -40,17 +41,26 @@ function MyService:KnitStart()
 	-- Comm Test:
 	local obj = {}
 	function obj:Add(player, a, b)
-		print(player.Name .. " from object wants to add " .. a .. " and " .. b)
-		return a + b
+		print("ADD", player, a, b, Option.Is(a), Option.Is(b))
+		a = a:Unwrap()
+		b = b:Unwrap()
+		print(player.Name .. " from object wants to add unwrapped " .. a .. " and " .. b)
+		return Option.Some(a + b)
 	end
 	
 	local comm = Comm.Server.ForParent(workspace, "TestNS")
-	comm:WrapMethod(obj, "Add")
+	comm:WrapMethod(obj, "Add", {Ser.DeserializeMiddleware(Option)}, {Ser.SerializeMiddleware(Option)})
 
-	local sig = comm:CreateSignal("TestSignal")
-	sig:Connect(function(player, m)
-		print("Received message event from " .. player.Name .. ": " .. m)
-		sig:Fire(player, m:upper())
+	local sig = comm:CreateSignal("TestSignal", {
+		-- Inbound:
+		Ser.DeserializeMiddleware(Option)
+	}, {
+		-- Outbound:
+		Ser.SerializeMiddleware(Option)
+	})
+	sig:Connect(function(player, opt)
+		print("Received message event from " .. player.Name .. ": " .. opt:Unwrap())
+		sig:Fire(player, Option.Some("Hello from server"))
 	end)
 
 end
