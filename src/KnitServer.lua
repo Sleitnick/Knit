@@ -36,9 +36,9 @@ type ServiceClient = {
 
 local KnitServer = {}
 
-KnitServer.Version = script.Parent:WaitForChild("Version").Value
+KnitServer.Version = script.Parent.Version.Value
 KnitServer.Services = {} :: {[string]: Service}
-KnitServer.Util = script.Parent:WaitForChild("Util")
+KnitServer.Util = script.Parent.Util
 
 
 local knitRepServiceFolder = Instance.new("Folder")
