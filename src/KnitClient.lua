@@ -30,10 +30,10 @@ type Service = {
 
 local KnitClient = {}
 
-KnitClient.Version = script.Parent.Version.Value
+KnitClient.Version = script.Parent:WaitForChild("Version").Value
 KnitClient.Player = game:GetService("Players").LocalPlayer
 KnitClient.Controllers = {} :: {[string]: Controller}
-KnitClient.Util = script.Parent.Util
+KnitClient.Util = script.Parent:WaitForChild("Util")
 
 local Promise = require(KnitClient.Util.Promise)
 local Loader = require(KnitClient.Util.Loader)
