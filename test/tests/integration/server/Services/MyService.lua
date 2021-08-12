@@ -17,7 +17,7 @@ end
 function MyService.Client:MaybeGetRandomNumber(_player)
 	local rng = Random.new()
 	local num = rng:NextNumber()
-	if (num < 0.5) then
+	if num < 0.5 then
 		return Option.Some(num)
 	else
 		return Option.None
