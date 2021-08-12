@@ -70,9 +70,9 @@ end
 function Ser.DeserializeArgs(...: any): Args
 	local args = table.pack(...)
 	for i,arg in ipairs(args) do
-		if (type(arg) == "table") then
+		if type(arg) == "table" then
 			local ser = Ser.Classes[arg.ClassName]
-			if (ser) then
+			if ser then
 				args[i] = ser.Deserialize(arg)
 			end
 		end
@@ -88,9 +88,9 @@ end
 
 
 function Ser.Serialize(value: any): any
-	if (type(value) == "table") then
+	if type(value) == "table" then
 		local ser = Ser.Classes[value.ClassName]
-		if (ser) then
+		if ser then
 			value = ser.Serialize(value)
 		end
 	end
@@ -99,9 +99,9 @@ end
 
 
 function Ser.Deserialize(value: any): any
-	if (type(value) == "table") then
+	if type(value) == "table" then
 		local ser = Ser.Classes[value.ClassName]
-		if (ser) then
+		if ser then
 			value = ser.Deserialize(value)
 		end
 	end

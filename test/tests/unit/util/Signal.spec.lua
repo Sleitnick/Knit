@@ -1,9 +1,9 @@
 local function AwaitCondition(predicate, timeout)
 	local start = os.clock()
 	timeout = (timeout or 10)
-	while (true) do
-		if (predicate()) then return true end
-		if ((os.clock() - start) > timeout) then return false end
+	while true do
+		if predicate() then return true end
+		if (os.clock() - start) > timeout then return false end
 		task.wait()
 	end
 end

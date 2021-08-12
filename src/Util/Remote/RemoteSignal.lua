@@ -26,7 +26,7 @@ RemoteSignal.__index = RemoteSignal
 
 
 function RemoteSignal.Is(object)
-	return (type(object) == "table" and getmetatable(object) == RemoteSignal)
+	return type(object) == "table" and getmetatable(object) == RemoteSignal
 end
 
 
@@ -52,7 +52,7 @@ end
 function RemoteSignal:FireExcept(player, ...)
 	local args = Ser.SerializeArgs(...)
 	for _,plr in ipairs(Players:GetPlayers()) do
-		if (plr ~= player) then
+		if plr ~= player then
 			self._remote:FireClient(plr, Ser.UnpackArgs(args))
 		end
 	end

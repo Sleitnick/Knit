@@ -1,3 +1,5 @@
+--!strict
+
 --[[
 
 	Knit.CreateController(controller): Controller
@@ -11,12 +13,27 @@
 --]]
 
 
+type ControllerDef = {
+	Name: string,
+	[any]: any,
+}
+
+type Controller = {
+	Name: string,
+	[any]: any,
+}
+
+type Service = {
+	[any]: any,
+}
+
+
 local KnitClient = {}
 
-KnitClient.Version = script.Parent.Version.Value
+KnitClient.Version = script.Parent:WaitForChild("Version").Value
 KnitClient.Player = game:GetService("Players").LocalPlayer
-KnitClient.Controllers = {}
-KnitClient.Util = script.Parent.Util
+KnitClient.Controllers = {} :: {[string]: Controller}
+KnitClient.Util = script.Parent:WaitForChild("Util")
 
 local Promise = require(KnitClient.Util.Promise)
 local Loader = require(KnitClient.Util.Loader)
@@ -25,7 +42,7 @@ local ClientRemoteSignal = require(KnitClient.Util.Remote.ClientRemoteSignal)
 local ClientRemoteProperty = require(KnitClient.Util.Remote.ClientRemoteProperty)
 local TableUtil = require(KnitClient.Util.TableUtil)
 
-local services = {}
+local services: {[string]: Service} = {}
 local servicesFolder = script.Parent:WaitForChild("Services")
 
 local started = false
@@ -33,33 +50,38 @@ local startedComplete = false
 local onStartedComplete = Instance.new("BindableEvent")
 
 
-local function BuildService(serviceName, folder)
+local function BuildService(serviceName: string, folder: Instance): Service
 	local service = {}
-	if (folder:FindFirstChild("RF")) then
-		for _,rf in ipairs(folder.RF:GetChildren()) do
-			if (rf:IsA("RemoteFunction")) then
-				service[rf.Name] = function(_self, ...)
+	local rfFolder = folder:FindFirstChild("RF")
+	local reFolder = folder:FindFirstChild("RE")
+	local rpFolder = folder:FindFirstChild("RP")
+	if rfFolder then
+		for _,rf in ipairs(rfFolder:GetChildren()) do
+			if rf:IsA("RemoteFunction") then
+				local function StandardRemote(_self, ...)
 					return Ser.DeserializeArgsAndUnpack(rf:InvokeServer(Ser.SerializeArgsAndUnpack(...)))
 				end
-				service[rf.Name .. "Promise"] = function(_self, ...)
+				local function PromiseRemote(_self, ...)
 					local args = Ser.SerializeArgs(...)
 					return Promise.new(function(resolve)
 						resolve(Ser.DeserializeArgsAndUnpack(rf:InvokeServer(table.unpack(args, 1, args.n))))
 					end)
 				end
+				service[rf.Name] = StandardRemote
+				service[rf.Name .. "Promise"] = PromiseRemote
 			end
 		end
 	end
-	if (folder:FindFirstChild("RE")) then
-		for _,re in ipairs(folder.RE:GetChildren()) do
-			if (re:IsA("RemoteEvent")) then
+	if reFolder then
+		for _,re in ipairs(reFolder:GetChildren()) do
+			if re:IsA("RemoteEvent") then
 				service[re.Name] = ClientRemoteSignal.new(re)
 			end
 		end
 	end
-	if (folder:FindFirstChild("RP")) then
-		for _,rp in ipairs(folder.RP:GetChildren()) do
-			if (rp:IsA("ValueBase") or rp:IsA("RemoteEvent")) then
+	if rpFolder then
+		for _,rp in ipairs(rpFolder:GetChildren()) do
+			if rp:IsA("ValueBase") or rp:IsA("RemoteEvent") then
 				service[rp.Name] = ClientRemoteProperty.new(rp)
 			end
 		end
@@ -69,12 +91,18 @@ local function BuildService(serviceName, folder)
 end
 
 
-function KnitClient.CreateController(controller)
-	assert(type(controller) == "table", "Controller must be a table; got " .. type(controller))
-	assert(type(controller.Name) == "string", "Controller.Name must be a string; got " .. type(controller.Name))
-	assert(#controller.Name > 0, "Controller.Name must be a non-empty string")
-	assert(KnitClient.Controllers[controller.Name] == nil, "Controller \"" .. controller.Name .. "\" already exists")
-	controller = TableUtil.Assign(controller, {
+local function DoesControllerExist(controllerName: string): boolean
+	local controller: Controller? = KnitClient.Controllers[controllerName]
+	return controller ~= nil
+end
+
+
+function KnitClient.CreateController(controllerDef: ControllerDef): Controller
+	assert(type(controllerDef) == "table", "Controller must be a table; got " .. type(controllerDef))
+	assert(type(controllerDef.Name) == "string", "Controller.Name must be a string; got " .. type(controllerDef.Name))
+	assert(#controllerDef.Name > 0, "Controller.Name must be a non-empty string")
+	assert(not DoesControllerExist(controllerDef.Name), "Controller \"" .. controllerDef.Name .. "\" already exists")
+	local controller: Controller = TableUtil.Assign(controllerDef, {
 		_knit_is_controller = true;
 	})
 	KnitClient.Controllers[controller.Name] = controller
@@ -82,32 +110,32 @@ function KnitClient.CreateController(controller)
 end
 
 
-function KnitClient.AddControllers(folder)
+function KnitClient.AddControllers(folder: Instance): {any}
 	return Loader.LoadChildren(folder)
 end
 
 
-function KnitClient.AddControllersDeep(folder)
+function KnitClient.AddControllersDeep(folder: Instance): {any}
 	return Loader.LoadDescendants(folder)
 end
 
 
-function KnitClient.GetService(serviceName)
+function KnitClient.GetService(serviceName: string): Service
 	assert(type(serviceName) == "string", "ServiceName must be a string; got " .. type(serviceName))
-	local folder = servicesFolder:FindFirstChild(serviceName)
+	local folder: Instance? = servicesFolder:FindFirstChild(serviceName)
 	assert(folder ~= nil, "Could not find service \"" .. serviceName .. "\"")
-	return services[serviceName] or BuildService(serviceName, folder)
+	return services[serviceName] or BuildService(serviceName, folder :: Instance)
 end
 
 
-function KnitClient.GetController(controllerName)
+function KnitClient.GetController(controllerName: string): Controller?
 	return KnitClient.Controllers[controllerName]
 end
 
 
 function KnitClient.Start()
 
-	if (started) then
+	if started then
 		return Promise.Reject("Knit already started")
 	end
 
@@ -120,7 +148,7 @@ function KnitClient.Start()
 		-- Init:
 		local promisesStartControllers = {}
 		for _,controller in pairs(controllers) do
-			if (type(controller.KnitInit) == "function") then
+			if type(controller.KnitInit) == "function" then
 				table.insert(promisesStartControllers, Promise.new(function(r)
 					controller:KnitInit()
 					r()
@@ -134,7 +162,7 @@ function KnitClient.Start()
 
 		-- Start:
 		for _,controller in pairs(controllers) do
-			if (type(controller.KnitStart) == "function") then
+			if type(controller.KnitStart) == "function" then
 				task.spawn(controller.KnitStart, controller)
 			end
 		end
@@ -152,7 +180,7 @@ end
 
 
 function KnitClient.OnStart()
-	if (startedComplete) then
+	if startedComplete then
 		return Promise.Resolve()
 	else
 		return Promise.FromEvent(onStartedComplete.Event)

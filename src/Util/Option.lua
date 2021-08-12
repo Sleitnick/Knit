@@ -104,7 +104,7 @@ end
 
 
 function Option.Wrap(value)
-	if (value == nil) then
+	if value == nil then
 		return Option.None
 	else
 		return Option.Some(value)
@@ -113,7 +113,7 @@ end
 
 
 function Option.Is(obj)
-	return (type(obj) == "table" and getmetatable(obj) == Option)
+	return type(obj) == "table" and getmetatable(obj) == Option
 end
 
 
@@ -124,7 +124,7 @@ end
 
 function Option.Deserialize(data) -- type data = {ClassName: string, Value: any}
 	assert(type(data) == "table" and data.ClassName == CLASSNAME, "Invalid data for deserializing Option")
-	return (data.Value == nil and Option.None or Option.Some(data.Value))
+	return data.Value == nil and Option.None or Option.Some(data.Value)
 end
 
 
@@ -141,7 +141,7 @@ function Option:Match(matches)
 	local onNone = matches.None
 	assert(type(onSome) == "function", "Missing 'Some' match")
 	assert(type(onNone) == "function", "Missing 'None' match")
-	if (self:IsSome()) then
+	if self:IsSome() then
 		return onSome(self:Unwrap())
 	else
 		return onNone()
@@ -176,7 +176,7 @@ end
 
 
 function Option:UnwrapOr(default)
-	if (self:IsSome()) then
+	if self:IsSome() then
 		return self:Unwrap()
 	else
 		return default
@@ -185,7 +185,7 @@ end
 
 
 function Option:UnwrapOrElse(defaultFunc)
-	if (self:IsSome()) then
+	if self:IsSome() then
 		return self:Unwrap()
 	else
 		return defaultFunc()
@@ -194,7 +194,7 @@ end
 
 
 function Option:And(optB)
-	if (self:IsSome()) then
+	if self:IsSome() then
 		return optB
 	else
 		return Option.None
@@ -203,7 +203,7 @@ end
 
 
 function Option:AndThen(andThenFunc)
-	if (self:IsSome()) then
+	if self:IsSome() then
 		local result = andThenFunc(self:Unwrap())
 		Option.Assert(result)
 		return result
@@ -214,7 +214,7 @@ end
 
 
 function Option:Or(optB)
-	if (self:IsSome()) then
+	if self:IsSome() then
 		return self
 	else
 		return optB
@@ -223,7 +223,7 @@ end
 
 
 function Option:OrElse(orElseFunc)
-	if (self:IsSome()) then
+	if self:IsSome() then
 		return self
 	else
 		local result = orElseFunc()
@@ -236,9 +236,9 @@ end
 function Option:XOr(optB)
 	local someOptA = self:IsSome()
 	local someOptB = optB:IsSome()
-	if (someOptA == someOptB) then
+	if someOptA == someOptB then
 		return Option.None
-	elseif (someOptA) then
+	elseif someOptA then
 		return self
 	else
 		return optB
@@ -247,7 +247,7 @@ end
 
 
 function Option:Filter(predicate)
-	if (self:IsNone() or not predicate(self._v)) then
+	if self:IsNone() or not predicate(self._v) then
 		return Option.None
 	else
 		return self
@@ -256,12 +256,12 @@ end
 
 
 function Option:Contains(value)
-	return (self:IsSome() and self._v == value)
+	return self:IsSome() and self._v == value
 end
 
 
 function Option:__tostring()
-	if (self:IsSome()) then
+	if self:IsSome() then
 		return ("Option<" .. typeof(self._v) .. ">")
 	else
 		return "Option<None>"
@@ -270,10 +270,10 @@ end
 
 
 function Option:__eq(opt)
-	if (Option.Is(opt)) then
-		if (self:IsSome() and opt:IsSome()) then
+	if Option.Is(opt) then
+		if self:IsSome() and opt:IsSome() then
 			return (self:Unwrap() == opt:Unwrap())
-		elseif (self:IsNone() and opt:IsNone()) then
+		elseif self:IsNone() and opt:IsNone() then
 			return true
 		end
 	end

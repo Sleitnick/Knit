@@ -24,8 +24,7 @@
 --]]
 
 
-local Knit = require(game:GetService("ReplicatedStorage").Knit)
-local Signal = require(Knit.Util.Signal)
+local Signal = require(script.Parent.Signal)
 
 local RunService = game:GetService("RunService")
 
@@ -55,7 +54,7 @@ end
 
 function Timer:Start()
 	if self._runHandle then return end
-	local n = 0
+	local n = 1
 	local start = time()
 	local nextTick = start + self.Interval
 	self._runHandle = RunService.Heartbeat:Connect(function()
