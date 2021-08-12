@@ -44,6 +44,7 @@ KnitServer.Util = script.Parent.Util
 local knitRepServiceFolder = Instance.new("Folder")
 knitRepServiceFolder.Name = "Services"
 
+local Comm = require(KnitServer.Util.Comm)
 local Promise = require(KnitServer.Util.Promise)
 local Signal = require(KnitServer.Util.Signal)
 local Loader = require(KnitServer.Util.Loader)

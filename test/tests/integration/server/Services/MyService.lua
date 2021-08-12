@@ -40,7 +40,7 @@ function MyService:KnitStart()
 
 	-- Comm Test:
 	local obj = {}
-	function obj:Add(player, a, b)
+	function obj.Add(_self, player, a, b)
 		print("ADD", player, a, b, Option.Is(a), Option.Is(b))
 		a = a:Unwrap()
 		b = b:Unwrap()
