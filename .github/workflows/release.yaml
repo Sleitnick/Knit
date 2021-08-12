@@ -36,6 +36,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           name: Release ${{ github.ref }}
+          body_path: CHANGELOG.md
           fail_on_unmatched_files: true
           files: |
             knit.zip
