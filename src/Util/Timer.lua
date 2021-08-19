@@ -33,6 +33,9 @@
 --]]
 
 
+type CallbackFunc = () -> nil
+type TimeFunc = () -> number
+
 local Signal = require(script.Parent.Signal)
 
 local RunService = game:GetService("RunService")
@@ -59,15 +62,15 @@ function Timer.new(interval: number, janitor)
 end
 
 
-function Timer.Simple(interval: number, callback, startNow, updateSignal, timeFunc)
-	updateSignal = updateSignal or RunService.Heartbeat
-	timeFunc = timeFunc or time
-	local nextTick = timeFunc() + interval
+function Timer.Simple(interval: number, callback: CallbackFunc, startNow: boolean?, updateSignal: RBXScriptSignal?, timeFunc: TimeFunc?)
+	local update = updateSignal or RunService.Heartbeat
+	local t = timeFunc or time
+	local nextTick = t() + interval
 	if startNow then
 		task.defer(callback)
 	end
-	return updateSignal:Connect(function()
-		local now = timeFunc()
+	return update:Connect(function()
+		local now = t()
 		if now >= nextTick then
 			nextTick = now + interval
 			task.defer(callback)
