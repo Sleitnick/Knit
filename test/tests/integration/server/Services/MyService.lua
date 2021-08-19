@@ -1,6 +1,7 @@
 local Knit = require(game:GetService("ReplicatedStorage").Knit)
 local Option = require(Knit.Util.Option)
 local Timer = require(Knit.Util.Timer)
+local TableUtil = require(Knit.Util.TableUtil)
 
 
 local MyService = Knit.CreateService {
@@ -51,6 +52,12 @@ function MyService:KnitStart()
 		timerNoDrift:Destroy()
 		conn:Disconnect()
 	end)
+
+	local a = {10, 20, 30, 40, 50}
+	local b = {5, 4, 3, 2, 1}
+	for i,v in TableUtil.Zip(a, b) do
+		print(i, v)
+	end
 
 end
 

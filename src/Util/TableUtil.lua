@@ -18,6 +18,7 @@
 	TableUtil.Extend(tbl: table, extension: table): table
 	TableUtil.Reverse(tbl: table): table
 	TableUtil.Shuffle(tbl: table [, rng: Random]): table
+	TableUtil.Sample(tbl: table, sampleSize: number, [, rng: Random]): table
 	TableUtil.Flat(tbl: table [, maxDepth: number = 1]): table
 	TableUtil.FlatMap(tbl: callback: (value: any) -> table): table
 	TableUtil.Keys(tbl: table): table
@@ -228,6 +229,22 @@ local function Shuffle(tbl: Table, rngOverride: Random?): Table
 end
 
 
+local function Sample(tbl: Table, size: number, rngOverride: Random?): Table
+	assert(type(tbl) == "table", "First argument must be a table")
+	assert(type(size) == "number", "Second argument must be a number")
+	local shuffled = CopyTableShallow(tbl)
+	local sample = table.create(size)
+	local random = rngOverride or rng
+	local low = math.clamp(#tbl - size, 2, #tbl)
+	for i = #tbl, low, -1 do
+		local j = random:NextInteger(1, i)
+		shuffled[i], shuffled[j] = shuffled[j], shuffled[i]
+	end
+	table.move(shuffled, 1, size, 1, sample)
+	return sample
+end
+
+
 local function Flat(tbl: Table, depth: number?): Table
 	local maxDepth: number = depth or 1
 	local flatTbl = table.create(#tbl)
@@ -289,6 +306,44 @@ local function Some(tbl: Table, callback: FindCallback): boolean
 end
 
 
+type IteratorFunc = (t: Table, k: any) -> (any, any)
+
+local function Zip(...): (IteratorFunc, Table, any)
+	assert(select("#", ...) > 0, "Must supply at least 1 table")
+	local function ZipIteratorArray(all: Table, k: number)
+		k += 1
+		local values = {}
+		for i,t in ipairs(all) do
+			local v = t[k]
+			if v ~= nil then
+				values[i] = v
+			else
+				return nil, nil
+			end
+		end
+		return k, values
+	end
+	local function ZipIteratorMap(all: Table, k: any)
+		local values = {}
+		for i,t in ipairs(all) do
+			local v = next(t, k)
+			if v ~= nil then
+				values[i] = v
+			else
+				return nil, nil
+			end
+		end
+		return k, values
+	end
+	local all = {...}
+	if #all[1] > 0 then
+		return ZipIteratorArray, all, 0
+	else
+		return ZipIteratorMap, all, nil
+	end
+end
+
+
 local function IsEmpty(tbl)
 	return next(tbl) == nil
 end
@@ -316,12 +371,14 @@ TableUtil.Assign = Assign
 TableUtil.Extend = Extend
 TableUtil.Reverse = Reverse
 TableUtil.Shuffle = Shuffle
+TableUtil.Sample = Sample
 TableUtil.Flat = Flat
 TableUtil.FlatMap = FlatMap
 TableUtil.Keys = Keys
 TableUtil.Find = Find
 TableUtil.Every = Every
 TableUtil.Some = Some
+TableUtil.Zip = Zip
 TableUtil.IsEmpty = IsEmpty
 TableUtil.EncodeJSON = EncodeJSON
 TableUtil.DecodeJSON = DecodeJSON
