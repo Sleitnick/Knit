@@ -85,9 +85,7 @@ function Streamable:Destroy()
 end
 
 
-local s = Streamable.new(workspace, "X")
-export type Streamable = typeof(s)
-s:Destroy()
+export type Streamable = typeof(Streamable.new(workspace, "X"))
 
 
 return Streamable
