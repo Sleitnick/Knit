@@ -171,6 +171,16 @@ return function()
 
 	end)
 
+	describe("Sample", function()
+
+		it("should sample a table", function()
+			local tbl = {1, 2, 3, 4, 5}
+			local sample = TableUtil.Sample(tbl, 3)
+			expect(#sample).to.equal(3)
+		end)
+
+	end)
+
 	describe("Flat", function()
 
 		it("should flatten table", function()
@@ -264,6 +274,60 @@ return function()
 				return (n > 20)
 			end)
 			expect(every).never.to.equal(true)
+		end)
+
+	end)
+
+	describe("Zip", function()
+
+		it("should zip arrays together", function()
+			local t1 = {1, 2, 3, 4, 5}
+			local t2 = {9, 8, 7, 6, 5}
+			local t3 = {1, 1, 1, 1, 1}
+			local lastIndex = 0
+			for i,v in TableUtil.Zip(t1, t2, t3) do
+				lastIndex = i
+				expect(v[1]).to.equal(t1[i])
+				expect(v[2]).to.equal(t2[i])
+				expect(v[3]).to.equal(t3[i])
+			end
+			expect(lastIndex).to.equal(math.min(#t1, #t2, #t3))
+		end)
+
+		it("should zip arrays of different lengths together", function()
+			local t1 = {1, 2, 3, 4, 5}
+			local t2 = {9, 8, 7, 6}
+			local t3 = {1, 1, 1}
+			local lastIndex = 0
+			for i,v in TableUtil.Zip(t1, t2, t3) do
+				lastIndex = i
+				expect(v[1]).to.equal(t1[i])
+				expect(v[2]).to.equal(t2[i])
+				expect(v[3]).to.equal(t3[i])
+			end
+			expect(lastIndex).to.equal(math.min(#t1, #t2, #t3))
+		end)
+
+		it("should zip maps together", function()
+			local t1 = {a = 10, b = 20, c = 30}
+			local t2 = {a = 100, b = 200, c = 300}
+			local t3 = {a = 3000, b = 2000, c = 3000}
+			for k,v in TableUtil.Zip(t1, t2, t3) do
+				expect(v[1]).to.equal(t1[k])
+				expect(v[2]).to.equal(t2[k])
+				expect(v[3]).to.equal(t3[k])
+			end
+		end)
+
+		it("should zip maps of different keys together", function()
+			local t1 = {a = 10, b = 20, c = 30, d = 40}
+			local t2 = {a = 100, b = 200, c = 300, z = 10}
+			local t3 = {a = 3000, b = 2000, c = 3000, x = 0}
+			for k,v in TableUtil.Zip(t1, t2, t3) do
+				expect(v[1]).to.equal(t1[k])
+				expect(v[2]).to.equal(t2[k])
+				expect(v[3]).to.equal(t3[k])
+			end
 		end)
 
 	end)

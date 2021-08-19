@@ -273,6 +273,8 @@ function Component.new(tag, class, renderPriority, requireComponents)
 		end
 		for _,requiredComponent in ipairs(self._requireComponents) do
 			tagsReady[requiredComponent] = false
+		end
+		for _,requiredComponent in ipairs(self._requireComponents) do
 			self._janitor:Add(Component.ObserveFromTag(requiredComponent, function(_component, janitor)
 				tagsReady[requiredComponent] = true
 				Check()

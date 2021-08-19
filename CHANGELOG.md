@@ -1,3 +1,9 @@
+## 0.0.21-alpha
+
+- Fix issue with having multiple required components
+- Adds `Sample` and `Zip` to TableUtil
+- Improvements to Timer module
+
 ## 0.0.20-alpha
 
 - Fixes bug with Timer class
