@@ -34,7 +34,7 @@ jobs:
           remodel run publish.lua
       - name: Changelog
         run: |
-          python3 last_changelog.py > log.md
+          python3 last_changelog.py CHANGELOG.md > log.md
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
