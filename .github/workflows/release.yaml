@@ -32,11 +32,14 @@ jobs:
           REMODEL_AUTH: ${{ secrets.RBX_AUTH }}
         run: |
           remodel run publish.lua
+      - name: Changelog
+        run: |
+          python3 last_changelog.py > log.md
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
           name: Release ${{ github.ref }}
-          body_path: CHANGELOG.md
+          body_path: log.md
           fail_on_unmatched_files: true
           files: |
             knit.zip
