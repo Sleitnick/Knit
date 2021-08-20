@@ -28,6 +28,7 @@
 	TableUtil.IsEmpty(tbl: table): boolean
 	TableUtil.EncodeJSON(tbl: table): string
 	TableUtil.DecodeJSON(json: string): table
+	TableUtil.Zip(...): (IteratorFunc, table, any)
 
 --]]
 
