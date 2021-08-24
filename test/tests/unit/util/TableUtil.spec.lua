@@ -107,20 +107,40 @@ return function()
 
 	describe("Reduce", function()
 
+		it("should reduce table with numbers", function()
+			local tbl = {1, 2, 3, 4, 5}
+			local reduced = TableUtil.Reduce(tbl, function(accum, value)
+				return accum + value
+			end)
+			expect(reduced).to.equal(15)
+		end)
+
 		it("should reduce table", function()
 			local tbl = {{Score = 10}, {Score = 20}, {Score = 30}}
 			local reduced = TableUtil.Reduce(tbl, function(accum, value)
-				return accum + (value.Score)
-			end)
+				return accum + value.Score
+			end, 0)
 			expect(reduced).to.equal(60)
 		end)
 
-		it("should reduce table with initial vlaue", function()
+		it("should reduce table with initial value", function()
 			local tbl = {{Score = 10}, {Score = 20}, {Score = 30}}
 			local reduced = TableUtil.Reduce(tbl, function(accum, value)
 				return accum + (value.Score)
 			end, 40)
 			expect(reduced).to.equal(100)
+		end)
+
+		it("should reduce functions", function()
+			local function Square(x) return x * x end
+			local function Double(x) return x * 2 end
+			local Func = TableUtil.Reduce({Square, Double}, function(a, b)
+				return function(x)
+					return a(b(x))
+				end
+			end)
+			local result = Func(10)
+			expect(result).to.equal(400)
 		end)
 
 	end)
@@ -276,6 +296,19 @@ return function()
 			expect(every).never.to.equal(true)
 		end)
 
+	end)
+
+	describe("Truncate", function()
+
+		it("should truncate an array", function()
+			local t1 = {1, 2, 3, 4, 5}
+			local t2 = TableUtil.Truncate(t1, 3)
+			expect(#t2).to.equal(3)
+			expect(t2[1]).to.equal(t1[1])
+			expect(t2[2]).to.equal(t1[2])
+			expect(t2[3]).to.equal(t1[3])
+		end)
+		
 	end)
 
 	describe("Zip", function()

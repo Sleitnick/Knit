@@ -13,7 +13,7 @@
 	TableUtil.FastRemoveFirstValue(tbl: table, value: any): (boolean, number)
 	TableUtil.Map(tbl: table, callback: (value: any) -> any): table
 	TableUtil.Filter(tbl: table, callback: (value: any) -> boolean): table
-	TableUtil.Reduce(tbl: table, callback: (accum: number, value: number) -> number [, initialValue: number]): number
+	TableUtil.Reduce(tbl: table, callback: (accum: any, value: any) -> any [, initialValue: any]): any
 	TableUtil.Assign(target: table, ...sources: table): table
 	TableUtil.Extend(tbl: table, extension: table): table
 	TableUtil.Reverse(tbl: table): table
@@ -178,13 +178,28 @@ local function Filter(t: Table, f: FilterPredicate): Table
 end
 
 
-local function Reduce(t: Table, f: ReducePredicate, init: number?): number
+local function Reduce(t: Table, f: ReducePredicate, init: any?): any
 	assert(type(t) == "table", "First argument must be a table")
 	assert(type(f) == "function", "Second argument must be a function")
-	assert(init == nil or type(init) == "number", "Third argument must be a number or nil")
-	local result = init or 0
-	for k,v in pairs(t) do
-		result = f(result, v, k, t)
+	local result = init
+	if #t > 0 then
+		local start = 1
+		if init == nil then
+			result = t[1]
+			start = 2
+		end
+		for i = start,#t do
+			result = f(result, t[i], i, t)
+		end
+	else
+		local start = nil
+		if init == nil then
+			result = next(t)
+			start = result
+		end
+		for k,v in next,t,start do
+			result = f(result, v, k, t)
+		end
 	end
 	return result
 end
@@ -311,7 +326,7 @@ end
 
 
 local function Truncate(tbl: Table, len: number): Table
-	return table.move(tbl, 1, #tbl - len, 1, table.create(#tbl - len))
+	return table.move(tbl, 1, len, 1, table.create(len))
 end
 
 
