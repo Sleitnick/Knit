@@ -349,6 +349,9 @@ local function IsEmpty(tbl)
 	return next(tbl) == nil
 end
 
+local function Truncate(tbl, len)
+	return table.move(tbl, 1, #tbl - len, 1, table.create(#tbl - len))
+end
 
 local function EncodeJSON(tbl: any): string
 	return HttpService:JSONEncode(tbl)
@@ -383,6 +386,6 @@ TableUtil.Zip = Zip
 TableUtil.IsEmpty = IsEmpty
 TableUtil.EncodeJSON = EncodeJSON
 TableUtil.DecodeJSON = DecodeJSON
-
+TableUtil.Truncate = Truncate
 
 return TableUtil
