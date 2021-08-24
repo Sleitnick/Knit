@@ -25,6 +25,7 @@
 	TableUtil.Find(tbl: table, callback: (value: any) -> boolean): (any, number)
 	TableUtil.Every(tbl: table, callback: (value: any) -> boolean): boolean
 	TableUtil.Some(tbl: table, callback: (value: any) -> boolean): boolean
+	TableUtil.Zip(...table): ((table, any) -> (any, any), table, any)
 	TableUtil.IsEmpty(tbl: table): boolean
 	TableUtil.EncodeJSON(tbl: table): string
 	TableUtil.DecodeJSON(json: string): table
@@ -37,6 +38,7 @@ type MapPredicate = (any, any, Table) -> any
 type FilterPredicate = (any, any, Table) -> boolean
 type ReducePredicate = (number, any, any, Table) -> number
 type FindCallback = (any, any, Table) -> boolean
+type IteratorFunc = (t: Table, k: any) -> (any, any)
 
 local TableUtil = {}
 
@@ -306,8 +308,6 @@ local function Some(tbl: Table, callback: FindCallback): boolean
 	return false
 end
 
-
-type IteratorFunc = (t: Table, k: any) -> (any, any)
 
 local function Zip(...): (IteratorFunc, Table, any)
 	assert(select("#", ...) > 0, "Must supply at least 1 table")
