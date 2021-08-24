@@ -235,9 +235,10 @@ local function Sample(tbl: Table, size: number, rngOverride: Random?): Table
 	local shuffled = CopyTableShallow(tbl)
 	local sample = table.create(size)
 	local random = rngOverride or rng
-	local low = math.clamp(#tbl - size, 2, #tbl)
-	for i = #tbl, low, -1 do
-		local j = random:NextInteger(1, i)
+	local len = #tbl
+	size = math.clamp(size, 1, len)
+	for i = 1,size do
+		local j = random:NextInteger(i, len)
 		shuffled[i], shuffled[j] = shuffled[j], shuffled[i]
 	end
 	table.move(shuffled, 1, size, 1, sample)
