@@ -19,13 +19,12 @@ end
 local NOT_A_PROMISE = "Invalid argument #1 to 'Janitor:AddPromise' (Promise expected, got %s (%s))"
 local METHOD_NOT_FOUND_ERROR = "Object %s doesn't have method %s, are you sure you want to add it? Traceback: %s"
 
-local Janitor = {
-	ClassName = "Janitor";
-	__index = {
-		CurrentlyCleaning = true;
-		[IndicesReference] = nil;
-	};
-}
+local Janitor = {}
+Janitor.ClassName = "Janitor"
+Janitor.__index = {}
+
+Janitor.__index.CurrentlyCleaning = true
+Janitor.__index[IndicesReference] = nil
 
 local TypeDefaults = {
 	["function"] = true;
@@ -33,24 +32,15 @@ local TypeDefaults = {
 }
 
 --[[**
-	Instantiates a new Janitor object.
-	@returns [t:Janitor]
-**--]]
-function Janitor.new()
-	return setmetatable({
-		CurrentlyCleaning = false;
-		[IndicesReference] = nil;
-	}, Janitor)
-end
-
---[[**
 	Determines if the passed object is a Janitor.
 	@param [t:any] Object The object you are checking.
 	@returns [t:boolean] Whether or not the object is a Janitor.
 **--]]
-function Janitor.Is(Object)
+function Janitor.Is(Object: any): boolean
 	return type(Object) == "table" and getmetatable(Object) == Janitor
 end
+
+type StringOrTrue = string | boolean
 
 --[[**
 	Adds an `Object` to Janitor for later cleanup, where `MethodName` is the key of the method within `Object` which should be called at cleanup time. If the `MethodName` is `true` the `Object` itself will be called instead. If passed an index it will occupy a namespace which can be `Remove()`d or overwritten. Returns the `Object`.
@@ -59,7 +49,7 @@ end
 	@param [t:any?] Index The index that can be used to clean up the object manually.
 	@returns [t:any] The object that was passed as the first argument.
 **--]]
-function Janitor.__index:Add(Object, MethodName, Index)
+function Janitor.__index:Add(Object: any, MethodName: StringOrTrue?, Index: any?): any
 	if Index then
 		self:Remove(Index)
 
@@ -108,7 +98,7 @@ end
 	@param [t:any] Index The index you want to remove.
 	@returns [t:Janitor] The same janitor, for chaining reasons.
 **--]]
-function Janitor.__index:Remove(Index)
+function Janitor.__index:Remove(Index: any): Janitor
 	local This = self[IndicesReference]
 
 	if This then
@@ -119,11 +109,11 @@ function Janitor.__index:Remove(Index)
 
 			if MethodName then
 				if MethodName == true then
-					Object()
+					task.spawn(Object)
 				else
 					local ObjectMethod = Object[MethodName]
 					if ObjectMethod then
-						ObjectMethod(Object)
+						task.spawn(ObjectMethod, Object)
 					end
 				end
 
@@ -142,7 +132,7 @@ end
 	@param [t:any] Index The index that the object is stored under.
 	@returns [t:any?] This will return the object if it is found, but it won't return anything if it doesn't exist.
 **--]]
-function Janitor.__index:Get(Index)
+function Janitor.__index:Get(Index: any): any?
 	local This = self[IndicesReference]
 	if This then
 		return This[Index]
@@ -164,11 +154,11 @@ function Janitor.__index:Cleanup()
 			end
 
 			if MethodName == true then
-				Object()
+				task.spawn(Object)
 			else
 				local ObjectMethod = Object[MethodName]
 				if ObjectMethod then
-					ObjectMethod(Object)
+					task.spawn(ObjectMethod, Object)
 				end
 			end
 
@@ -204,8 +194,10 @@ Janitor.__call = Janitor.__index.Cleanup
 -- @param Instance Instance The Instance the Janitor will wait for to be Destroyed
 -- @returns Disconnectable table to stop Janitor from being cleaned up upon Instance Destroy (automatically cleaned up by Janitor, btw)
 -- @author Corecii
-local Disconnect = {Connected = true}
+local Disconnect = {}
+Disconnect.Connected = true
 Disconnect.__index = Disconnect
+
 function Disconnect:Disconnect()
 	if self.Connected then
 		self.Connected = false
@@ -213,9 +205,17 @@ function Disconnect:Disconnect()
 	end
 end
 
+function Disconnect._new(RBXScriptConnection: RBXScriptConnection)
+	return setmetatable({
+		Connection = RBXScriptConnection;
+	}, Disconnect)
+end
+
 function Disconnect:__tostring()
 	return "Disconnect<" .. tostring(self.Connected) .. ">"
 end
+
+type RbxScriptConnection = typeof(Disconnect._new(game:GetPropertyChangedSignal("ClassName"):Connect(function() end)))
 
 --[[**
 	"Links" this Janitor to an Instance, such that the Janitor will `Cleanup` when the Instance is `Destroyed()` and garbage collected. A Janitor may only be linked to one instance at a time, unless `AllowMultiple` is true. When called with a truthy `AllowMultiple` parameter, the Janitor will "link" the Instance without overwriting any previous links, and will also not be overwritable. When called with a falsy `AllowMultiple` parameter, the Janitor will overwrite the previous link which was also called with a falsy `AllowMultiple` parameter, if applicable.
@@ -223,7 +223,7 @@ end
 	@param [t:boolean?] AllowMultiple Whether or not to allow multiple links on the same Janitor.
 	@returns [t:RbxScriptConnection] A pseudo RBXScriptConnection that can be disconnected to prevent the cleanup of LinkToInstance.
 **--]]
-function Janitor.__index:LinkToInstance(Object, AllowMultiple)
+function Janitor.__index:LinkToInstance(Object: Instance, AllowMultiple: boolean?): RbxScriptConnection
 	local Connection
 	local IndexToUse = AllowMultiple and newproxy(false) or LinkToInstanceIndex
 	local IsNilParented = Object.Parent == nil
@@ -261,7 +261,7 @@ function Janitor.__index:LinkToInstance(Object, AllowMultiple)
 		ChangedFunction(nil, Object.Parent)
 	end
 
-	Object = nil
+	Object = nil :: any
 	return self:Add(ManualDisconnect, "Disconnect", IndexToUse)
 end
 
@@ -270,7 +270,7 @@ end
 	@param [t:...Instance] ... All the instances you want linked.
 	@returns [t:Janitor] A new janitor that can be used to manually disconnect all LinkToInstances.
 **--]]
-function Janitor.__index:LinkToInstances(...)
+function Janitor.__index:LinkToInstances(...: Instance): Janitor
 	local ManualCleanup = Janitor.new()
 	for _, Object in ipairs({...}) do
 		ManualCleanup:Add(self:LinkToInstance(Object, true), "Disconnect")
@@ -279,4 +279,16 @@ function Janitor.__index:LinkToInstances(...)
 	return ManualCleanup
 end
 
+--[[**
+	Instantiates a new Janitor object.
+	@returns [t:Janitor]
+**--]]
+function Janitor.new()
+	return setmetatable({
+		CurrentlyCleaning = false;
+		[IndicesReference] = nil;
+	}, Janitor)
+end
+
+export type Janitor = typeof(Janitor.new())
 return Janitor
