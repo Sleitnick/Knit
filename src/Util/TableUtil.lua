@@ -25,6 +25,7 @@
 	TableUtil.Find(tbl: table, callback: (value: any) -> boolean): (any, number)
 	TableUtil.Every(tbl: table, callback: (value: any) -> boolean): boolean
 	TableUtil.Some(tbl: table, callback: (value: any) -> boolean): boolean
+	TableUtil.Truncate(tbl: table, length: number): table
 	TableUtil.Zip(...table): ((table, any) -> (any, any), table, any)
 	TableUtil.IsEmpty(tbl: table): boolean
 	TableUtil.EncodeJSON(tbl: table): string
@@ -309,6 +310,11 @@ local function Some(tbl: Table, callback: FindCallback): boolean
 end
 
 
+local function Truncate(tbl: Table, len: number): Table
+	return table.move(tbl, 1, #tbl - len, 1, table.create(#tbl - len))
+end
+
+
 local function Zip(...): (IteratorFunc, Table, any)
 	assert(select("#", ...) > 0, "Must supply at least 1 table")
 	local function ZipIteratorArray(all: Table, k: number)
@@ -349,9 +355,6 @@ local function IsEmpty(tbl)
 	return next(tbl) == nil
 end
 
-local function Truncate(tbl, len)
-	return table.move(tbl, 1, #tbl - len, 1, table.create(#tbl - len))
-end
 
 local function EncodeJSON(tbl: any): string
 	return HttpService:JSONEncode(tbl)

@@ -445,6 +445,20 @@ print("SomeBelowFive", someBelowFive) --> SomeBelowFive, false
 
 ---------------
 
+## `Truncate`
+`TableUtil.Truncate(tbl: table, length: number): table`
+
+Truncates a table to the specified length.
+
+```lua
+local t1 = {10, 20, 30, 40, 50}
+local t2 = TableUtil.Truncate(t1, 3)
+
+print(t2) --> {10, 20, 30}
+```
+
+---------------
+
 ## `Zip`
 `TableUtil.Zip(...table): Iterator`
 
