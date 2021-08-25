@@ -109,11 +109,11 @@ function Janitor.__index:Remove(Index: any): Janitor
 
 			if MethodName then
 				if MethodName == true then
-					task.spawn(Object)
+					Object()
 				else
 					local ObjectMethod = Object[MethodName]
 					if ObjectMethod then
-						task.spawn(ObjectMethod, Object)
+						ObjectMethod(Object)
 					end
 				end
 
