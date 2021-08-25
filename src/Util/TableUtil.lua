@@ -400,10 +400,10 @@ TableUtil.Keys = Keys
 TableUtil.Find = Find
 TableUtil.Every = Every
 TableUtil.Some = Some
+TableUtil.Truncate = Truncate
 TableUtil.Zip = Zip
 TableUtil.IsEmpty = IsEmpty
 TableUtil.EncodeJSON = EncodeJSON
 TableUtil.DecodeJSON = DecodeJSON
-TableUtil.Truncate = Truncate
 
 return TableUtil
