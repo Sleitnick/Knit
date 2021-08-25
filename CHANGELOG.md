@@ -1,3 +1,10 @@
+## 0.0.22-alpha
+
+- Fix `TableUtil.Sample` algorithm to properly implement a partial Fisher-Yates shuffle
+- Fix `TableUtil.Reduce` to handle the `init` parameter properly
+- Update Janitor to [v1.13.6](https://github.com/howmanysmall/Janitor/releases/tag/V1.13.6)
+- Small documentation adjustments
+
 ## 0.0.21-alpha
 
 - Fix issue with having multiple required components

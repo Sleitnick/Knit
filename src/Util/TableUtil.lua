@@ -13,7 +13,7 @@
 	TableUtil.FastRemoveFirstValue(tbl: table, value: any): (boolean, number)
 	TableUtil.Map(tbl: table, callback: (value: any) -> any): table
 	TableUtil.Filter(tbl: table, callback: (value: any) -> boolean): table
-	TableUtil.Reduce(tbl: table, callback: (accum: number, value: number) -> number [, initialValue: number]): number
+	TableUtil.Reduce(tbl: table, callback: (accum: any, value: any) -> any [, initialValue: any]): any
 	TableUtil.Assign(target: table, ...sources: table): table
 	TableUtil.Extend(tbl: table, extension: table): table
 	TableUtil.Reverse(tbl: table): table
@@ -25,6 +25,8 @@
 	TableUtil.Find(tbl: table, callback: (value: any) -> boolean): (any, number)
 	TableUtil.Every(tbl: table, callback: (value: any) -> boolean): boolean
 	TableUtil.Some(tbl: table, callback: (value: any) -> boolean): boolean
+	TableUtil.Truncate(tbl: table, length: number): table
+	TableUtil.Zip(...table): ((table, any) -> (any, any), table, any)
 	TableUtil.IsEmpty(tbl: table): boolean
 	TableUtil.EncodeJSON(tbl: table): string
 	TableUtil.DecodeJSON(json: string): table
@@ -37,6 +39,7 @@ type MapPredicate = (any, any, Table) -> any
 type FilterPredicate = (any, any, Table) -> boolean
 type ReducePredicate = (number, any, any, Table) -> number
 type FindCallback = (any, any, Table) -> boolean
+type IteratorFunc = (t: Table, k: any) -> (any, any)
 
 local TableUtil = {}
 
@@ -175,13 +178,28 @@ local function Filter(t: Table, f: FilterPredicate): Table
 end
 
 
-local function Reduce(t: Table, f: ReducePredicate, init: number?): number
+local function Reduce(t: Table, f: ReducePredicate, init: any?): any
 	assert(type(t) == "table", "First argument must be a table")
 	assert(type(f) == "function", "Second argument must be a function")
-	assert(init == nil or type(init) == "number", "Third argument must be a number or nil")
-	local result = init or 0
-	for k,v in pairs(t) do
-		result = f(result, v, k, t)
+	local result = init
+	if #t > 0 then
+		local start = 1
+		if init == nil then
+			result = t[1]
+			start = 2
+		end
+		for i = start,#t do
+			result = f(result, t[i], i, t)
+		end
+	else
+		local start = nil
+		if init == nil then
+			result = next(t)
+			start = result
+		end
+		for k,v in next,t,start do
+			result = f(result, v, k, t)
+		end
 	end
 	return result
 end
@@ -235,9 +253,10 @@ local function Sample(tbl: Table, size: number, rngOverride: Random?): Table
 	local shuffled = CopyTableShallow(tbl)
 	local sample = table.create(size)
 	local random = rngOverride or rng
-	local low = math.clamp(#tbl - size, 2, #tbl)
-	for i = #tbl, low, -1 do
-		local j = random:NextInteger(1, i)
+	local len = #tbl
+	size = math.clamp(size, 1, len)
+	for i = 1,size do
+		local j = random:NextInteger(i, len)
 		shuffled[i], shuffled[j] = shuffled[j], shuffled[i]
 	end
 	table.move(shuffled, 1, size, 1, sample)
@@ -306,7 +325,10 @@ local function Some(tbl: Table, callback: FindCallback): boolean
 end
 
 
-type IteratorFunc = (t: Table, k: any) -> (any, any)
+local function Truncate(tbl: Table, len: number): Table
+	return table.move(tbl, 1, len, 1, table.create(len))
+end
+
 
 local function Zip(...): (IteratorFunc, Table, any)
 	assert(select("#", ...) > 0, "Must supply at least 1 table")
@@ -378,10 +400,10 @@ TableUtil.Keys = Keys
 TableUtil.Find = Find
 TableUtil.Every = Every
 TableUtil.Some = Some
+TableUtil.Truncate = Truncate
 TableUtil.Zip = Zip
 TableUtil.IsEmpty = IsEmpty
 TableUtil.EncodeJSON = EncodeJSON
 TableUtil.DecodeJSON = DecodeJSON
-
 
 return TableUtil

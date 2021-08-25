@@ -174,9 +174,11 @@ print(scores) --> {23, 40, 31}
 ---------------
 
 ## `Reduce`
-`TableUtil.Reduce(tbl: table, callback: (acc: number, val: number) -> number [, init: number]): number`
+`TableUtil.Reduce(tbl: table, callback: (acc: any, val: any) -> number [, init: any]): any`
 
-Reduces the contents of a table to a number.
+Reduces the contents of a table to a certain value.
+
+If the `init` value is not specified, it defaults to the first value in the table.
 
 ```lua
 local scores = {10, 20, 30}
@@ -198,6 +200,32 @@ local totalScore = TableUtil.Reduce(scores, function(accumulator, value)
 end, initialValue)
 
 print(totalScore) --> 100
+```
+
+The `Reduce` function is not limited to numbers. Here's an example of a very inefficient string builder:
+```lua
+local values = {"A", "B", "C"}
+local str = TableUtil.Reduce(values, function(accumulator, value)
+	return accumulator .. value
+end)
+
+print(str) --> "ABC"
+```
+
+Functions could also be combined using a reducer:
+```lua
+local function Square(x) return x * x end
+local function Double(x) return x * 2 end
+
+local Func = TableUtil.Reduce({Square, Double}, function(a, b)
+	return function(x)
+		return a(b(x))
+	end
+end)
+-- Func == Square(Double(x))
+
+local result = Func(10)
+print(result) --> 400
 ```
 
 `Reduce` can be used with both arrays and dictionaries.
@@ -442,6 +470,20 @@ print("SomeBelowFive", someBelowFive) --> SomeBelowFive, false
 ```
 
 `Some` can be used with both arrays and dictionaries.
+
+---------------
+
+## `Truncate`
+`TableUtil.Truncate(tbl: table, length: number): table`
+
+Truncates a table to the specified length.
+
+```lua
+local t1 = {10, 20, 30, 40, 50}
+local t2 = TableUtil.Truncate(t1, 3)
+
+print(t2) --> {10, 20, 30}
+```
 
 ---------------
 

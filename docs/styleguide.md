@@ -44,6 +44,8 @@ All source files should follow a similar format to this template:
 -- Return module
 ```
 
+In other Roblox programming ecosystems, it is usually standard for service refs to come _before_ module requires. The reason for the switch here is that imports are always first in just about every other ecosystem, and thus Knit tries to follow the more global standard.
+
 Example of `MyModule.lua`:
 
 ```lua
