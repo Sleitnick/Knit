@@ -35,8 +35,6 @@ Installing Knit is very simple. Just drop the module into ReplicatedStorage. Kni
 1. Place Knit within your project.
 1. Use Rojo to point Knit to ReplicatedStorage.
 
-Please note that it is vital for Knit to live directly within ReplicatedStorage. It cannot be nested in another instance, nor can it live in another service. This is due to other parts of Knit needing to reference back to the Knit module.
-
 ## Basic Usage
 
 The core usage of Knit is the same from the server and the client. The general pattern is to create a single script on the server and a single script on the client. These scripts will load Knit, create services/controllers, and then start Knit.
@@ -84,9 +82,6 @@ end
 Knit.Start():Catch(warn)
 ```
 
-!!! note
-	It's better practice to put services and controllers within their own ModuleScript and then require them from your main script. For the sake of simplicity, they are all in one script for these examples.
-
 Now we have a little MoneyService that can get and give money to a player. However, only the server can use this at the moment. What if we want clients to fetch how much money they have? To do this, we have to create some client-side code to consume our service. We _could_ create a controller, but it's not necessary for this example.
 
 First, we need to expose a method to the client. We can do this by writing methods on the service's Client table:
@@ -119,5 +114,3 @@ end)
 ```
 
 Under the hood, Knit is creating a RemoteFunction bound to the service's GetMoney method. Knit keeps RemoteFunctions and RemoteEvents out of the way so that developers can focus on writing code and not building communication infrastructure.
-
-Check out the [Services](services.md) documentation for more info on services.

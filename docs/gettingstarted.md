@@ -14,8 +14,6 @@ Installing Knit is very simple. Just drop the module into ReplicatedStorage. Kni
 1. Place Knit within your project.
 1. Use Rojo to point Knit to ReplicatedStorage.
 
-Please note that it is vital for Knit to live directly within ReplicatedStorage. It cannot be nested in another instance, nor can it live in another service. This is due to other parts of Knit needing to reference back to the Knit module.
-
 ## Basic Usage
 
 The core usage of Knit is the same from the server and the client. The general pattern is to create a single script on the server and a single script on the client. These scripts will load Knit, create services/controllers, and then start Knit.
