@@ -294,6 +294,22 @@ print(shuffledMusic) --> e.g. {"Song4", "Song5", "Song2", "Song3", "Song1"}
 
 ---------------
 
+## `Sample`
+`TableUtil.Sample(tbl: table, size: number [, rng: Random]): table`
+
+Returns a random sample of the given array. The sample size is determined by the `size` argument.
+
+```lua
+local names = {"John", "Mary", "Ron", "Julie", "Sam"}
+local sample = TableUtil.Sample(names, 3)
+
+print(sample) --> e.g. {"Julie", "John", "Sam"}
+```
+
+`Sample` can only be used with arrays.
+
+---------------
+
 ## `Flat`
 `TableUtil.Flat(tbl: table [, maxDepth: number = 1]): table`
 
@@ -426,6 +442,38 @@ print("SomeBelowFive", someBelowFive) --> SomeBelowFive, false
 ```
 
 `Some` can be used with both arrays and dictionaries.
+
+---------------
+
+## `Zip`
+`TableUtil.Zip(...table): Iterator`
+
+Returns an iterator that can be used to iterate through multiple different arrays or dictionaries. Any overlapping indices between all given tables will be included in the iteration.
+
+```lua
+local a = {4, 5, 6}
+local b = {9, 8, 7}
+
+for i,values in TableUtil.Zip(a, b) do
+	print(i, values)
+end
+--> 1 {4, 9}
+--> 2 {5, 8}
+--> 3 {6, 7}
+```
+
+```lua
+local a = {X = 10, Y = 20, Z = 30}
+local b = {X = 40, Y = 50, Z = 60}
+local c = {X = 70, Y = 80, Z = 90}
+
+for k,values in TableUtil.Zip(a, b, c) do
+	print(k, values)
+end
+--> X {10, 40, 70}
+--> Y {20, 50, 80}
+--> Z {30, 60, 90}
+```
 
 ---------------
 

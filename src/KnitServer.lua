@@ -1,3 +1,5 @@
+--!strict
+
 --[[
 
 	Knit.CreateService(service): Service
@@ -9,10 +11,33 @@
 --]]
 
 
+type ServiceDef = {
+	Name: string,
+	Client: {[any]: any}?,
+	[any]: any,
+}
+
+type Service = {
+	Name: string,
+	Client: ServiceClient,
+	_knit_is_service: boolean,
+	_knit_rf: {},
+	_knit_re: {},
+	_knit_rp: {},
+	_knit_rep_folder: Instance,
+	[any]: any,
+}
+
+type ServiceClient = {
+	Server: Service,
+	[any]: any,
+}
+
+
 local KnitServer = {}
 
 KnitServer.Version = script.Parent.Version.Value
-KnitServer.Services = {}
+KnitServer.Services = {} :: {[string]: Service}
 KnitServer.Util = script.Parent.Util
 
 
@@ -32,16 +57,16 @@ local startedComplete = false
 local onStartedComplete = Instance.new("BindableEvent")
 
 
-local function CreateRepFolder(serviceName)
+local function CreateRepFolder(serviceName: string): Instance
 	local folder = Instance.new("Folder")
 	folder.Name = serviceName
 	return folder
 end
 
 
-local function GetFolderOrCreate(parent, name)
+local function GetFolderOrCreate(parent: Instance, name: string): Instance
 	local f = parent:FindFirstChild(name)
-	if (not f) then
+	if not f then
 		f = Instance.new("Folder")
 		f.Name = name
 		f.Parent = parent
@@ -50,45 +75,51 @@ local function GetFolderOrCreate(parent, name)
 end
 
 
-local function AddToRepFolder(service, remoteObj, folderOverride)
-	if (folderOverride) then
+local function AddToRepFolder(service: Service, remoteObj: Instance, folderOverride: string?)
+	if folderOverride then
 		remoteObj.Parent = GetFolderOrCreate(service._knit_rep_folder, folderOverride)
-	elseif (remoteObj:IsA("RemoteFunction")) then
+	elseif remoteObj:IsA("RemoteFunction") then
 		remoteObj.Parent = GetFolderOrCreate(service._knit_rep_folder, "RF")
-	elseif (remoteObj:IsA("RemoteEvent")) then
+	elseif remoteObj:IsA("RemoteEvent") then
 		remoteObj.Parent = GetFolderOrCreate(service._knit_rep_folder, "RE")
-	elseif (remoteObj:IsA("ValueBase")) then
+	elseif remoteObj:IsA("ValueBase") then
 		remoteObj.Parent = GetFolderOrCreate(service._knit_rep_folder, "RP")
 	else
 		error("Invalid rep object: " .. remoteObj.ClassName)
 	end
-	if (not service._knit_rep_folder.Parent) then
+	if not service._knit_rep_folder.Parent then
 		service._knit_rep_folder.Parent = knitRepServiceFolder
 	end
 end
 
 
-function KnitServer.IsService(object)
+local function DoesServiceExist(serviceName: string): boolean
+	local service: Service? = KnitServer.Services[serviceName]
+	return service ~= nil
+end
+
+
+function KnitServer.IsService(object: any): boolean
 	return type(object) == "table" and object._knit_is_service == true
 end
 
 
-function KnitServer.CreateService(service)
-	assert(type(service) == "table", "Service must be a table; got " .. type(service))
-	assert(type(service.Name) == "string", "Service.Name must be a string; got " .. type(service.Name))
-	assert(#service.Name > 0, "Service.Name must be a non-empty string")
-	assert(KnitServer.Services[service.Name] == nil, "Service \"" .. service.Name .. "\" already exists")
-	service = TableUtil.Assign(service, {
+function KnitServer.CreateService(serviceDef: ServiceDef): Service
+	assert(type(serviceDef) == "table", "Service must be a table; got " .. type(serviceDef))
+	assert(type(serviceDef.Name) == "string", "Service.Name must be a string; got " .. type(serviceDef.Name))
+	assert(#serviceDef.Name > 0, "Service.Name must be a non-empty string")
+	assert(not DoesServiceExist(serviceDef.Name), "Service \"" .. serviceDef.Name .. "\" already exists")
+	local service: Service = TableUtil.Assign(serviceDef, {
 		_knit_is_service = true;
 		_knit_rf = {};
 		_knit_re = {};
 		_knit_rp = {};
-		_knit_rep_folder = CreateRepFolder(service.Name);
+		_knit_rep_folder = CreateRepFolder(serviceDef.Name);
 	})
-	if (type(service.Client) ~= "table") then
+	if type(service.Client) ~= "table" then
 		service.Client = {Server = service}
 	else
-		if (service.Client.Server ~= service) then
+		if service.Client.Server ~= service then
 			service.Client.Server = service
 		end
 	end
@@ -97,23 +128,23 @@ function KnitServer.CreateService(service)
 end
 
 
-function KnitServer.AddServices(folder)
+function KnitServer.AddServices(folder: Instance): {any}
 	return Loader.LoadChildren(folder)
 end
 
 
-function KnitServer.AddServicesDeep(folder)
+function KnitServer.AddServicesDeep(folder: Instance): {any}
 	return Loader.LoadDescendants(folder)
 end
 
 
-function KnitServer.GetService(serviceName)
+function KnitServer.GetService(serviceName: string): Service
 	assert(type(serviceName) == "string", "ServiceName must be a string; got " .. type(serviceName))
-	return assert(KnitServer.Services[serviceName], "Could not find service \"" .. serviceName .. "\"")
+	return assert(KnitServer.Services[serviceName], "Could not find service \"" .. serviceName .. "\"") :: Service
 end
 
 
-function KnitServer.BindRemoteEvent(service, eventName, remoteEvent)
+function KnitServer.BindRemoteEvent(service: Service, eventName: string, remoteEvent)
 	assert(service._knit_re[eventName] == nil, "RemoteEvent \"" .. eventName .. "\" already exists")
 	local re = remoteEvent._remote
 	re.Name = eventName
@@ -122,19 +153,19 @@ function KnitServer.BindRemoteEvent(service, eventName, remoteEvent)
 end
 
 
-function KnitServer.BindRemoteFunction(service, funcName, func)
+function KnitServer.BindRemoteFunction(service: Service, funcName: string, func: (ServiceClient, ...any) -> ...any)
 	assert(service._knit_rf[funcName] == nil, "RemoteFunction \"" .. funcName .. "\" already exists")
 	local rf = Instance.new("RemoteFunction")
 	rf.Name = funcName
 	service._knit_rf[funcName] = rf
 	AddToRepFolder(service, rf)
-	function rf.OnServerInvoke(...)
+	rf.OnServerInvoke = function(...)
 		return Ser.SerializeArgsAndUnpack(func(service.Client, Ser.DeserializeArgsAndUnpack(...)))
 	end
 end
 
 
-function KnitServer.BindRemoteProperty(service, propName, prop)
+function KnitServer.BindRemoteProperty(service: Service, propName: string, prop)
 	assert(service._knit_rp[propName] == nil, "RemoteProperty \"" .. propName .. "\" already exists")
 	prop._object.Name = propName
 	service._knit_rp[propName] = prop
@@ -144,7 +175,7 @@ end
 
 function KnitServer.Start()
 
-	if (started) then
+	if started then
 		return Promise.Reject("Knit already started")
 	end
 
@@ -157,13 +188,13 @@ function KnitServer.Start()
 		-- Bind remotes:
 		for _,service in pairs(services) do
 			for k,v in pairs(service.Client) do
-				if (type(v) == "function") then
+				if type(v) == "function" then
 					KnitServer.BindRemoteFunction(service, k, v)
-				elseif (RemoteSignal.Is(v)) then
+				elseif RemoteSignal.Is(v) then
 					KnitServer.BindRemoteEvent(service, k, v)
-				elseif (RemoteProperty.Is(v)) then
+				elseif RemoteProperty.Is(v) then
 					KnitServer.BindRemoteProperty(service, k, v)
-				elseif (Signal.Is(v)) then
+				elseif Signal.Is(v) then
 					warn("Found Signal instead of RemoteSignal (Knit.Util.RemoteSignal). Please change to RemoteSignal. [" .. service.Name .. ".Client." .. k .. "]")
 				end
 			end
@@ -172,7 +203,7 @@ function KnitServer.Start()
 		-- Init:
 		local promisesInitServices = {}
 		for _,service in pairs(services) do
-			if (type(service.KnitInit) == "function") then
+			if type(service.KnitInit) == "function" then
 				table.insert(promisesInitServices, Promise.new(function(r)
 					service:KnitInit()
 					r()
@@ -186,7 +217,7 @@ function KnitServer.Start()
 
 		-- Start:
 		for _,service in pairs(services) do
-			if (type(service.KnitStart) == "function") then
+			if type(service.KnitStart) == "function" then
 				task.spawn(service.KnitStart, service)
 			end
 		end
@@ -207,7 +238,7 @@ end
 
 
 function KnitServer.OnStart()
-	if (startedComplete) then
+	if startedComplete then
 		return Promise.Resolve()
 	else
 		return Promise.FromEvent(onStartedComplete.Event)

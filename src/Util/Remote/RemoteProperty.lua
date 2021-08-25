@@ -40,7 +40,7 @@ RemoteProperty.__index = RemoteProperty
 
 
 function RemoteProperty.Is(object)
-	return (type(object) == "table" and getmetatable(object) == RemoteProperty)
+	return type(object) == "table" and getmetatable(object) == RemoteProperty
 end
 
 
@@ -48,7 +48,7 @@ function RemoteProperty.new(value, overrideClass)
 
 	assert(IS_SERVER, "RemoteProperty can only be created on the server")
 
-	if (overrideClass ~= nil) then
+	if overrideClass ~= nil then
 		assert(type(overrideClass) == "string", "OverrideClass must be a string; got " .. type(overrideClass))
 		assert(overrideClass:match("Value$"), "OverrideClass must be of super type ValueBase (e.g. IntValue); got " .. overrideClass)
 	end
@@ -64,7 +64,7 @@ function RemoteProperty.new(value, overrideClass)
 		_object = Instance.new(class);
 	}, RemoteProperty)
 
-	if (self._isTable) then
+	if self._isTable then
 		local req = Instance.new("RemoteFunction")
 		req.Name = "TableRequest"
 		req.Parent = self._object
@@ -84,14 +84,14 @@ end
 
 
 function RemoteProperty:Replicate()
-	if (self._isTable) then
+	if self._isTable then
 		self:Set(self._value)
 	end
 end
 
 
 function RemoteProperty:Set(value)
-	if (self._isTable) then
+	if self._isTable then
 		self._object:FireAllClients(value)
 		self.Changed:Fire(value)
 	else

@@ -136,7 +136,7 @@ return function()
 			local runtimeSuccess = Promise.new(function(resolve, _reject, onCancel)
 				local handle
 				handle = game:GetService("RunService").Heartbeat:Connect(function()
-					if (obj.DidHeartbeatUpdate and obj.DidSteppedUpdate and obj.DidRenderUpdate) then
+					if obj.DidHeartbeatUpdate and obj.DidSteppedUpdate and obj.DidRenderUpdate then
 						resolve()
 					end
 				end)
@@ -153,9 +153,9 @@ return function()
 			local initDeinitSuccess = Promise.new(function(resolve, _reject, onCancel)
 				local handle
 				handle = game:GetService("RunService").Heartbeat:Connect(function()
-					if (obj.DidDeinit) then
+					if obj.DidDeinit then
 						resolve()
-					elseif (obj.DidInit and instance.Parent) then
+					elseif obj.DidInit and instance.Parent then
 						instance:Destroy()
 					end
 				end)

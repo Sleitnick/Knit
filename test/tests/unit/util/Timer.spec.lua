@@ -12,7 +12,7 @@ return function()
 		end)
 
 		afterEach(function()
-			if (timer) then
+			if timer then
 				timer:Destroy()
 				timer = nil
 			end
@@ -34,7 +34,7 @@ return function()
 			local start = time()
 			local stop = nil
 			timer.Tick:Connect(function()
-				if (not stop) then
+				if not stop then
 					stop = time()
 				end
 			end)
