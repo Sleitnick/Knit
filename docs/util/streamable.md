@@ -2,7 +2,7 @@
 
 Streamables can be paired with Components. If a component is attached to a model and the component needs to access the model's children, a streamable can guarantee safe access to those children. When using a streamable within a component, be sure to pass the streamable to the component's janitor for automatic cleanup.
 
-Check out Roblox's [Content Streaming](https://developer.roblox.com/en-us/articles/content-streaming) developer documentation for more information on how content is streamed into and out of games during runtime.
+Check out Roblox's [Content Streaming](https://developer.roblox.com/en-us/articles/content-streaming) documentation for more information on how content is streamed into and out of games during runtime.
 
 ```lua
 local Streamable = require(Knit.Util.Streamable)
