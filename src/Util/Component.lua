@@ -319,7 +319,6 @@ end
 
 
 function Component:_startRenderUpdate()
-	local all = self._objects
 	self._renderName = (self._tag .. "RenderUpdate")
 	RunService:BindToRenderStep(self._renderName, self._renderPriority, function(dt)
 		for _,v in ipairs(self._objects) do
