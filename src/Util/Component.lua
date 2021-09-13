@@ -299,9 +299,8 @@ end
 
 
 function Component:_startHeartbeatUpdate()
-	local all = self._objects
 	self._heartbeatUpdate = RunService.Heartbeat:Connect(function(dt)
-		for _,v in ipairs(all) do
+		for _,v in ipairs(self._objects) do
 			v:HeartbeatUpdate(dt)
 		end
 	end)
@@ -310,9 +309,8 @@ end
 
 
 function Component:_startSteppedUpdate()
-	local all = self._objects
 	self._steppedUpdate = RunService.Stepped:Connect(function(_, dt)
-		for _,v in ipairs(all) do
+		for _,v in ipairs(self._objects) do
 			v:SteppedUpdate(dt)
 		end
 	end)
@@ -324,7 +322,7 @@ function Component:_startRenderUpdate()
 	local all = self._objects
 	self._renderName = (self._tag .. "RenderUpdate")
 	RunService:BindToRenderStep(self._renderName, self._renderPriority, function(dt)
-		for _,v in ipairs(all) do
+		for _,v in ipairs(self._objects) do
 			v:RenderUpdate(dt)
 		end
 	end)
