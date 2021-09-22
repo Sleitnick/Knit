@@ -1375,7 +1375,7 @@ function Promise.retry(callback, times, ...)
 		end
 	end)
 end
-Promise.prototype.Retry = Promise.prototype.retry
+Promise.Retry = Promise.retry
 
 --[[
 	Converts an event into a Promise with an optional predicate
