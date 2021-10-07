@@ -1,4 +1,4 @@
-The [Janitor](https://github.com/AtollStudios/Knit/blob/main/src/Util/Janitor.lua) class manages the cleanup of instances, connections, promises, or anything else. A typical pattern is to use a Janitor within other classes. Instances and connections created by said classes can be added to janitors and then automatically cleaned up when destructed.
+The [Janitor](https://github.com/Sleitnick/Knit/blob/main/src/Util/Janitor.lua) class manages the cleanup of instances, connections, promises, or anything else. A typical pattern is to use a Janitor within other classes. Instances and connections created by said classes can be added to janitors and then automatically cleaned up when destructed.
 
 ```lua
 local Janitor = require(Knit.Util.Janitor)

@@ -1,10 +1,10 @@
 site_name: Knit
 site_description: Documentation for Knit
-site_author: Atoll Studios
-site_url: https://atollstudios.github.io/Knit/
-repo_url: https://github.com/AtollStudios/Knit
+site_author: Stephen Leitnick
+site_url: https://sleitnick.github.io/Knit/
+repo_url: https://github.com/Sleitnick/Knit
 repo_name: Knit
-copyright: Copyright &copy; 2020 - 2021 Atoll Studios
+copyright: Copyright &copy; 2020 - 2021 Stephen Leitnick
 
 nav:
   - Home: index.md
@@ -53,10 +53,10 @@ theme:
 extra:
   social:
     - icon: fontawesome/brands/github-alt
-      link: https://github.com/AtollStudios/Knit
+      link: https://github.com/Sleitnick/Knit
       name: GitHub repository for Knit
     - icon: fontawesome/brands/twitter
-      link: https://twitter.com/AtollStudios
+      link: https://twitter.com/Sleitnick
       name: Twitter for Knit's author
 
 markdown_extensions:

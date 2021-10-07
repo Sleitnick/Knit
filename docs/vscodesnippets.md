@@ -284,29 +284,6 @@ Require a module within Knit.
 
 ```lua
 local Janitor = require(Knit.Util.Janitor)
-
-local MyComponent = {}
-MyComponent.__index = MyComponent
-
-MyComponent.Tag = "MyComponent"
-
-function MyComponent.new(instance)
-	local self = setmetatable({}, MyComponent)
-	self._janitor = Janitor.new()
-	return self
-end
-
-function MyComponent:Init()
-end
-
-function MyComponent:Deinit()
-end
-
-function MyComponent:Destroy()
-	self._janitor:Destroy()
-end
-
-return MyComponent
 ```
 
 </details>

@@ -1,4 +1,4 @@
-The [Timer](https://github.com/AtollStudios/Knit/blob/main/src/Util/Timer.lua) class allows for firing tasks at given intervals. An example could be a periodic check to see if a car is flipped upside down.
+The [Timer](https://github.com/Sleitnick/Knit/blob/main/src/Util/Timer.lua) class allows for firing tasks at given intervals. An example could be a periodic check to see if a car is flipped upside down.
 
 ```lua
 local Timer = require(Knit.Util.Timer)
