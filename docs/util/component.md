@@ -1,4 +1,4 @@
-The [Component](https://github.com/AtollStudios/Knit/blob/main/src/Util/Component.lua) class allows developers to bind custom component classes to in-game objects based on tags provided by the [CollectionService](https://developer.roblox.com/en-us/api-reference/class/CollectionService).
+The [Component](https://github.com/Sleitnick/Knit/blob/main/src/Util/Component.lua) class allows developers to bind custom component classes to in-game objects based on tags provided by the [CollectionService](https://developer.roblox.com/en-us/api-reference/class/CollectionService).
 
 The best practice is to keep all components as descendants of a folder and then call `Component.Auto(folder)` to load all the components automatically. This process is looks for component modules in all descendants of the given folder.
 
