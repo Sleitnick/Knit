@@ -9,4 +9,4 @@ realm = "shared"
 [dependencies]
 Loader = "sleitnick/loader@1.0.1"
 Signal = "sleitnick/signal@1.0.0"
-Remote = "sleitnick/remote@1.0.0"
+Remote = "sleitnick/remote@1.0.1"

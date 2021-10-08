@@ -5,7 +5,7 @@ registry = "test"
 [[package]]
 name = "sleitnick/knit"
 version = "1.0.0"
-dependencies = [["Loader", "sleitnick/loader@1.0.1"], ["Signal", "sleitnick/signal@1.0.0"], ["TableUtil", "sleitnick/table-util@1.0.0"]]
+dependencies = [["Loader", "sleitnick/loader@1.0.1"], ["Remote", "sleitnick/remote@1.0.1"], ["Signal", "sleitnick/signal@1.0.0"]]
 
 [[package]]
 name = "sleitnick/loader"
@@ -13,11 +13,21 @@ version = "1.0.1"
 dependencies = []
 
 [[package]]
-name = "sleitnick/signal"
+name = "sleitnick/option"
 version = "1.0.0"
 dependencies = []
 
 [[package]]
-name = "sleitnick/table-util"
+name = "sleitnick/remote"
+version = "1.0.1"
+dependencies = [["Ser", "sleitnick/ser@1.0.1"], ["Signal", "sleitnick/signal@1.0.0"]]
+
+[[package]]
+name = "sleitnick/ser"
+version = "1.0.1"
+dependencies = [["Option", "sleitnick/option@1.0.0"]]
+
+[[package]]
+name = "sleitnick/signal"
 version = "1.0.0"
 dependencies = []
