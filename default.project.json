@@ -1,6 +1,9 @@
 {
 	"name": "Knit",
 	"tree": {
-		"$path": "src"
+		"$path": "src",
+		"Util": {
+			"$path": "Packages"
+		}
 	}
 }

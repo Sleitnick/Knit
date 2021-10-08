@@ -21,7 +21,7 @@
 			"$className": "ReplicatedStorage",
 			"Knit": {
 				"$path": "src",
-				"Packages": {
+				"Util": {
 					"$path": "Packages"
 				}
 			},
