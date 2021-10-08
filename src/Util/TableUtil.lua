@@ -47,12 +47,14 @@ local HttpService = game:GetService("HttpService")
 local rng = Random.new()
 
 
-local function CopyTable(t: Table, cache): Table
+local function CopyTable(t: Table): Table
 	assert(type(t) == "table", "First argument must be a table")
 	
-	cache = cache or {}
 	
-	local function Copy(tbl)
+	
+	local function Copy(tbl, cache)
+		cache = cache or {}
+		
 		local tCopy = table.create(#tbl)
 		for k,v in pairs(tbl) do
 			if type(v) == "table" and not cache[v] then
