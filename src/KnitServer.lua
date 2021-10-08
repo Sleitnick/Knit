@@ -38,7 +38,7 @@ local KnitServer = {}
 
 KnitServer.Version = script.Parent.Version.Value
 KnitServer.Services = {} :: {[string]: Service}
-KnitServer.Util = script.Parent.Util
+KnitServer.Util = script.Parent.Parent
 
 
 local knitRepServiceFolder = Instance.new("Folder")
@@ -176,7 +176,7 @@ end
 function KnitServer.Start()
 
 	if started then
-		return Promise.Reject("Knit already started")
+		return Promise.reject("Knit already started")
 	end
 
 	started = true
@@ -211,9 +211,9 @@ function KnitServer.Start()
 			end
 		end
 
-		resolve(Promise.All(promisesInitServices))
+		resolve(Promise.all(promisesInitServices))
 
-	end):Then(function()
+	end):andThen(function()
 
 		-- Start:
 		for _,service in pairs(services) do
@@ -239,9 +239,9 @@ end
 
 function KnitServer.OnStart()
 	if startedComplete then
-		return Promise.Resolve()
+		return Promise.resolve()
 	else
-		return Promise.FromEvent(onStartedComplete.Event)
+		return Promise.fromEvent(onStartedComplete.Event)
 	end
 end
 

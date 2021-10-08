@@ -5,9 +5,21 @@
 		"ReplicatedStorage": {
 			"$className": "ReplicatedStorage",
 			"Knit": {
-				"$path": "src",
-				"Util": {
-					"$path": "Packages"
+				"$path": "."
+			}
+		},
+		"ServerScriptService": {
+			"$className": "ServerScriptService",
+			"Test": {
+				"$path": "test/server"
+			}
+		},
+		"StarterPlayer": {
+			"$className": "StarterPlayer",
+			"StarterPlayerScripts": {
+				"$className": "StarterPlayerScripts",
+				"Test": {
+					"$path": "test/client"
 				}
 			}
 		}

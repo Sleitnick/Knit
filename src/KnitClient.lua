@@ -33,7 +33,7 @@ local KnitClient = {}
 KnitClient.Version = script.Parent:WaitForChild("Version").Value
 KnitClient.Player = game:GetService("Players").LocalPlayer
 KnitClient.Controllers = {} :: {[string]: Controller}
-KnitClient.Util = script.Parent:WaitForChild("Util")
+KnitClient.Util = script.Parent.Parent
 
 local Promise = require(KnitClient.Util.Promise)
 local Loader = require(KnitClient.Util.Loader)
@@ -136,7 +136,7 @@ end
 function KnitClient.Start()
 
 	if started then
-		return Promise.Reject("Knit already started")
+		return Promise.reject("Knit already started")
 	end
 
 	started = true
@@ -156,9 +156,9 @@ function KnitClient.Start()
 			end
 		end
 
-		resolve(Promise.All(promisesStartControllers))
+		resolve(Promise.all(promisesStartControllers))
 
-	end):Then(function()
+	end):andThen(function()
 
 		-- Start:
 		for _,controller in pairs(controllers) do
@@ -181,9 +181,9 @@ end
 
 function KnitClient.OnStart()
 	if startedComplete then
-		return Promise.Resolve()
+		return Promise.resolve()
 	else
-		return Promise.FromEvent(onStartedComplete.Event)
+		return Promise.fromEvent(onStartedComplete.Event)
 	end
 end
 
