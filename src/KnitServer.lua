@@ -40,13 +40,16 @@ KnitServer.Version = script.Parent.Version.Value
 KnitServer.Services = {} :: {[string]: Service}
 KnitServer.Util = script.Parent.Util
 
+-- TEMPORARY:
+KnitServer._TEMP_PACKAGES = script.Parent.Packages
+
 
 local knitRepServiceFolder = Instance.new("Folder")
 knitRepServiceFolder.Name = "Services"
 
 local Promise = require(KnitServer.Util.Promise)
 local Signal = require(KnitServer.Util.Signal)
-local Loader = require(KnitServer.Util.Loader)
+local Loader = require(KnitServer._TEMP_PACKAGES.Loader)
 local Ser = require(KnitServer.Util.Ser)
 local RemoteSignal = require(KnitServer.Util.Remote.RemoteSignal)
 local RemoteProperty = require(KnitServer.Util.Remote.RemoteProperty)

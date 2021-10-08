@@ -20,7 +20,10 @@
 		"ReplicatedStorage": {
 			"$className": "ReplicatedStorage",
 			"Knit": {
-				"$path": "src"
+				"$path": "src",
+				"Packages": {
+					"$path": "Packages"
+				}
 			},
 			"KnitUnitTests": {
 				"$path": "test/tests/unit"
