@@ -47,19 +47,24 @@ local HttpService = game:GetService("HttpService")
 local rng = Random.new()
 
 
-local function CopyTable(t: Table): Table
+local function CopyTable(t: Table, cache): Table
 	assert(type(t) == "table", "First argument must be a table")
+	
+	cache = cache or {}
+	
 	local function Copy(tbl)
 		local tCopy = table.create(#tbl)
 		for k,v in pairs(tbl) do
-			if type(v) == "table" then
-				tCopy[k] = Copy(v)
+			if type(v) == "table" and not cache[v] then
+				cache[v] = true
+				tCopy[k] = Copy(v, cache)
 			else
 				tCopy[k] = v
 			end
 		end
 		return tCopy
 	end
+	
 	return Copy(t)
 end
 
@@ -75,13 +80,14 @@ local function CopyTableShallow(t: Table): Table
 end
 
 
-local function Sync(srcTbl: Table, templateTbl: Table): Table
+local function Sync(srcTbl: Table, templateTbl: Table, cache): Table
 
 	assert(type(srcTbl) == "table", "First argument must be a table")
 	assert(type(templateTbl) == "table", "Second argument must be a table")
 
 	local tbl = CopyTableShallow(srcTbl)
-
+	cache = cache or {}
+	
 	-- If 'tbl' has something 'templateTbl' doesn't, then remove it from 'tbl'
 	-- If 'tbl' has something of a different type than 'templateTbl', copy from 'templateTbl'
 	-- If 'templateTbl' has something 'tbl' doesn't, then add it to 'tbl'
@@ -102,8 +108,9 @@ local function Sync(srcTbl: Table, templateTbl: Table): Table
 			end
 
 		-- Synchronize sub-tables:
-		elseif type(v) == "table" then
-			tbl[k] = Sync(v, vTemplate)
+		elseif type(v) == "table" and not cache[v] then
+			cache[v] = true
+			tbl[k] = Sync(v, vTemplate, cache)
 		end
 
 	end
