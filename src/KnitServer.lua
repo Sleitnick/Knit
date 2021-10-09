@@ -36,7 +36,6 @@ type ServiceClient = {
 
 local KnitServer = {}
 
-KnitServer.Version = script.Parent.Version.Value
 KnitServer.Services = {} :: {[string]: Service}
 KnitServer.Util = script.Parent.Parent
 

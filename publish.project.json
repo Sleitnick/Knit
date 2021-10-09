@@ -1,5 +1,5 @@
 {
-	"name": "Knit-Publish",
+	"name": "knit-publish",
 	"tree": {
 		"$className": "DataModel",
 		"ReplicatedStorage": {

@@ -1,4 +1,4 @@
-local Knit = require(game:GetService("ReplicatedStorage").Knit)
+local Knit = require(game:GetService("ReplicatedStorage").Test.Knit)
 
 Knit.Start():andThen(function()
 	print("KnitClient started")

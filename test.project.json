@@ -1,11 +1,14 @@
 {
-	"name": "Knit-Test",
+	"name": "knit-test",
 	"tree": {
 		"$className": "DataModel",
 		"ReplicatedStorage": {
 			"$className": "ReplicatedStorage",
-			"Knit": {
-				"$path": "."
+			"Test": {
+				"$path": "src/Packages",
+				"Knit": {
+					"$path": "."
+				}
 			}
 		},
 		"ServerScriptService": {

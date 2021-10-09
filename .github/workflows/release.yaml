@@ -26,6 +26,7 @@ jobs:
           mkdir -p ~/.wally
           echo "$WALLY_AUTH" > ~/.wally/auth.toml
           cd src
+          rm -rf Packages
           wally publish
           cd ..
       - name: Wally install
