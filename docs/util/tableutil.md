@@ -30,7 +30,7 @@ Performs a shallow copy of the given table. In other words, all nested tables wi
 
 ```lua
 local tbl = {"a", "b", "c", {"d", "e", "f"}}
-local tblCopy = TableUtil.Copy(tbl)
+local tblCopy = TableUtil.CopyShallow(tbl)
 
 print(tblCopy) --> {"a", "b", "c", {"d", "e", "f"}}
 print(tblCopy[4] == tbl[4]) --> true
