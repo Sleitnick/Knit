@@ -1,3 +1,9 @@
+---
+sidebar_position: 7
+---
+
+# Knit API
+
 ## Knit
 
 ### `Knit.Services: [Service]`
@@ -12,8 +18,9 @@ for name,service in pairs(allServices) do
 end
 ```
 
-!!! note
-	Within other services, this table should only be accessed during or after the `KnitInit` stage. While it is safe to reference other services at the `KnitInit` stage, it is _not_ safe to use them. Wait until the `KnitStart` stage to start using them (e.g. calling methods and events).
+:::note
+Within other services, this table should only be accessed during or after the `KnitInit` stage. While it is safe to reference other services at the `KnitInit` stage, it is _not_ safe to use them. Wait until the `KnitStart` stage to start using them (e.g. calling methods and events).
+:::
 
 ### `Knit.Controllers: Controller[]`
 [Client-side only]
@@ -27,9 +34,9 @@ for name,controller in pairs(allControllers) do
 end
 ```
 
-!!! note
-	Within other controllers, this table should only be accessed during or after the `KnitInit` stage. While it is safe to reference other controllers at the `KnitInit` stage, it is _not_ safe to use them. Wait until the `KnitStart` stage to start using them (e.g. calling methods and events).
-
+:::note
+Within other controllers, this table should only be accessed during or after the `KnitInit` stage. While it is safe to reference other controllers at the `KnitInit` stage, it is _not_ safe to use them. Wait until the `KnitStart` stage to start using them (e.g. calling methods and events).
+:::
 
 ### `Knit.Util: Folder`
 A folder containing utility modules used by Knit, but also accessible for developers to use. They can be required like any other module:

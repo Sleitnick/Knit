@@ -1,3 +1,9 @@
+---
+sidebar_position: 4
+---
+
+# Services
+
 ## Services Defined
 
 Services are singleton objects that serve a specific purpose on the server. For instance, a game might have a PointsService, which manages in-game points for the players.
@@ -16,8 +22,9 @@ local PointsService = Knit.CreateService { Name = "PointsService", Client = {} }
 return PointsService
 ```
 
-!!! note "Client table optional"
-	The `Client` table is optional for the constructor. However, it will be added by Knit if left out. For the sake of code clarity, it is recommended to keep it in the constructor as shown above.
+:::note Client table optional
+The `Client` table is optional for the constructor. However, it will be added by Knit if left out. For the sake of code clarity, it is recommended to keep it in the constructor as shown above.
+:::
 
 The `Name` field is required. This name is how code outside of your service will find it. This name must be unique from all other services. It is best practice to name your variable the same as the service name (e.g. `local PointsService` matches `Name = "PointsService"`).
 
@@ -194,8 +201,9 @@ PointsService.PointsChanged:Connect(function(points)
 end)
 ```
 
-!!! note
-	Be sure to use `RemoteSignal` (_not_ `Signal`) for client-exposed events.
+:::note
+Be sure to use `RemoteSignal` (_not_ `Signal`) for client-exposed events.
+:::
 
 ### Signals (Client-to-Server)
 

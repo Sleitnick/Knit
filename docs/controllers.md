@@ -1,3 +1,9 @@
+---
+sidebar_position: 5
+---
+
+# Controllers
+
 ## Controllers Defined
 
 Controllers are singleton objects that serve a specific purpose on the client. For instance, a game might have a CameraController, which manages a custom in-game camera for the player.

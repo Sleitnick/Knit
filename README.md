@@ -4,8 +4,6 @@
 
 # Knit
 
-<img align="right" src="logo/rounded/knit_logo_rounded_256.png" width="128px" style="margin-left: 20px;">
-
 Knit is a lightweight framework for Roblox that simplifies communication between core parts of your game and seamlessly bridges the gap between the server and the client.
 
 Read the [documentation](https://sleitnick.github.io/Knit/) for more info.

@@ -1,3 +1,9 @@
+---
+sidebar_position: 3
+---
+
+# Getting Started
+
 ## Install
 
 Installing Knit is very simple. Just drop the module into ReplicatedStorage. Knit can also be used within a Rojo project.
@@ -12,7 +18,7 @@ Installing Knit is very simple. Just drop the module into ReplicatedStorage. Kni
 1. Add Knit to your `wally.toml` dependency list (e.g. `Knit = "sleitnick/knit@v1.0.3"`)
 1. Require Knit like any other module grabbed from Wally
 
-!!! note "Wally"
+	:::note Wally
 	Not familiar with Wally? Wally is a package manager (like NPM) for the Roblox ecosystem.
 	To get started, check out the [Wally repository](https://github.com/UpliftGames/wally).
 
@@ -63,8 +69,9 @@ end
 Knit.Start():catch(warn)
 ```
 
-!!! note
-	It's better practice to put services and controllers within their own ModuleScript and then require them from your main script. For the sake of simplicity, they are all in one script for these examples.
+:::note
+It's better practice to put services and controllers within their own ModuleScript and then require them from your main script. For the sake of simplicity, they are all in one script for these examples.
+:::
 
 Now we have a little MoneyService that can get and give money to a player. However, only the server can use this at the moment. What if we want clients to fetch how much money they have? To do this, we have to create some client-side code to consume our service. We _could_ create a controller, but it's not necessary for this example.
 

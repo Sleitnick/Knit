@@ -1,3 +1,7 @@
+---
+sidebar_position: 11
+---
+
 # Knit Style Guide
 
 For those who want to contribute to Knit, here are some guidelines in regards to code style.

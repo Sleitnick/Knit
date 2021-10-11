@@ -1,3 +1,9 @@
+---
+sidebar_position: 10
+---
+
+# Examples
+
 ## Start All Services
 
 A useful pattern is to keep all service modules within a folder. The script that starts Knit can then require all of these at once. Let's say we have a directory structure like such:
@@ -38,8 +44,9 @@ Knit.AddServicesDeep(script.Parent.OtherServices)
 Knit.Start():catch(warn)
 ```
 
-!!! tip
-	This same design practice can also be done on the client with controllers. Either loop through and collect controllers or use the `Knit.AddControllers` or `Knit.AddControllersDeep` function.
+:::tip
+This same design practice can also be done on the client with controllers. Either loop through and collect controllers or use the `Knit.AddControllers` or `Knit.AddControllersDeep` function.
+:::
 
 ----------------
 

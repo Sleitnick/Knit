@@ -1,0 +1,6 @@
+[home]
+enabled = true
+includeReadme = true
+
+[docusaurus]
+tagline = "Lightweight game framework for Roblox"

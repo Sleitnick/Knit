@@ -1,3 +1,9 @@
+---
+sidebar_position: 9
+---
+
+# VS Code Snippets
+
 Being able to quickly create services, controllers, or other Knit-related items is very useful when using Knit as a framework. To keep Knit lightweight, there are no required extensions or plugins. Instead, below are some VS Code snippets that can be used to speed up development.
 
 ![Snippets](img/snippets.gif)

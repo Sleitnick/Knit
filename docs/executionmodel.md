@@ -1,3 +1,9 @@
+---
+sidebar_position: 8
+---
+
+# Execution Model
+
 ## Order of Operations
 
 The execution model of Knit defines the flow of operations and lifecycle of the framework.
@@ -21,8 +27,9 @@ Knit.Start():catch(warn)
 
 Once services or controllers are created, they persist forever (until the server shuts down or the player leaves).
 
-!!! warning
-	Services and controllers **_cannot_** be created after `Knit.Start()` has been called.
+:::caution
+Services and controllers **_cannot_** be created after `Knit.Start()` has been called.
+:::
 
 ## Catching KnitInit Errors
 Due to the way Promises work, errors that occur within `KnitInit` methods of services or controllers will be caught as a rejected promise. These can be handled by either grabbing the status after using `Await` or using the `Catch()` method:

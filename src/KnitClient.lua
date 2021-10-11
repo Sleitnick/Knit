@@ -28,6 +28,9 @@ type Service = {
 }
 
 
+--[=[
+	@class KnitClient
+]=]
 local KnitClient = {}
 
 KnitClient.Player = game:GetService("Players").LocalPlayer
