@@ -148,7 +148,7 @@ On the client, we could then invoke the service as such:
 
 ```lua
 -- From a LocalScript
-local Knit = require(game:GetService("ReplicatedStorage").Knit)
+local Knit = require(game:GetService("ReplicatedStorage").Packages.Knit)
 
 local PointsService = Knit.GetService("PointsService")
 local points = PointsService:GetPoints()
@@ -185,7 +185,7 @@ And from the client, we can listen for an event on the signal:
 
 ```lua
 -- From a LocalScript
-local Knit = require(game:GetService("ReplicatedStorage").Knit)
+local Knit = require(game:GetService("ReplicatedStorage").Packages.Knit)
 
 local PointsService = Knit.GetService("PointsService")
 
@@ -229,7 +229,7 @@ From the client, we can fire the signal like so:
 
 ```lua
 -- From a LocalScript
-local Knit = require(game:GetService("ReplicatedStorage").Knit)
+local Knit = require(game:GetService("ReplicatedStorage").Packages.Knit)
 
 local PointsService = Knit.GetService("PointsService")
 
@@ -268,7 +268,7 @@ Let's grab this value on the client:
 
 ```lua
 -- From a LocalScript
-local Knit = require(game:GetService("ReplicatedStorage").Knit)
+local Knit = require(game:GetService("ReplicatedStorage").Packages.Knit)
 
 local PointsService = Knit.GetService("PointsService")
 
@@ -290,7 +290,7 @@ end)
 At the end of this tutorial, we should have a PointsService that looks something like this:
 
 ```lua
-local Knit = require(game:GetService("ReplicatedStorage").Knit)
+local Knit = require(game:GetService("ReplicatedStorage").Packages.Knit)
 local Signal = require(Knit.Util.Signal)
 local RemoteSignal = require(Knit.Util.Remote.RemoteSignal)
 local RemoteProperty = require(Knit.Util.Remote.RemoteProperty)
@@ -378,7 +378,7 @@ Example of client-side LocalScript consuming the PointsService:
 
 ```lua
 -- From a LocalScript
-local Knit = require(game:GetService("ReplicatedStorage").Knit)
+local Knit = require(game:GetService("ReplicatedStorage").Packages.Knit)
 
 local PointsService = Knit.GetService("PointsService")
 
@@ -403,7 +403,7 @@ PointsService.MostPoints.Changed:Connect(function(newMostPoints)
 end)
 
 -- Advanced example, using promises to get points:
-PointsService:GetPointsPromise():Then(function(points)
+PointsService:GetPointsPromise():andThen(function(points)
 	print("Got points:", points)
 end)
 ```

@@ -7,12 +7,14 @@ Installing Knit is very simple. Just drop the module into ReplicatedStorage. Kni
 1. Get [Knit](https://www.roblox.com/library/5530714855/Knit) from the Roblox library.
 1. Place Knit directly within ReplicatedStorage.
 
-**Rojo workflow:**
+**Rojo/Wally workflow:**
 
-1. [Download Knit](https://github.com/Sleitnick/Knit/releases/latest/download/knit.zip) from the latest release on GitHub.
-1. Extract the Knit directory from the zipped file.
-1. Place Knit within your project.
-1. Use Rojo to point Knit to ReplicatedStorage.
+1. Add Knit to your `wally.toml` dependency list (e.g. `Knit = "sleitnick/knit@v1.0.3"`)
+1. Require Knit like any other module grabbed from Wally
+
+!!! note "Wally"
+	Not familiar with Wally? Wally is a package manager (like NPM) for the Roblox ecosystem.
+	To get started, check out the [Wally repository](https://github.com/UpliftGames/wally).
 
 ## Basic Usage
 
@@ -21,12 +23,12 @@ The core usage of Knit is the same from the server and the client. The general p
 The most basic usage would look as such:
 
 ```lua
-local Knit = require(game:GetService("ReplicatedStorage").Knit)
+local Knit = require(game:GetService("ReplicatedStorage").Packages.Knit)
 
-Knit.Start():Catch(warn)
+Knit.Start():catch(warn)
 -- Knit.Start() returns a Promise, so we are catching any errors and feeding it to the built-in 'warn' function
--- You could also chain 'Await()' to the end to yield until the whole sequence is completed:
---    Knit.Start():Catch(warn):Await()
+-- You could also chain 'await()' to the end to yield until the whole sequence is completed:
+--    Knit.Start():catch(warn):await()
 ```
 
 That would be the necessary code on both the server and the client. However, nothing interesting is going to happen. Let's dive into some more examples.
@@ -36,7 +38,7 @@ That would be the necessary code on both the server and the client. However, not
 A service is simply a structure that _serves_ some specific purpose. For instance, a game might have a MoneyService, which manages in-game currency for players. Let's look at a simple example:
 
 ```lua
-local Knit = require(game:GetService("ReplicatedStorage").Knit)
+local Knit = require(game:GetService("ReplicatedStorage").Packages.Knit)
 
 -- Create the service:
 local MoneyService = Knit.CreateService {
@@ -58,7 +60,7 @@ function MoneyService:GiveMoney(player, amount)
 	someDataStore:SetAsync("money", money)
 end
 
-Knit.Start():Catch(warn)
+Knit.Start():catch(warn)
 ```
 
 !!! note
@@ -83,14 +85,14 @@ We can write client-side code to fetch money from the service:
 
 ```lua
 -- Client-side code
-local Knit = require(game:GetService("ReplicatedStorage").Knit)
-Knit.Start():Catch(warn):Await()
+local Knit = require(game:GetService("ReplicatedStorage").Packages.Knit)
+Knit.Start():catch(warn):await()
 
 local moneyService = Knit.GetService("MoneyService")
 local money = moneyService:GetMoney()
 
 -- Alternatively, using promises:
-moneyService:GetMoneyPromise():Then(function(money)
+moneyService:GetMoneyPromise():andThen(function(money)
 	print(money)
 end)
 ```

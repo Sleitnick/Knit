@@ -42,12 +42,12 @@ The core usage of Knit is the same from the server and the client. The general p
 The most basic usage would look as such:
 
 ```lua
-local Knit = require(game:GetService("ReplicatedStorage").Knit)
+local Knit = require(game:GetService("ReplicatedStorage").Packages.Knit)
 
-Knit.Start():Catch(warn)
+Knit.Start():catch(warn)
 -- Knit.Start() returns a Promise, so we are catching any errors and feeding it to the built-in 'warn' function
 -- You could also chain 'Await()' to the end to yield until the whole sequence is completed:
---    Knit.Start():Catch(warn):Await()
+--    Knit.Start():catch(warn):await()
 ```
 
 That would be the necessary code on both the server and the client. However, nothing interesting is going to happen. Let's dive into some more examples.
@@ -57,7 +57,7 @@ That would be the necessary code on both the server and the client. However, not
 A service is simply a structure that _serves_ some specific purpose. For instance, a game might have a MoneyService, which manages in-game currency for players. Let's look at a simple example:
 
 ```lua
-local Knit = require(game:GetService("ReplicatedStorage").Knit)
+local Knit = require(game:GetService("ReplicatedStorage").Packages.Knit)
 
 -- Create the service:
 local MoneyService = Knit.CreateService {
@@ -79,7 +79,7 @@ function MoneyService:GiveMoney(player, amount)
 	someDataStore:SetAsync("money", money)
 end
 
-Knit.Start():Catch(warn)
+Knit.Start():catch(warn)
 ```
 
 Now we have a little MoneyService that can get and give money to a player. However, only the server can use this at the moment. What if we want clients to fetch how much money they have? To do this, we have to create some client-side code to consume our service. We _could_ create a controller, but it's not necessary for this example.
@@ -101,14 +101,14 @@ We can write client-side code to fetch money from the service:
 
 ```lua
 -- Client-side code
-local Knit = require(game:GetService("ReplicatedStorage").Knit)
-Knit.Start():Catch(warn):Await()
+local Knit = require(game:GetService("ReplicatedStorage").Packages.Knit)
+Knit.Start():catch(warn):await()
 
 local moneyService = Knit.GetService("MoneyService")
 local money = moneyService:GetMoney()
 
 -- Alternatively, using promises:
-moneyService:GetMoneyPromise():Then(function(money)
+moneyService:GetMoneyPromise():andThen(function(money)
 	print(money)
 end)
 ```

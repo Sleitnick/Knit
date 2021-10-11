@@ -26,7 +26,7 @@ Include a `require` statement for Knit.
 ```json
 "Knit": {
 	"prefix": ["knit"],
-	"body": ["local Knit = require(game:GetService(\"ReplicatedStorage\").Knit)"],
+	"body": ["local Knit = require(game:GetService(\"ReplicatedStorage\").Packages.Knit)"],
 	"description": "Require the Knit module"
 }
 ```
@@ -36,7 +36,7 @@ Include a `require` statement for Knit.
 <summary>Code Result</summary>
 
 ```lua
-local Knit = require(game:GetService("ReplicatedStorage").Knit)
+local Knit = require(game:GetService("ReplicatedStorage").Packages.Knit)
 ```
 
 </details>
@@ -77,7 +77,7 @@ Reference Knit, create a service, and return the service.
 "Knit Service": {
 	"prefix": ["knitservice"],
 	"body": [
-		"local Knit = require(game:GetService(\"ReplicatedStorage\").Knit)",
+		"local Knit = require(game:GetService(\"ReplicatedStorage\").Packages.Knit)",
 		"",
 		"local ${0:$TM_FILENAME_BASE} = Knit.CreateService {",
 		"\tName = \"${0:$TM_FILENAME_BASE}\";",
@@ -106,7 +106,7 @@ Reference Knit, create a service, and return the service.
 <summary>Code Result</summary>
 
 ```lua
-local Knit = require(game:GetService("ReplicatedStorage").Knit)
+local Knit = require(game:GetService("ReplicatedStorage").Packages.Knit)
 
 local MyService = Knit.CreateService {
 	Name = "MyService";
@@ -135,7 +135,7 @@ Reference Knit, create a controller, and return the controller.
 "Knit Controller": {
 	"prefix": ["knitcontroller"],
 	"body": [
-		"local Knit = require(game:GetService(\"ReplicatedStorage\").Knit)",
+		"local Knit = require(game:GetService(\"ReplicatedStorage\").Packages.Knit)",
 		"",
 		"local ${0:$TM_FILENAME_BASE} = Knit.CreateController { Name = \"${0:$TM_FILENAME_BASE}\" }",
 		"",
@@ -161,7 +161,7 @@ Reference Knit, create a controller, and return the controller.
 <summary>Code Result</summary>
 
 ```lua
-local Knit = require(game:GetService("ReplicatedStorage").Knit)
+local Knit = require(game:GetService("ReplicatedStorage").Packages.Knit)
 
 local MyController = Knit.CreateController {
 	Name = "MyController";
@@ -190,7 +190,7 @@ Create a Knit component.
 "Knit Component": {
 	"prefix": ["knitcomponent"],
 	"body": [
-		"local Knit = require(game:GetService(\"ReplicatedStorage\").Knit)",
+		"local Knit = require(game:GetService(\"ReplicatedStorage\").Packages.Knit)",
 		"local Janitor = require(Knit.Util.Janitor)",
 		"",
 		"local ${0:$TM_FILENAME_BASE} = {}",
@@ -234,7 +234,7 @@ Create a Knit component.
 <summary>Code Result</summary>
 
 ```lua
-local Knit = require(game:GetService("ReplicatedStorage").Knit)
+local Knit = require(game:GetService("ReplicatedStorage").Packages.Knit)
 local Janitor = require(Knit.Util.Janitor)
 
 local MyComponent = {}
@@ -385,14 +385,14 @@ All the above snippets together.
 
 	"Knit": {
 		"prefix": ["knit"],
-		"body": ["local Knit = require(game:GetService(\"ReplicatedStorage\").Knit)"],
+		"body": ["local Knit = require(game:GetService(\"ReplicatedStorage\").Packages.Knit)"],
 		"description": "Require the Knit module"
 	},
 
 	"Knit Component": {
 		"prefix": ["knitcomponent"],
 		"body": [
-			"local Knit = require(game:GetService(\"ReplicatedStorage\").Knit)",
+			"local Knit = require(game:GetService(\"ReplicatedStorage\").Packages.Knit)",
 			"local Janitor = require(Knit.Util.Janitor)",
 			"",
 			"local ${0:$TM_FILENAME_BASE} = {}",
@@ -433,7 +433,7 @@ All the above snippets together.
 	"Knit Service": {
 		"prefix": ["knitservice"],
 		"body": [
-			"local Knit = require(game:GetService(\"ReplicatedStorage\").Knit)",
+			"local Knit = require(game:GetService(\"ReplicatedStorage\").Packages.Knit)",
 			"",
 			"local ${0:$TM_FILENAME_BASE} = Knit.CreateService {",
 			"\tName = \"${0:$TM_FILENAME_BASE}\";",
@@ -459,7 +459,7 @@ All the above snippets together.
 	"Knit Controller": {
 		"prefix": ["knitcontroller"],
 		"body": [
-			"local Knit = require(game:GetService(\"ReplicatedStorage\").Knit)",
+			"local Knit = require(game:GetService(\"ReplicatedStorage\").Packages.Knit)",
 			"",
 			"local ${0:$TM_FILENAME_BASE} = Knit.CreateController { Name = \"${0:$TM_FILENAME_BASE}\" }",
 			"",

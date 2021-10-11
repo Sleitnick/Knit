@@ -43,16 +43,16 @@ local Signal = require(Knit.Util.Signal)
 Start Knit. This returns a promise which resolves once all services or controllers are fully initialized and started. The usage of this is the same on the server and the client.
 
 ```lua
-local Knit = require(game:GetService("ReplicatedStorage").Knit)
+local Knit = require(game:GetService("ReplicatedStorage").Packages.Knit)
 
 ----
 -- Create services or controllers here
 ----
 
 -- Start Knit:
-Knit.Start():Then(function()
+Knit.Start():andThen(function()
 	print("Knit is running")
-end):Catch(function(err)
+end):catch(function(err)
 	warn(err)
 end)
 ```
@@ -61,19 +61,19 @@ Alternative ways to start Knit:
 
 ```lua
 -- Use 'Await' to wait for Knit to start and capture any errors:
-local success, err = Knit.Start():Await()
+local success, err = Knit.Start():await()
 if (not success) then
 	warn(err)
 end
 ```
 ```lua
 -- Feed the 'warn' built-in function directly to the Catch of the returned promise:
-Knit.Start():Catch(warn)
+Knit.Start():catch(warn)
 ```
 ```lua
 -- Same as above, but also yield until Knit has started.
 -- Just note that the 'Catch' will eat up the error, so Await will return successfully even if an error occurs.
-Knit.Start():Catch(warn):Await()
+Knit.Start():catch(warn):await()
 ```
 
 It is important that errors are handled when starting Catch, as any errors within the Init lifecycle will go undetected otherwise.
@@ -84,7 +84,7 @@ Wait for Knit to start. This is useful if there are other scripts that need to a
 
 ```lua
 -- Wait for Knit to be started:
-Knit.OnStart():Await()
+Knit.OnStart():await()
 ```
 
 ### `Knit.CreateService(service: ServiceDefinition)` -> `Service`
@@ -162,7 +162,7 @@ Every method will also have a "Promisefied" version. Just append "Promise" to th
 
 ```lua
 local SomeService = Knit.GetService("SomeService")
-SomeService:DoSomethingPromise():Then(function() ... end)
+SomeService:DoSomethingPromise():andThen(function() ... end)
 ```
 
 ### `Knit.GetController(controllerName: string)` -> Controller
