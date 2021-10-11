@@ -5,10 +5,7 @@
 		"ReplicatedStorage": {
 			"$className": "ReplicatedStorage",
 			"Test": {
-				"$path": "src/Packages",
-				"Knit": {
-					"$path": "."
-				}
+				"$path": "."
 			}
 		},
 		"ServerScriptService": {

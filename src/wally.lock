@@ -9,35 +9,35 @@ dependencies = []
 
 [[package]]
 name = "sleitnick/knit"
-version = "1.0.0"
-dependencies = [["Loader", "sleitnick/loader@1.0.1"], ["Promise", "evaera/promise@3.1.0"], ["Remote", "sleitnick/remote@1.0.1"], ["Ser", "sleitnick/ser@1.0.1"], ["Signal", "sleitnick/signal@1.0.0"], ["TableUtil", "sleitnick/table-util@1.0.0"]]
+version = "1.0.3"
+dependencies = [["Loader", "sleitnick/loader@1.0.2"], ["Promise", "evaera/promise@3.1.0"], ["Remote", "sleitnick/remote@1.0.3"], ["Ser", "sleitnick/ser@1.0.2"], ["Signal", "sleitnick/signal@1.0.1"], ["TableUtil", "sleitnick/table-util@1.0.1"]]
 
 [[package]]
 name = "sleitnick/loader"
-version = "1.0.1"
+version = "1.0.2"
 dependencies = []
 
 [[package]]
 name = "sleitnick/option"
-version = "1.0.0"
+version = "1.0.1"
 dependencies = []
 
 [[package]]
 name = "sleitnick/remote"
-version = "1.0.1"
-dependencies = [["Ser", "sleitnick/ser@1.0.1"], ["Signal", "sleitnick/signal@1.0.0"]]
+version = "1.0.3"
+dependencies = [["Ser", "sleitnick/ser@1.0.2"], ["Signal", "sleitnick/signal@1.0.1"]]
 
 [[package]]
 name = "sleitnick/ser"
-version = "1.0.1"
-dependencies = [["Option", "sleitnick/option@1.0.0"]]
+version = "1.0.2"
+dependencies = [["Option", "sleitnick/option@1.0.1"]]
 
 [[package]]
 name = "sleitnick/signal"
-version = "1.0.0"
+version = "1.0.1"
 dependencies = []
 
 [[package]]
 name = "sleitnick/table-util"
-version = "1.0.0"
+version = "1.0.1"
 dependencies = []

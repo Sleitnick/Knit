@@ -37,7 +37,6 @@ jobs:
       - name: Build place file
         run: |
           rojo build publish.project.json -o Knit.rbxl
-          rojo build default.project.json -o Knit.rbxm
       - name: Publish Knit to Roblox
         shell: bash
         env:
