@@ -1,15 +1,15 @@
 [package]
 name = "sleitnick/knit"
 description = "Knit is a lightweight game framework"
-version = "1.0.1"
+version = "1.0.2"
 license = "MIT"
 registry = "https://github.com/UpliftGames/wally-index"
 realm = "shared"
 
 [dependencies]
-Loader = "sleitnick/loader@1.0.1"
-Signal = "sleitnick/signal@1.0.0"
-Remote = "sleitnick/remote@1.0.1"
-TableUtil = "sleitnick/table-util@1.0.0"
-Ser = "sleitnick/ser@1.0.1"
+Loader = "sleitnick/loader@1.0.2"
+Signal = "sleitnick/signal@1.0.1"
+Remote = "sleitnick/remote@1.0.2"
+TableUtil = "sleitnick/table-util@1.0.1"
+Ser = "sleitnick/ser@1.0.2"
 Promise = "evaera/promise@3.1.0"
