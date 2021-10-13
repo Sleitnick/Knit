@@ -15,6 +15,8 @@ The execution model of Knit defines the flow of operations and lifecycle of the 
 	1. All `KnitStart` methods are invoked at the same time
 1. After all `KnitStart` methods are called, the promise returned by `Knit.Start()` resolves
 
+![Lifecycle](img/lifecycle.svg)
+
 On the server, you should have one Script in ServerScriptService. On the client, you should have one LocalScript in PlayerStarterScripts. Each of these scripts should have a similar layout:
 
 ```lua

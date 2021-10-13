@@ -149,6 +149,10 @@ function CameraController:KnitStart()
 end
 ```
 
+:::caution No client table forces server-only mode
+If the `Client` table is omitted from the service, the service will be interpreted as server-side only. This means that the client will _not_ be able to access the service using `Knit.GetService` on the client if there is no `Client` table present.
+:::caution
+
 ## KnitInit and KnitStart
 
 The `KnitInit` and `KnitStart` methods are optional lifecycle methods that can be added to any controller. For more info, check out the [service version](services.md#knitinit-and-knitstart) of this section (which has the same behavior) and the [execution model](executionmodel.md).
