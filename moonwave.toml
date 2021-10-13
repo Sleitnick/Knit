@@ -1,6 +1,12 @@
+classOrder = [
+	"KnitServer",
+	"KnitClient"
+]
+
 [home]
 enabled = true
-includeReadme = true
+includeReadme = false
 
 [docusaurus]
 tagline = "Lightweight game framework for Roblox"
+favicon = "/img/favicon.png"

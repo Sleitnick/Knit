@@ -47,6 +47,7 @@ type Service = {
 
 --[=[
 	@class KnitClient
+	@client
 ]=]
 local KnitClient = {}
 
