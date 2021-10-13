@@ -48,7 +48,7 @@ All source files should follow a similar format to this template:
 -- Return module
 ```
 
-In other Roblox programming ecosystems, it is usually standard for service refs to come _before_ module requires. The reason for the switch here is that imports are always first in just about every other ecosystem, and thus Knit tries to follow the more global standard.
+In other Roblox programming ecosystems, it is usually standard for service refs to come _before_ module requires. The reason for the switch here is that imports/includes are always first in just about every other ecosystem. The ordering here should be a matter of personal/team preference.
 
 Example of `MyModule.lua`:
 
@@ -200,41 +200,7 @@ Standalone functions in class modules should be defined above the class definiti
 
 ## Documentation
 
-At the top of each source file, simple documentation should be given to show how to use the module. This should show method signatures, fields, and events. If needed, short examples of usage can be shown too.
-
-While Lua is a dynamic language, it is helpful to include types for arguments and return values. For instance: `Symbol.Is(obj: any): boolean`, which shows that `obj` can be any type, and a `boolean` is the expected return type.
-
-The typical layout is as follows:
-
-```lua
---[[
-
-	-- CONSTRUCTOR DEFINITIONS --
-
-	-- FIELD DEFINITIONS --
-
-	-- METHOD DEFINITIONS --
-
-	-- EVENT DEFINITIONS --
-
-	-- EXAMPLES IF NEEDED --
-
---]]
-```
-
-Example:
-
-```lua
---[[
-
-	myClass = MyClass.new()
-
-	myClass.MyPublicField: string
-
-	myClass:SomeMethod(): string
-
---]]
-```
+Using [Moonwave](https://upliftgames.github.io/moonwave/) is an easy way to add documentation to a codebase. Follow the Moonwave guides for best practices regarding documentation.
 
 ## Other Material
 

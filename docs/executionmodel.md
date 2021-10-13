@@ -4,9 +4,9 @@ sidebar_position: 8
 
 # Execution Model
 
-## Order of Operations
+## Lifecycle
 
-The execution model of Knit defines the flow of operations and lifecycle of the framework.
+The execution model of Knit defines the flow of operations and lifecycle of Knit.
 
 1. Require the Knit module
 1. Create services or controllers

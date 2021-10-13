@@ -11,12 +11,27 @@
 --]]
 
 
+--[=[
+	@interface ServiceDef
+	.Name string
+	.Client table?
+	.[any] any
+	@within KnitServer
+	Used to define a service when creating it in `CreateService`.
+]=]
 type ServiceDef = {
 	Name: string,
 	Client: {[any]: any}?,
 	[any]: any,
 }
 
+--[=[
+	@interface Service
+	.Name string
+	.Client ServiceClient
+	.[any] any
+	@within KnitServer
+]=]
 type Service = {
 	Name: string,
 	Client: ServiceClient,
@@ -28,15 +43,34 @@ type Service = {
 	[any]: any,
 }
 
+--[=[
+	@interface ServiceClient
+	.Server Service
+	.[any] any
+	@within KnitServer
+]=]
 type ServiceClient = {
 	Server: Service,
 	[any]: any,
 }
 
 
+--[=[
+	@class KnitServer
+	@server
+]=]
 local KnitServer = {}
 
+--[=[
+	@prop Services {[string]: Service}
+	@within KnitServer
+]=]
 KnitServer.Services = {} :: {[string]: Service}
+
+--[=[
+	@prop Util Folder
+	@within KnitServer
+]=]
 KnitServer.Util = script.Parent.Parent
 
 
@@ -98,11 +132,21 @@ local function DoesServiceExist(serviceName: string): boolean
 end
 
 
+--[=[
+	@param object any
+	@return boolean
+	Check if an object is a service.
+]=]
 function KnitServer.IsService(object: any): boolean
 	return type(object) == "table" and object._knit_is_service == true
 end
 
 
+--[=[
+	@param serviceDefinition ServiceDef
+	@return Service
+	Constructs a new service.
+]=]
 function KnitServer.CreateService(serviceDef: ServiceDef): Service
 	assert(type(serviceDef) == "table", "Service must be a table; got " .. type(serviceDef))
 	assert(type(serviceDef.Name) == "string", "Service.Name must be a string; got " .. type(serviceDef.Name))
@@ -127,16 +171,35 @@ function KnitServer.CreateService(serviceDef: ServiceDef): Service
 end
 
 
-function KnitServer.AddServices(folder: Instance): {any}
-	return Loader.LoadChildren(folder)
+--[=[
+	@param parent Instance
+	@return {any}
+	Requires all the modules that are children of the given parent. This is an easy
+	way to quickly load all services that might be in a folder.
+	```lua
+	Knit.AddServices(somewhere.Services)
+	```
+]=]
+function KnitServer.AddServices(parent: Instance): {any}
+	return Loader.LoadChildren(parent)
 end
 
 
-function KnitServer.AddServicesDeep(folder: Instance): {any}
-	return Loader.LoadDescendants(folder)
+--[=[
+	@param parent Instance
+	@return {any}
+	Requires all the modules that are descendants of the given parent.
+]=]
+function KnitServer.AddServicesDeep(parent: Instance): {any}
+	return Loader.LoadDescendants(parent)
 end
 
 
+--[=[
+	@param serviceName string
+	@return Service?
+	Gets the service by name, or `nil` if it is not found.
+]=]
 function KnitServer.GetService(serviceName: string): Service
 	assert(type(serviceName) == "string", "ServiceName must be a string; got " .. type(serviceName))
 	return assert(KnitServer.Services[serviceName], "Could not find service \"" .. serviceName .. "\"") :: Service
@@ -172,6 +235,20 @@ function KnitServer.BindRemoteProperty(service: Service, propName: string, prop)
 end
 
 
+--[=[
+	@return Promise
+	Starts Knit. Should only be called once.
+
+	:::caution
+	Be sure that all services have been created _before_ calling `Start`. Services cannot be added later.
+	:::
+
+	```lua
+	Knit.Start():andThen(function()
+		print("Knit started!")
+	end):catch(warn)
+	```
+]=]
 function KnitServer.Start()
 
 	if started then
@@ -236,6 +313,18 @@ function KnitServer.Start()
 end
 
 
+--[=[
+	@return Promise
+	Returns a promise that is resolved once Knit has started. This is useful
+	for any code that needs to tie into Knit services but is not the script
+	that called `Start`.
+	```lua
+	Knit.OnStart():andThen(function()
+		local MyService = Knit.Services.MyService
+		MyService:DoSomething()
+	end):catch(warn)
+	```
+]=]
 function KnitServer.OnStart()
 	if startedComplete then
 		return Promise.resolve()

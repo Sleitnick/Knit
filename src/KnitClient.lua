@@ -13,16 +13,33 @@
 --]]
 
 
+--[=[
+	@interface ControllerDef
+	.Name string
+	.[any] any
+	@within KnitClient
+]=]
 type ControllerDef = {
 	Name: string,
 	[any]: any,
 }
 
+--[=[
+	@interface Controller
+	.Name string
+	.[any] any
+	@within KnitClient
+]=]
 type Controller = {
 	Name: string,
 	[any]: any,
 }
 
+--[=[
+	@interface Service
+	.[any] any
+	@within KnitClient
+]=]
 type Service = {
 	[any]: any,
 }
@@ -33,8 +50,23 @@ type Service = {
 ]=]
 local KnitClient = {}
 
+--[=[
+	@prop Player Player
+	@within KnitClient
+	Reference to the LocalPlayer
+]=]
 KnitClient.Player = game:GetService("Players").LocalPlayer
+
+--[=[
+	@prop Controllers {[string]: Controller}
+	@within KnitClient
+]=]
 KnitClient.Controllers = {} :: {[string]: Controller}
+
+--[=[
+	@prop Util Folder
+	@within KnitClient
+]=]
 KnitClient.Util = script.Parent.Parent
 
 local Promise = require(KnitClient.Util.Promise)
@@ -99,6 +131,11 @@ local function DoesControllerExist(controllerName: string): boolean
 end
 
 
+--[=[
+	@param controllerDefinition ControllerDef
+	@return Controller
+	Creates a new controller.
+]=]
 function KnitClient.CreateController(controllerDef: ControllerDef): Controller
 	assert(type(controllerDef) == "table", "Controller must be a table; got " .. type(controllerDef))
 	assert(type(controllerDef.Name) == "string", "Controller.Name must be a string; got " .. type(controllerDef.Name))
@@ -112,16 +149,44 @@ function KnitClient.CreateController(controllerDef: ControllerDef): Controller
 end
 
 
-function KnitClient.AddControllers(folder: Instance): {any}
-	return Loader.LoadChildren(folder)
+--[=[
+	@param parent Instance
+	@return {any}
+	Requires all the modules that are children of the given parent. This is an easy
+	way to quickly load all controllers that might be in a folder.
+	```lua
+	Knit.AddControllers(somewhere.Controllers)
+	```
+]=]
+function KnitClient.AddControllers(parent: Instance): {any}
+	return Loader.LoadChildren(parent)
 end
 
 
-function KnitClient.AddControllersDeep(folder: Instance): {any}
-	return Loader.LoadDescendants(folder)
+--[=[
+	@param parent Instance
+	@return {any}
+	Requires all the modules that are descendants of the given parent.
+]=]
+function KnitClient.AddControllersDeep(parent: Instance): {any}
+	return Loader.LoadDescendants(parent)
 end
 
 
+--[=[
+	@param serviceName string
+	@return Service?
+	Returns a Service object which is a reflection of the remote objects
+	within the Client table of the given service. Returns `nil` if the
+	service is not found.
+
+	:::caution
+	Services are only exposed to the client if the service has remote-based
+	content in the Client table. If not, the service will not be visible
+	to the client. `KnitClient.GetService` will only work on services that
+	expose remote-based content on their Client tables.
+	:::
+]=]
 function KnitClient.GetService(serviceName: string): Service
 	assert(type(serviceName) == "string", "ServiceName must be a string; got " .. type(serviceName))
 	local folder: Instance? = servicesFolder:FindFirstChild(serviceName)
@@ -130,11 +195,25 @@ function KnitClient.GetService(serviceName: string): Service
 end
 
 
+--[=[
+	@param controllerName string
+	@return Controller?
+	Gets the controller by name. Returns `nil` if not found. This is just
+	an alias for `KnitControllers.Controllers[controllerName]`.
+]=]
 function KnitClient.GetController(controllerName: string): Controller?
 	return KnitClient.Controllers[controllerName]
 end
 
 
+--[=[
+	Starts Knit.
+	```lua
+	Knit.Start():andThen(function()
+		print("Knit started!")
+	end):catch(warn)
+	```
+]=]
 function KnitClient.Start()
 
 	if started then
@@ -181,6 +260,18 @@ function KnitClient.Start()
 end
 
 
+--[=[
+	@return Promise
+	Returns a promise that is resolved once Knit has started. This is useful
+	for any code that needs to tie into Knit controllers but is not the script
+	that called `Start`.
+	```lua
+	Knit.OnStart():andThen(function()
+		local MyController = Knit.Controllers.MyController
+		MyController:DoSomething()
+	end):catch(warn)
+	```
+]=]
 function KnitClient.OnStart()
 	if startedComplete then
 		return Promise.resolve()
