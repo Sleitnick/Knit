@@ -189,7 +189,7 @@ function KnitServer.Start()
 		for _,service in pairs(services) do
 			for k,v in pairs(service.Client) do
 				if type(v) == "function" then
-					service.KnitComm:BindFunction(k, v)
+					service.KnitComm:WrapMethod(service.Client, k)
 				end
 			end
 		end
