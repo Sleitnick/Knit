@@ -1,6 +1,12 @@
-## Order of Operations
+---
+sidebar_position: 6
+---
 
-The execution model of Knit defines the flow of operations and lifecycle of the framework.
+# Execution Model
+
+## Lifecycle
+
+The execution model of Knit defines the flow of operations and lifecycle of Knit.
 
 1. Require the Knit module
 1. Create services or controllers
@@ -9,26 +15,29 @@ The execution model of Knit defines the flow of operations and lifecycle of the 
 	1. All `KnitStart` methods are invoked at the same time
 1. After all `KnitStart` methods are called, the promise returned by `Knit.Start()` resolves
 
+![Lifecycle](img/lifecycle.svg)
+
 On the server, you should have one Script in ServerScriptService. On the client, you should have one LocalScript in PlayerStarterScripts. Each of these scripts should have a similar layout:
 
 ```lua
-local Knit = require(game:GetService("ReplicatedStorage").Knit)
+local Knit = require(game:GetService("ReplicatedStorage").Packages.Knit)
 
 -- Load services or controllers here
 
-Knit.Start():Catch(warn)
+Knit.Start():catch(warn)
 ```
 
 Once services or controllers are created, they persist forever (until the server shuts down or the player leaves).
 
-!!! warning
-	Services and controllers **_cannot_** be created after `Knit.Start()` has been called.
+:::caution
+Services and controllers **_cannot_** be created after `Knit.Start()` has been called.
+:::
 
 ## Catching KnitInit Errors
 Due to the way Promises work, errors that occur within `KnitInit` methods of services or controllers will be caught as a rejected promise. These can be handled by either grabbing the status after using `Await` or using the `Catch()` method:
 
 ```lua
-local success, err = Knit.Start():Await()
+local success, err = Knit.Start():await()
 if (not success) then
 	-- Handle error
 	error(tostring(err))
@@ -36,7 +45,7 @@ end
 ```
 
 ```lua
-Knit.Start():Catch(function(err)
+Knit.Start():catch(function(err)
 	-- Handle error
 	warn(tostring(err))
 end)

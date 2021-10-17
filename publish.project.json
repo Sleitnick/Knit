@@ -1,10 +1,10 @@
 {
-	"name": "Knit-Publish",
+	"name": "knit-publish",
 	"tree": {
 		"$className": "DataModel",
 		"ReplicatedStorage": {
 			"$className": "ReplicatedStorage",
-			"Knit": {
+			"Packages": {
 				"$path": "default.project.json"
 			}
 		}

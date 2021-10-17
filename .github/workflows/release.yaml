@@ -17,15 +17,28 @@ jobs:
         with:
           version: "^1.0.0"
           token: ${{ SECRETS.GITHUB_TOKEN }}
-      - name: Build project
+      - name: Publish release to Wally
+        shell: bash
+        env:
+          WALLY_AUTH: ${{ secrets.WALLY_AUTH }}
         run: |
-          mkdir -p Knit
-          cp -R src/* Knit
-          zip -r knit.zip Knit/**
+          rm -rf .foreman-install
+          mkdir -p ~/.wally
+          echo "$WALLY_AUTH" > ~/.wally/auth.toml
+          cd src
+          rm -rf Packages
+          wally publish
+          cd ..
+      - name: Wally install
+        run: |
+          cd src
+          rm wally.toml
+          mv wally_bundle.toml wally.toml
+          wally install --locked
+          cd ..
       - name: Build place file
         run: |
           rojo build publish.project.json -o Knit.rbxl
-          rojo build default.project.json -o Knit.rbxm
       - name: Publish Knit to Roblox
         shell: bash
         env:
@@ -44,5 +57,4 @@ jobs:
           body_path: log.md
           fail_on_unmatched_files: true
           files: |
-            knit.zip
             Knit.rbxm

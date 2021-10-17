@@ -1,3 +1,9 @@
+---
+sidebar_position: 4
+---
+
+# Controllers
+
 ## Controllers Defined
 
 Controllers are singleton objects that serve a specific purpose on the client. For instance, a game might have a CameraController, which manages a custom in-game camera for the player.
@@ -6,7 +12,7 @@ A controller is essentially the client-side equivalent of a service on the serve
 
 A game might have many controllers. They serve as a core structure of the client within Knit.
 
-For the sake of example, we will develop a CameraController. For full API documentation, visit the [Knit API](knitapi.md#controller) page.
+For the sake of example, we will develop a CameraController.
 
 ## Creating Controllers
 
@@ -142,6 +148,10 @@ function CameraController:KnitStart()
 	SomeService.AnotherEvent:Fire("Some data")
 end
 ```
+
+:::caution No client table forces server-only mode
+If the `Client` table is omitted from the service, the service will be interpreted as server-side only. This means that the client will _not_ be able to access the service using `Knit.GetService` on the client if there is no `Client` table present.
+:::caution
 
 ## KnitInit and KnitStart
 

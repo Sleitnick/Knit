@@ -1,41 +1,26 @@
 {
-	"name": "Knit-Test",
+	"name": "knit-test",
 	"tree": {
 		"$className": "DataModel",
+		"ReplicatedStorage": {
+			"$className": "ReplicatedStorage",
+			"Test": {
+				"$path": "."
+			}
+		},
 		"ServerScriptService": {
 			"$className": "ServerScriptService",
-			"KnitTest": {
-				"$path": "test/tests/integration/server"
+			"Test": {
+				"$path": "test/server"
 			}
 		},
 		"StarterPlayer": {
 			"$className": "StarterPlayer",
 			"StarterPlayerScripts": {
 				"$className": "StarterPlayerScripts",
-				"KnitTest": {
-					"$path": "test/tests/integration/client"
+				"Test": {
+					"$path": "test/client"
 				}
-			}
-		},
-		"ReplicatedStorage": {
-			"$className": "ReplicatedStorage",
-			"Knit": {
-				"$path": "src"
-			},
-			"KnitUnitTests": {
-				"$path": "test/tests/unit"
-			}
-		},
-		"TestService": {
-			"$className": "TestService",
-			"$properties": {
-				"ExecuteWithStudioRun": true
-			},
-			"TestEZ": {
-				"$path": "test/testez/default.project.json"
-			},
-			"RunTests": {
-				"$path": "test/RunUnitTests.server.lua"
 			}
 		}
 	}

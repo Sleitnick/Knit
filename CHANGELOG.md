@@ -1,3 +1,8 @@
+## 1.0.0
+
+- Migrated all core modules to Wally
+- Revamped documentation
+
 ## 0.0.22-alpha
 
 - Fix `TableUtil.Sample` algorithm to properly implement a partial Fisher-Yates shuffle

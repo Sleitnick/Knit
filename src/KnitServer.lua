@@ -1,8 +1,7 @@
---!strict
-
 --[[
 
 	Knit.CreateService(service): Service
+	Knit.CreateSignal(): SIGNAL_MARKER
 	Knit.AddServices(folder): Service[]
 	Knit.AddServicesDeep(folder): Service[]
 	Knit.Start(): Promise<void>
@@ -11,46 +10,90 @@
 --]]
 
 
+--[=[
+	@interface ServiceDef
+	.Name string
+	.Client table?
+	.[any] any
+	@within KnitServer
+	Used to define a service when creating it in `CreateService`.
+]=]
 type ServiceDef = {
 	Name: string,
 	Client: {[any]: any}?,
 	[any]: any,
 }
 
+--[=[
+	@interface Service
+	.Name string
+	.Client ServiceClient
+	.KnitComm Comm
+	.[any] any
+	@within KnitServer
+]=]
 type Service = {
 	Name: string,
 	Client: ServiceClient,
-	_knit_is_service: boolean,
-	_knit_rf: {},
-	_knit_re: {},
-	_knit_rp: {},
-	_knit_rep_folder: Instance,
+	KnitComm: any,
 	[any]: any,
 }
 
+--[=[
+	@interface ServiceClient
+	.Server Service
+	.[any] any
+	@within KnitServer
+]=]
 type ServiceClient = {
 	Server: Service,
 	[any]: any,
 }
 
 
+--[=[
+	@class KnitServer
+	@server
+	Knit server-side lets developers create services and expose methods and signals
+	to the clients.
+
+	```lua
+	local Knit = require(somewhere.Knit)
+
+	-- Load service modules within some folder:
+	Knit.AddServices(somewhere.Services)
+
+	-- Start Knit:
+	Knit.Start():andThen(function()
+		print("Knit started")
+	end):catch(warn)
+	```
+]=]
 local KnitServer = {}
 
-KnitServer.Version = script.Parent.Version.Value
+--[=[
+	@prop Services {[string]: Service}
+	@within KnitServer
+]=]
 KnitServer.Services = {} :: {[string]: Service}
-KnitServer.Util = script.Parent.Util
 
+--[=[
+	@prop Util Folder
+	@within KnitServer
+]=]
+KnitServer.Util = script.Parent.Parent
+
+local SIGNAL_MARKER = newproxy(true)
+getmetatable(SIGNAL_MARKER).__tostring = function()
+	return "SIGNAL_MARKER"
+end
 
 local knitRepServiceFolder = Instance.new("Folder")
 knitRepServiceFolder.Name = "Services"
 
 local Promise = require(KnitServer.Util.Promise)
-local Signal = require(KnitServer.Util.Signal)
-local Loader = require(KnitServer.Util.Loader)
-local Ser = require(KnitServer.Util.Ser)
-local RemoteSignal = require(KnitServer.Util.Remote.RemoteSignal)
-local RemoteProperty = require(KnitServer.Util.Remote.RemoteProperty)
-local TableUtil = require(KnitServer.Util.TableUtil)
+local Comm = require(KnitServer.Util.Comm)
+local ServerComm = Comm.ServerComm
 
 local started = false
 local startedComplete = false
@@ -60,36 +103,8 @@ local onStartedComplete = Instance.new("BindableEvent")
 local function CreateRepFolder(serviceName: string): Instance
 	local folder = Instance.new("Folder")
 	folder.Name = serviceName
+	folder.Parent = knitRepServiceFolder
 	return folder
-end
-
-
-local function GetFolderOrCreate(parent: Instance, name: string): Instance
-	local f = parent:FindFirstChild(name)
-	if not f then
-		f = Instance.new("Folder")
-		f.Name = name
-		f.Parent = parent
-	end
-	return f
-end
-
-
-local function AddToRepFolder(service: Service, remoteObj: Instance, folderOverride: string?)
-	if folderOverride then
-		remoteObj.Parent = GetFolderOrCreate(service._knit_rep_folder, folderOverride)
-	elseif remoteObj:IsA("RemoteFunction") then
-		remoteObj.Parent = GetFolderOrCreate(service._knit_rep_folder, "RF")
-	elseif remoteObj:IsA("RemoteEvent") then
-		remoteObj.Parent = GetFolderOrCreate(service._knit_rep_folder, "RE")
-	elseif remoteObj:IsA("ValueBase") then
-		remoteObj.Parent = GetFolderOrCreate(service._knit_rep_folder, "RP")
-	else
-		error("Invalid rep object: " .. remoteObj.ClassName)
-	end
-	if not service._knit_rep_folder.Parent then
-		service._knit_rep_folder.Parent = knitRepServiceFolder
-	end
 end
 
 
@@ -99,28 +114,54 @@ local function DoesServiceExist(serviceName: string): boolean
 end
 
 
-function KnitServer.IsService(object: any): boolean
-	return type(object) == "table" and object._knit_is_service == true
-end
+--[=[
+	@param serviceDefinition ServiceDef
+	@return Service
+	Constructs a new service.
 
+	:::caution
+	Services must be created _before_ calling `Knit.Start()`.
+	:::
+	```lua
+	-- Create a service
+	local MyService = Knit.CreateService {
+		Name = "MyService";
+		Client = {};
+	}
 
+	-- Expose a ToAllCaps remote function to the clients
+	function MyService.Client:ToAllCaps(player, msg)
+		return msg:upper()
+	end
+
+	-- Knit will call KnitStart after all services have been initialized
+	function MyService:KnitStart()
+		print("MyService started")
+	end
+
+	-- Knit will call KnitInit when Knit is first started
+	function MyService:KnitInit()
+		print("MyService initialize")
+	end
+	```
+]=]
 function KnitServer.CreateService(serviceDef: ServiceDef): Service
 	assert(type(serviceDef) == "table", "Service must be a table; got " .. type(serviceDef))
 	assert(type(serviceDef.Name) == "string", "Service.Name must be a string; got " .. type(serviceDef.Name))
 	assert(#serviceDef.Name > 0, "Service.Name must be a non-empty string")
 	assert(not DoesServiceExist(serviceDef.Name), "Service \"" .. serviceDef.Name .. "\" already exists")
-	local service: Service = TableUtil.Assign(serviceDef, {
-		_knit_is_service = true;
-		_knit_rf = {};
-		_knit_re = {};
-		_knit_rp = {};
-		_knit_rep_folder = CreateRepFolder(serviceDef.Name);
-	})
+	local service = serviceDef
+	service.KnitComm = ServerComm.new(CreateRepFolder(serviceDef.Name))
 	if type(service.Client) ~= "table" then
 		service.Client = {Server = service}
 	else
 		if service.Client.Server ~= service then
 			service.Client.Server = service
+		end
+		for k,v in pairs(service.Client) do
+			if v == SIGNAL_MARKER then
+				service.Client[k] = service.KnitComm:CreateSignal(k)
+			end
 		end
 	end
 	KnitServer.Services[service.Name] = service
@@ -128,55 +169,94 @@ function KnitServer.CreateService(serviceDef: ServiceDef): Service
 end
 
 
-function KnitServer.AddServices(folder: Instance): {any}
-	return Loader.LoadChildren(folder)
+--[=[
+	@param parent Instance
+	@return services: {Service}
+	Requires all the modules that are children of the given parent. This is an easy
+	way to quickly load all services that might be in a folder.
+	```lua
+	Knit.AddServices(somewhere.Services)
+	```
+]=]
+function KnitServer.AddServices(parent: Instance): {Service}
+	local services = {}
+	for _,v in ipairs(parent:GetChildren()) do
+		if not v:IsA("ModuleScript") then continue end
+		table.insert(services, require(v))
+	end
+	return services
 end
 
 
-function KnitServer.AddServicesDeep(folder: Instance): {any}
-	return Loader.LoadDescendants(folder)
+--[=[
+	@param parent Instance
+	@return services: {Service}
+	Requires all the modules that are descendants of the given parent.
+]=]
+function KnitServer.AddServicesDeep(parent: Instance): {Service}
+	local services = {}
+	for _,v in ipairs(parent:GetDescendants()) do
+		if not v:IsA("ModuleScript") then continue end
+		table.insert(services, require(v))
+	end
+	return services
 end
 
 
+--[=[
+	@param serviceName string
+	@return Service
+	Gets the service by name. Throws an error if the service is not found.
+]=]
 function KnitServer.GetService(serviceName: string): Service
 	assert(type(serviceName) == "string", "ServiceName must be a string; got " .. type(serviceName))
 	return assert(KnitServer.Services[serviceName], "Could not find service \"" .. serviceName .. "\"") :: Service
 end
 
 
-function KnitServer.BindRemoteEvent(service: Service, eventName: string, remoteEvent)
-	assert(service._knit_re[eventName] == nil, "RemoteEvent \"" .. eventName .. "\" already exists")
-	local re = remoteEvent._remote
-	re.Name = eventName
-	service._knit_re[eventName] = re
-	AddToRepFolder(service, re)
+--[=[
+	@return SIGNAL_MARKER
+	Returns a marker that will transform the current key into
+	a RemoteSignal once the service is created. Should only
+	be called within the Client table of a service.
+
+	See [RemoteSignal](https://sleitnick.github.io/RbxUtil/api/RemoteSignal)
+	documentation for more info.
+	```lua
+	local MyService = Knit.CreateService {
+		Name = "MyService";
+		Client = {
+			MySignal = Knit.CreateSignal(); -- Create the signal marker
+		}
+	}
+
+	-- Connect to the signal:
+	MyService.Client.MySignal:Connect(function(player, ...) end)
+	```
+]=]
+function KnitServer.CreateSignal()
+	return SIGNAL_MARKER
 end
 
 
-function KnitServer.BindRemoteFunction(service: Service, funcName: string, func: (ServiceClient, ...any) -> ...any)
-	assert(service._knit_rf[funcName] == nil, "RemoteFunction \"" .. funcName .. "\" already exists")
-	local rf = Instance.new("RemoteFunction")
-	rf.Name = funcName
-	service._knit_rf[funcName] = rf
-	AddToRepFolder(service, rf)
-	rf.OnServerInvoke = function(...)
-		return Ser.SerializeArgsAndUnpack(func(service.Client, Ser.DeserializeArgsAndUnpack(...)))
-	end
-end
+--[=[
+	@return Promise
+	Starts Knit. Should only be called once.
 
+	:::caution
+	Be sure that all services have been created _before_ calling `Start`. Services cannot be added later.
+	:::
 
-function KnitServer.BindRemoteProperty(service: Service, propName: string, prop)
-	assert(service._knit_rp[propName] == nil, "RemoteProperty \"" .. propName .. "\" already exists")
-	prop._object.Name = propName
-	service._knit_rp[propName] = prop
-	AddToRepFolder(service, prop._object, "RP")
-end
-
-
+	```lua
+	Knit.Start():andThen(function()
+		print("Knit started!")
+	end):catch(warn)
+	```
+]=]
 function KnitServer.Start()
 
 	if started then
-		return Promise.Reject("Knit already started")
+		return Promise.reject("Knit already started")
 	end
 
 	started = true
@@ -189,13 +269,9 @@ function KnitServer.Start()
 		for _,service in pairs(services) do
 			for k,v in pairs(service.Client) do
 				if type(v) == "function" then
-					KnitServer.BindRemoteFunction(service, k, v)
-				elseif RemoteSignal.Is(v) then
-					KnitServer.BindRemoteEvent(service, k, v)
-				elseif RemoteProperty.Is(v) then
-					KnitServer.BindRemoteProperty(service, k, v)
-				elseif Signal.Is(v) then
-					warn("Found Signal instead of RemoteSignal (Knit.Util.RemoteSignal). Please change to RemoteSignal. [" .. service.Name .. ".Client." .. k .. "]")
+					service.KnitComm:WrapMethod(service.Client, k)
+				elseif v == SIGNAL_MARKER then
+					service.Client[k] = service.KnitComm:CreateSignal(k)
 				end
 			end
 		end
@@ -211,9 +287,9 @@ function KnitServer.Start()
 			end
 		end
 
-		resolve(Promise.All(promisesInitServices))
+		resolve(Promise.all(promisesInitServices))
 
-	end):Then(function()
+	end):andThen(function()
 
 		-- Start:
 		for _,service in pairs(services) do
@@ -237,11 +313,23 @@ function KnitServer.Start()
 end
 
 
+--[=[
+	@return Promise
+	Returns a promise that is resolved once Knit has started. This is useful
+	for any code that needs to tie into Knit services but is not the script
+	that called `Start`.
+	```lua
+	Knit.OnStart():andThen(function()
+		local MyService = Knit.Services.MyService
+		MyService:DoSomething()
+	end):catch(warn)
+	```
+]=]
 function KnitServer.OnStart()
 	if startedComplete then
-		return Promise.Resolve()
+		return Promise.resolve()
 	else
-		return Promise.FromEvent(onStartedComplete.Event)
+		return Promise.fromEvent(onStartedComplete.Event)
 	end
 end
 

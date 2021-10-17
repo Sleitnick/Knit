@@ -1,3 +1,9 @@
+---
+sidebar_position: 8
+---
+
+# VS Code Snippets
+
 Being able to quickly create services, controllers, or other Knit-related items is very useful when using Knit as a framework. To keep Knit lightweight, there are no required extensions or plugins. Instead, below are some VS Code snippets that can be used to speed up development.
 
 ![Snippets](img/snippets.gif)
@@ -26,7 +32,7 @@ Include a `require` statement for Knit.
 ```json
 "Knit": {
 	"prefix": ["knit"],
-	"body": ["local Knit = require(game:GetService(\"ReplicatedStorage\").Knit)"],
+	"body": ["local Knit = require(game:GetService(\"ReplicatedStorage\").Packages.Knit)"],
 	"description": "Require the Knit module"
 }
 ```
@@ -36,7 +42,7 @@ Include a `require` statement for Knit.
 <summary>Code Result</summary>
 
 ```lua
-local Knit = require(game:GetService("ReplicatedStorage").Knit)
+local Knit = require(game:GetService("ReplicatedStorage").Packages.Knit)
 ```
 
 </details>
@@ -77,7 +83,7 @@ Reference Knit, create a service, and return the service.
 "Knit Service": {
 	"prefix": ["knitservice"],
 	"body": [
-		"local Knit = require(game:GetService(\"ReplicatedStorage\").Knit)",
+		"local Knit = require(game:GetService(\"ReplicatedStorage\").Packages.Knit)",
 		"",
 		"local ${0:$TM_FILENAME_BASE} = Knit.CreateService {",
 		"\tName = \"${0:$TM_FILENAME_BASE}\";",
@@ -95,7 +101,8 @@ Reference Knit, create a service, and return the service.
 		"end",
 		"",
 		"",
-		"return ${0:$TM_FILENAME_BASE}"
+		"return ${0:$TM_FILENAME_BASE}",
+		""
 	],
 	"description": "Knit Service template"
 }
@@ -106,7 +113,7 @@ Reference Knit, create a service, and return the service.
 <summary>Code Result</summary>
 
 ```lua
-local Knit = require(game:GetService("ReplicatedStorage").Knit)
+local Knit = require(game:GetService("ReplicatedStorage").Packages.Knit)
 
 local MyService = Knit.CreateService {
 	Name = "MyService";
@@ -135,7 +142,7 @@ Reference Knit, create a controller, and return the controller.
 "Knit Controller": {
 	"prefix": ["knitcontroller"],
 	"body": [
-		"local Knit = require(game:GetService(\"ReplicatedStorage\").Knit)",
+		"local Knit = require(game:GetService(\"ReplicatedStorage\").Packages.Knit)",
 		"",
 		"local ${0:$TM_FILENAME_BASE} = Knit.CreateController { Name = \"${0:$TM_FILENAME_BASE}\" }",
 		"",
@@ -150,7 +157,8 @@ Reference Knit, create a controller, and return the controller.
 		"end",
 		"",
 		"",
-		"return ${0:$TM_FILENAME_BASE}"
+		"return ${0:$TM_FILENAME_BASE}",
+		""
 	],
 	"description": "Knit Controller template"
 }
@@ -161,7 +169,7 @@ Reference Knit, create a controller, and return the controller.
 <summary>Code Result</summary>
 
 ```lua
-local Knit = require(game:GetService("ReplicatedStorage").Knit)
+local Knit = require(game:GetService("ReplicatedStorage").Packages.Knit)
 
 local MyController = Knit.CreateController {
 	Name = "MyController";
@@ -174,91 +182,6 @@ function MyController:KnitInit()
 end
 
 return MyController
-```
-
-</details>
-
--------------------------------------
-
-### Knit Component
-Create a Knit component.
-
-<details class="note">
-<summary>Snippet</summary>
-
-```json
-"Knit Component": {
-	"prefix": ["knitcomponent"],
-	"body": [
-		"local Knit = require(game:GetService(\"ReplicatedStorage\").Knit)",
-		"local Janitor = require(Knit.Util.Janitor)",
-		"",
-		"local ${0:$TM_FILENAME_BASE} = {}",
-		"${0:$TM_FILENAME_BASE}.__index = ${0:$TM_FILENAME_BASE}",
-		"",
-		"${0:$TM_FILENAME_BASE}.Tag = \"${0:$TM_FILENAME_BASE}\"",
-		"",
-		"",
-		"function ${0:$TM_FILENAME_BASE}.new(instance)",
-		"\t",
-		"\tlocal self = setmetatable({}, ${0:$TM_FILENAME_BASE})",
-		"\t",
-		"\tself._janitor = Janitor.new()",
-		"\t",
-		"\treturn self",
-		"\t",
-		"end",
-		"",
-		"",
-		"function ${0:$TM_FILENAME_BASE}:Init()",
-		"end",
-		"",
-		"",
-		"function ${0:$TM_FILENAME_BASE}:Deinit()",
-		"end",
-		"",
-		"",
-		"function ${0:$TM_FILENAME_BASE}:Destroy()",
-		"\tself._janitor:Destroy()",
-		"end",
-		"",
-		"",
-		"return ${0:$TM_FILENAME_BASE}"
-	],
-	"description": "Knit Component template"
-}
-```
-
-</details>
-<details class="success">
-<summary>Code Result</summary>
-
-```lua
-local Knit = require(game:GetService("ReplicatedStorage").Knit)
-local Janitor = require(Knit.Util.Janitor)
-
-local MyComponent = {}
-MyComponent.__index = MyComponent
-
-MyComponent.Tag = "MyComponent"
-
-function MyComponent.new(instance)
-	local self = setmetatable({}, MyComponent)
-	self._janitor = Janitor.new()
-	return self
-end
-
-function MyComponent:Init()
-end
-
-function MyComponent:Deinit()
-end
-
-function MyComponent:Destroy()
-	self._janitor:Destroy()
-end
-
-return MyComponent
 ```
 
 </details>
@@ -283,7 +206,7 @@ Require a module within Knit.
 <summary>Code Result</summary>
 
 ```lua
-local Janitor = require(Knit.Util.Janitor)
+local Signal = require(Knit.Util.Signal)
 ```
 
 </details>
@@ -315,7 +238,8 @@ A standard Lua class.
 		"end",
 		"",
 		"",
-		"return ${0:$TM_FILENAME_BASE}"
+		"return ${0:$TM_FILENAME_BASE}",
+		""
 	],
 	"description": "Lua Class"
 }
@@ -378,62 +302,22 @@ All the above snippets together.
 			"end",
 			"",
 			"",
-			"return ${0:$TM_FILENAME_BASE}"
+			"return ${0:$TM_FILENAME_BASE}",
+			""
 		],
 		"description": "Lua Class"
 	},
 
 	"Knit": {
 		"prefix": ["knit"],
-		"body": ["local Knit = require(game:GetService(\"ReplicatedStorage\").Knit)"],
+		"body": ["local Knit = require(game:GetService(\"ReplicatedStorage\").Packages.Knit)"],
 		"description": "Require the Knit module"
-	},
-
-	"Knit Component": {
-		"prefix": ["knitcomponent"],
-		"body": [
-			"local Knit = require(game:GetService(\"ReplicatedStorage\").Knit)",
-			"local Janitor = require(Knit.Util.Janitor)",
-			"",
-			"local ${0:$TM_FILENAME_BASE} = {}",
-			"${0:$TM_FILENAME_BASE}.__index = ${0:$TM_FILENAME_BASE}",
-			"",
-			"${0:$TM_FILENAME_BASE}.Tag = \"${0:$TM_FILENAME_BASE}\"",
-			"",
-			"",
-			"function ${0:$TM_FILENAME_BASE}.new(instance)",
-			"\t",
-			"\tlocal self = setmetatable({}, ${0:$TM_FILENAME_BASE})",
-			"\t",
-			"\tself._janitor = Janitor.new()",
-			"\t",
-			"\treturn self",
-			"\t",
-			"end",
-			"",
-			"",
-			"function ${0:$TM_FILENAME_BASE}:Init()",
-			"end",
-			"",
-			"",
-			"function ${0:$TM_FILENAME_BASE}:Deinit()",
-			"end",
-			"",
-			"",
-			"function ${0:$TM_FILENAME_BASE}:Destroy()",
-			"\tself._janitor:Destroy()",
-			"end",
-			"",
-			"",
-			"return ${0:$TM_FILENAME_BASE}"
-		],
-		"description": "Knit Component template"
 	},
 
 	"Knit Service": {
 		"prefix": ["knitservice"],
 		"body": [
-			"local Knit = require(game:GetService(\"ReplicatedStorage\").Knit)",
+			"local Knit = require(game:GetService(\"ReplicatedStorage\").Packages.Knit)",
 			"",
 			"local ${0:$TM_FILENAME_BASE} = Knit.CreateService {",
 			"\tName = \"${0:$TM_FILENAME_BASE}\";",
@@ -451,7 +335,8 @@ All the above snippets together.
 			"end",
 			"",
 			"",
-			"return ${0:$TM_FILENAME_BASE}"
+			"return ${0:$TM_FILENAME_BASE}",
+			""
 		],
 		"description": "Knit Service template"
 	},
@@ -459,7 +344,7 @@ All the above snippets together.
 	"Knit Controller": {
 		"prefix": ["knitcontroller"],
 		"body": [
-			"local Knit = require(game:GetService(\"ReplicatedStorage\").Knit)",
+			"local Knit = require(game:GetService(\"ReplicatedStorage\").Packages.Knit)",
 			"",
 			"local ${0:$TM_FILENAME_BASE} = Knit.CreateController { Name = \"${0:$TM_FILENAME_BASE}\" }",
 			"",
@@ -474,7 +359,8 @@ All the above snippets together.
 			"end",
 			"",
 			"",
-			"return ${0:$TM_FILENAME_BASE}"
+			"return ${0:$TM_FILENAME_BASE}",
+			""
 		],
 		"description": "Knit Controller template"
 	},
