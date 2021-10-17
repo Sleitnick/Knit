@@ -11,7 +11,7 @@ in the Wally release.
 
 ## Knit via ModuleScript
 Knit comes with a few utility modules. If Knit is being used from the packaged
-ModuleScript, then the best way to access these modules is via `Knit.Util.PACKAGE`.
+ModuleScript, then the best way to access these modules is via `require(Knit.Util.PACKAGE)`.
 
 The following modules are available:
 
@@ -24,3 +24,14 @@ The following modules are available:
 - [`Knit.Util.Timer`](https://sleitnick.github.io/RbxUtil/api/Timer)
 - [`Knit.Util.Trove`](https://sleitnick.github.io/RbxUtil/api/Trove)
 - [`Knit.Util.Promise`](https://eryn.io/roblox-lua-promise/api/Promise)
+
+Below is an example of the Signal class being used in a service:
+
+```lua
+local Signal = require(Knit.Util.Signal)
+
+local MyService = Knit.CreateService {
+	Name = "MyService";
+	SomeSignal = Signal.new();
+}
+```

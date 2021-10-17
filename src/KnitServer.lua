@@ -76,6 +76,11 @@ local KnitServer = {}
 	@within KnitServer
 ]=]
 KnitServer.Services = {} :: {[string]: Service}
+
+--[=[
+	@prop Util Folder
+	@within KnitServer
+]=]
 KnitServer.Util = script.Parent.Parent
 
 local SIGNAL_MARKER = newproxy(true)
