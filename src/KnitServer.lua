@@ -87,6 +87,7 @@ local onStartedComplete = Instance.new("BindableEvent")
 local function CreateRepFolder(serviceName: string): Instance
 	local folder = Instance.new("Folder")
 	folder.Name = serviceName
+	folder.Parent = knitRepServiceFolder
 	return folder
 end
 

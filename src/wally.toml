@@ -9,8 +9,6 @@ realm = "shared"
 [dependencies]
 Loader = "sleitnick/loader@^1.0"
 Signal = "sleitnick/signal@^1.0"
-# Remote = "sleitnick/remote@^1.0"
 Comm = "sleitnick/comm@^0.1"
 TableUtil = "sleitnick/table-util@^1.0"
-Ser = "sleitnick/ser@^1.0"
 Promise = "evaera/promise@^3.1"
