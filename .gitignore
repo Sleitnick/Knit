@@ -11,3 +11,5 @@ site/
 *.rbxmx
 *.rbxm
 Packages/
+src/Packages/
+build/

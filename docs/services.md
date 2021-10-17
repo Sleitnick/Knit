@@ -1,5 +1,5 @@
 ---
-sidebar_position: 4
+sidebar_position: 3
 ---
 
 # Services
@@ -10,7 +10,7 @@ Services are singleton objects that serve a specific purpose on the server. For 
 
 A game might have many services. They will serve as the backbone of a game.
 
-For the sake of example, we will slowly develop PointsService to show how a service is constructed. For full API documentation, visit the [Knit API](knitapi.md#service) page.
+For the sake of example, we will slowly develop PointsService to show how a service is constructed.
 
 ## Creating Services
 

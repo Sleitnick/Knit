@@ -1,5 +1,5 @@
 ---
-sidebar_position: 5
+sidebar_position: 4
 ---
 
 # Controllers
@@ -12,7 +12,7 @@ A controller is essentially the client-side equivalent of a service on the serve
 
 A game might have many controllers. They serve as a core structure of the client within Knit.
 
-For the sake of example, we will develop a CameraController. For full API documentation, visit the [Knit API](knitapi.md#controller) page.
+For the sake of example, we will develop a CameraController.
 
 ## Creating Controllers
 
