@@ -1,5 +1,3 @@
---!strict
-
 --[[
 
 	Knit.CreateController(controller): Controller
@@ -72,10 +70,9 @@ KnitClient.Util = script.Parent.Parent
 
 local Promise = require(KnitClient.Util.Promise)
 local Loader = require(KnitClient.Util.Loader)
-local Ser = require(KnitClient.Util.Ser)
-local ClientRemoteSignal = require(KnitClient.Util.Remote).ClientRemoteSignal
-local ClientRemoteProperty = require(KnitClient.Util.Remote).ClientRemoteProperty
 local TableUtil = require(KnitClient.Util.TableUtil)
+local Comm = require(KnitClient.Util.Comm)
+local ClientComm = Comm.ClientComm
 
 local services: {[string]: Service} = {}
 local servicesFolder = script.Parent:WaitForChild("Services")
@@ -86,41 +83,7 @@ local onStartedComplete = Instance.new("BindableEvent")
 
 
 local function BuildService(serviceName: string, folder: Instance): Service
-	local service = {}
-	local rfFolder = folder:FindFirstChild("RF")
-	local reFolder = folder:FindFirstChild("RE")
-	local rpFolder = folder:FindFirstChild("RP")
-	if rfFolder then
-		for _,rf in ipairs(rfFolder:GetChildren()) do
-			if rf:IsA("RemoteFunction") then
-				local function StandardRemote(_self, ...)
-					return Ser.DeserializeArgsAndUnpack(rf:InvokeServer(Ser.SerializeArgsAndUnpack(...)))
-				end
-				local function PromiseRemote(_self, ...)
-					local args = Ser.SerializeArgs(...)
-					return Promise.new(function(resolve)
-						resolve(Ser.DeserializeArgsAndUnpack(rf:InvokeServer(table.unpack(args, 1, args.n))))
-					end)
-				end
-				service[rf.Name] = StandardRemote
-				service[rf.Name .. "Promise"] = PromiseRemote
-			end
-		end
-	end
-	if reFolder then
-		for _,re in ipairs(reFolder:GetChildren()) do
-			if re:IsA("RemoteEvent") then
-				service[re.Name] = ClientRemoteSignal.new(re)
-			end
-		end
-	end
-	if rpFolder then
-		for _,rp in ipairs(rpFolder:GetChildren()) do
-			if rp:IsA("ValueBase") or rp:IsA("RemoteEvent") then
-				service[rp.Name] = ClientRemoteProperty.new(rp)
-			end
-		end
-	end
+	local service = ClientComm.new(folder, true):BuildObject()
 	services[serviceName] = service
 	return service
 end

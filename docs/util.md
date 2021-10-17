@@ -13,7 +13,7 @@ The following modules are available:
 - [`Knit.Util.Signal`](https://sleitnick.github.io/RbxUtil/api/Signal)
 - [`Knit.Util.Remote`](https://sleitnick.github.io/RbxUtil/api/Remote)
 - [`Knit.Util.TableUtil`](https://sleitnick.github.io/RbxUtil/api/TableUtil)
-- [`Knit.Util.Ser`](https://sleitnick.github.io/RbxUtil/api/Ser)
+- [`Knit.Util.Comm`](https://sleitnick.github.io/RbxUtil/api/Comm)
 - [`Knit.Util.Promise`](https://eryn.io/roblox-lua-promise/api/Promise)
 
 ## Knit via Wally
