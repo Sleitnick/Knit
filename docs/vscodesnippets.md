@@ -101,7 +101,8 @@ Reference Knit, create a service, and return the service.
 		"end",
 		"",
 		"",
-		"return ${0:$TM_FILENAME_BASE}"
+		"return ${0:$TM_FILENAME_BASE}",
+		""
 	],
 	"description": "Knit Service template"
 }
@@ -156,7 +157,8 @@ Reference Knit, create a controller, and return the controller.
 		"end",
 		"",
 		"",
-		"return ${0:$TM_FILENAME_BASE}"
+		"return ${0:$TM_FILENAME_BASE}",
+		""
 	],
 	"description": "Knit Controller template"
 }
@@ -186,91 +188,6 @@ return MyController
 
 -------------------------------------
 
-### Knit Component
-Create a Knit component.
-
-<details class="note">
-<summary>Snippet</summary>
-
-```json
-"Knit Component": {
-	"prefix": ["knitcomponent"],
-	"body": [
-		"local Knit = require(game:GetService(\"ReplicatedStorage\").Packages.Knit)",
-		"local Janitor = require(Knit.Util.Janitor)",
-		"",
-		"local ${0:$TM_FILENAME_BASE} = {}",
-		"${0:$TM_FILENAME_BASE}.__index = ${0:$TM_FILENAME_BASE}",
-		"",
-		"${0:$TM_FILENAME_BASE}.Tag = \"${0:$TM_FILENAME_BASE}\"",
-		"",
-		"",
-		"function ${0:$TM_FILENAME_BASE}.new(instance)",
-		"\t",
-		"\tlocal self = setmetatable({}, ${0:$TM_FILENAME_BASE})",
-		"\t",
-		"\tself._janitor = Janitor.new()",
-		"\t",
-		"\treturn self",
-		"\t",
-		"end",
-		"",
-		"",
-		"function ${0:$TM_FILENAME_BASE}:Init()",
-		"end",
-		"",
-		"",
-		"function ${0:$TM_FILENAME_BASE}:Deinit()",
-		"end",
-		"",
-		"",
-		"function ${0:$TM_FILENAME_BASE}:Destroy()",
-		"\tself._janitor:Destroy()",
-		"end",
-		"",
-		"",
-		"return ${0:$TM_FILENAME_BASE}"
-	],
-	"description": "Knit Component template"
-}
-```
-
-</details>
-<details class="success">
-<summary>Code Result</summary>
-
-```lua
-local Knit = require(game:GetService("ReplicatedStorage").Packages.Knit)
-local Janitor = require(Knit.Util.Janitor)
-
-local MyComponent = {}
-MyComponent.__index = MyComponent
-
-MyComponent.Tag = "MyComponent"
-
-function MyComponent.new(instance)
-	local self = setmetatable({}, MyComponent)
-	self._janitor = Janitor.new()
-	return self
-end
-
-function MyComponent:Init()
-end
-
-function MyComponent:Deinit()
-end
-
-function MyComponent:Destroy()
-	self._janitor:Destroy()
-end
-
-return MyComponent
-```
-
-</details>
-
--------------------------------------
-
 ### Knit Require
 Require a module within Knit.
 <details class="note">
@@ -289,7 +206,7 @@ Require a module within Knit.
 <summary>Code Result</summary>
 
 ```lua
-local Janitor = require(Knit.Util.Janitor)
+local Signal = require(Knit.Util.Signal)
 ```
 
 </details>
@@ -321,7 +238,8 @@ A standard Lua class.
 		"end",
 		"",
 		"",
-		"return ${0:$TM_FILENAME_BASE}"
+		"return ${0:$TM_FILENAME_BASE}",
+		""
 	],
 	"description": "Lua Class"
 }
@@ -384,7 +302,8 @@ All the above snippets together.
 			"end",
 			"",
 			"",
-			"return ${0:$TM_FILENAME_BASE}"
+			"return ${0:$TM_FILENAME_BASE}",
+			""
 		],
 		"description": "Lua Class"
 	},
@@ -393,47 +312,6 @@ All the above snippets together.
 		"prefix": ["knit"],
 		"body": ["local Knit = require(game:GetService(\"ReplicatedStorage\").Packages.Knit)"],
 		"description": "Require the Knit module"
-	},
-
-	"Knit Component": {
-		"prefix": ["knitcomponent"],
-		"body": [
-			"local Knit = require(game:GetService(\"ReplicatedStorage\").Packages.Knit)",
-			"local Janitor = require(Knit.Util.Janitor)",
-			"",
-			"local ${0:$TM_FILENAME_BASE} = {}",
-			"${0:$TM_FILENAME_BASE}.__index = ${0:$TM_FILENAME_BASE}",
-			"",
-			"${0:$TM_FILENAME_BASE}.Tag = \"${0:$TM_FILENAME_BASE}\"",
-			"",
-			"",
-			"function ${0:$TM_FILENAME_BASE}.new(instance)",
-			"\t",
-			"\tlocal self = setmetatable({}, ${0:$TM_FILENAME_BASE})",
-			"\t",
-			"\tself._janitor = Janitor.new()",
-			"\t",
-			"\treturn self",
-			"\t",
-			"end",
-			"",
-			"",
-			"function ${0:$TM_FILENAME_BASE}:Init()",
-			"end",
-			"",
-			"",
-			"function ${0:$TM_FILENAME_BASE}:Deinit()",
-			"end",
-			"",
-			"",
-			"function ${0:$TM_FILENAME_BASE}:Destroy()",
-			"\tself._janitor:Destroy()",
-			"end",
-			"",
-			"",
-			"return ${0:$TM_FILENAME_BASE}"
-		],
-		"description": "Knit Component template"
 	},
 
 	"Knit Service": {
@@ -457,7 +335,8 @@ All the above snippets together.
 			"end",
 			"",
 			"",
-			"return ${0:$TM_FILENAME_BASE}"
+			"return ${0:$TM_FILENAME_BASE}",
+			""
 		],
 		"description": "Knit Service template"
 	},
@@ -480,7 +359,8 @@ All the above snippets together.
 			"end",
 			"",
 			"",
-			"return ${0:$TM_FILENAME_BASE}"
+			"return ${0:$TM_FILENAME_BASE}",
+			""
 		],
 		"description": "Knit Controller template"
 	},
