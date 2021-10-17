@@ -1,6 +1,7 @@
 --[[
 
 	Knit.CreateService(service): Service
+	Knit.CreateSignal(): SIGNAL_MARKER
 	Knit.AddServices(folder): Service[]
 	Knit.AddServicesDeep(folder): Service[]
 	Knit.Start(): Promise<void>
@@ -69,6 +70,7 @@ KnitServer.Services = {} :: {[string]: Service}
 ]=]
 KnitServer.Util = script.Parent.Parent
 
+local SIGNAL_MARKER = newproxy()
 
 local knitRepServiceFolder = Instance.new("Folder")
 knitRepServiceFolder.Name = "Services"
@@ -160,6 +162,31 @@ end
 
 
 --[=[
+	@return SIGNAL_MARKER
+	Returns a marker that will transform the current key into
+	a RemoteSignal once the service is created. Should only
+	be called within the Client table of a service.
+
+	See [RemoteSignal](https://sleitnick.github.io/RbxUtil/api/RemoteSignal)
+	documentation for more info.
+	```lua
+	local MyService = Knit.CreateService {
+		Name = "MyService";
+		Client = {
+			MySignal = Knit.CreateSignal(); -- Create the signal marker
+		}
+	}
+
+	-- Connect to the signal:
+	MyService.Client.MySignal:Connect(function(player, ...) end)
+	```
+]=]
+function KnitServer.CreateSignal()
+	return SIGNAL_MARKER
+end
+
+
+--[=[
 	@return Promise
 	Starts Knit. Should only be called once.
 
@@ -190,6 +217,8 @@ function KnitServer.Start()
 			for k,v in pairs(service.Client) do
 				if type(v) == "function" then
 					service.KnitComm:WrapMethod(service.Client, k)
+				elseif v == SIGNAL_MARKER then
+					service.Client[k] = service.KnitComm:CreateSignal(k)
 				end
 			end
 		end
