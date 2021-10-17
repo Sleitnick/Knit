@@ -20,6 +20,6 @@ jobs:
           git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
           git config --global user.email "support+actions@github.com"
           git config --global user.name "github-actions-bot"
-          moonwave build --publish --code packages
+          moonwave build --publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
