@@ -8,15 +8,6 @@ Knit is a lightweight framework for Roblox that simplifies communication between
 
 Read the [documentation](https://sleitnick.github.io/Knit/) for more info.
 
-Check out the [Knit video tutorials](https://www.youtube.com/playlist?list=PLk3R4TM3pnqusf59x2tZ8f-5vE2c3L5S9) for hands-on examples.
-
--------------------
-
-## Alpha
-Knit is still in alpha, but will soon be elevated to beta. See the [Beta Roadmap](https://github.com/Sleitnick/Knit/projects/1) for more info. Please be aware that breaking changes may still be introduced.
-
--------------------
-
 ## Install
 
 Installing Knit is very simple. Just drop the module into ReplicatedStorage. Knit can also be used within a Rojo project.
@@ -26,12 +17,10 @@ Installing Knit is very simple. Just drop the module into ReplicatedStorage. Kni
 1. Get [Knit](https://www.roblox.com/library/5530714855/Knit) from the Roblox library.
 1. Place Knit directly within ReplicatedStorage.
 
-**Rojo workflow:**
+**Wally & Rojo workflow:**
 
-1. [Download Knit](https://github.com/Sleitnick/Knit/releases/latest/download/knit.zip) from the latest release on GitHub.
-1. Extract the Knit directory from the zipped file.
-1. Place Knit within your project.
-1. Use Rojo to point Knit to ReplicatedStorage.
+1. Add Knit as a Wally dependency (e.g. `Knit = "sleitnick/knit@^v1"`)
+1. Use Rojo to point the Wally packages to ReplicatedStorage.
 
 ## Basic Usage
 
@@ -44,7 +33,7 @@ local Knit = require(game:GetService("ReplicatedStorage").Packages.Knit)
 
 Knit.Start():catch(warn)
 -- Knit.Start() returns a Promise, so we are catching any errors and feeding it to the built-in 'warn' function
--- You could also chain 'Await()' to the end to yield until the whole sequence is completed:
+-- You could also chain 'await()' to the end to yield until the whole sequence is completed:
 --    Knit.Start():catch(warn):await()
 ```
 
@@ -102,11 +91,9 @@ We can write client-side code to fetch money from the service:
 local Knit = require(game:GetService("ReplicatedStorage").Packages.Knit)
 Knit.Start():catch(warn):await()
 
-local moneyService = Knit.GetService("MoneyService")
-local money = moneyService:GetMoney()
+local MoneyService = Knit.GetService("MoneyService")
 
--- Alternatively, using promises:
-moneyService:GetMoneyPromise():andThen(function(money)
+MoneyService:GetMoney():andThen(function(money)
 	print(money)
 end)
 ```
