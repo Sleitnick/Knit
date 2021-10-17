@@ -70,7 +70,10 @@ KnitServer.Services = {} :: {[string]: Service}
 ]=]
 KnitServer.Util = script.Parent.Parent
 
-local SIGNAL_MARKER = newproxy()
+local SIGNAL_MARKER = newproxy(true)
+getmetatable(SIGNAL_MARKER).__tostring = function()
+	return "SIGNAL_MARKER"
+end
 
 local knitRepServiceFolder = Instance.new("Folder")
 knitRepServiceFolder.Name = "Services"
@@ -119,6 +122,11 @@ function KnitServer.CreateService(serviceDef: ServiceDef): Service
 	else
 		if service.Client.Server ~= service then
 			service.Client.Server = service
+		end
+		for k,v in pairs(service.Client) do
+			if v == SIGNAL_MARKER then
+				service.Client[k] = service.KnitComm:CreateSignal(k)
+			end
 		end
 	end
 	KnitServer.Services[service.Name] = service
