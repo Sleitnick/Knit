@@ -36,7 +36,6 @@ type Service = {
 	Name: string,
 	Client: ServiceClient,
 	KnitComm: any,
-	_knit_is_service: boolean,
 	[any]: any,
 }
 
@@ -55,6 +54,20 @@ type ServiceClient = {
 --[=[
 	@class KnitServer
 	@server
+	Knit server-side lets developers create services and expose methods and signals
+	to the clients.
+
+	```lua
+	local Knit = require(somewhere.Knit)
+
+	-- Load service modules within some folder:
+	Knit.AddServices(somewhere.Services)
+
+	-- Start Knit:
+	Knit.Start():andThen(function()
+		print("Knit started")
+	end):catch(warn)
+	```
 ]=]
 local KnitServer = {}
 
@@ -63,11 +76,6 @@ local KnitServer = {}
 	@within KnitServer
 ]=]
 KnitServer.Services = {} :: {[string]: Service}
-
---[=[
-	@prop Util Folder
-	@within KnitServer
-]=]
 KnitServer.Util = script.Parent.Parent
 
 local SIGNAL_MARKER = newproxy(true)
@@ -79,8 +87,6 @@ local knitRepServiceFolder = Instance.new("Folder")
 knitRepServiceFolder.Name = "Services"
 
 local Promise = require(KnitServer.Util.Promise)
-local Loader = require(KnitServer.Util.Loader)
-local TableUtil = require(KnitServer.Util.TableUtil)
 local Comm = require(KnitServer.Util.Comm)
 local ServerComm = Comm.ServerComm
 
@@ -107,16 +113,40 @@ end
 	@param serviceDefinition ServiceDef
 	@return Service
 	Constructs a new service.
+
+	:::caution
+	Services must be created _before_ calling `Knit.Start()`.
+	:::
+	```lua
+	-- Create a service
+	local MyService = Knit.CreateService {
+		Name = "MyService";
+		Client = {};
+	}
+
+	-- Expose a ToAllCaps remote function to the clients
+	function MyService.Client:ToAllCaps(player, msg)
+		return msg:upper()
+	end
+
+	-- Knit will call KnitStart after all services have been initialized
+	function MyService:KnitStart()
+		print("MyService started")
+	end
+
+	-- Knit will call KnitInit when Knit is first started
+	function MyService:KnitInit()
+		print("MyService initialize")
+	end
+	```
 ]=]
 function KnitServer.CreateService(serviceDef: ServiceDef): Service
 	assert(type(serviceDef) == "table", "Service must be a table; got " .. type(serviceDef))
 	assert(type(serviceDef.Name) == "string", "Service.Name must be a string; got " .. type(serviceDef.Name))
 	assert(#serviceDef.Name > 0, "Service.Name must be a non-empty string")
 	assert(not DoesServiceExist(serviceDef.Name), "Service \"" .. serviceDef.Name .. "\" already exists")
-	local service: Service = TableUtil.Assign(serviceDef, {
-		_knit_is_service = true;
-		KnitComm = ServerComm.new(CreateRepFolder(serviceDef.Name));
-	})
+	local service = serviceDef
+	service.KnitComm = ServerComm.new(CreateRepFolder(serviceDef.Name))
 	if type(service.Client) ~= "table" then
 		service.Client = {Server = service}
 	else
@@ -136,32 +166,42 @@ end
 
 --[=[
 	@param parent Instance
-	@return {any}
+	@return services: {Service}
 	Requires all the modules that are children of the given parent. This is an easy
 	way to quickly load all services that might be in a folder.
 	```lua
 	Knit.AddServices(somewhere.Services)
 	```
 ]=]
-function KnitServer.AddServices(parent: Instance): {any}
-	return Loader.LoadChildren(parent)
+function KnitServer.AddServices(parent: Instance): {Service}
+	local services = {}
+	for _,v in ipairs(parent:GetChildren()) do
+		if not v:IsA("ModuleScript") then continue end
+		table.insert(services, require(v))
+	end
+	return services
 end
 
 
 --[=[
 	@param parent Instance
-	@return {any}
+	@return services: {Service}
 	Requires all the modules that are descendants of the given parent.
 ]=]
-function KnitServer.AddServicesDeep(parent: Instance): {any}
-	return Loader.LoadDescendants(parent)
+function KnitServer.AddServicesDeep(parent: Instance): {Service}
+	local services = {}
+	for _,v in ipairs(parent:GetDescendants()) do
+		if not v:IsA("ModuleScript") then continue end
+		table.insert(services, require(v))
+	end
+	return services
 end
 
 
 --[=[
 	@param serviceName string
-	@return Service?
-	Gets the service by name, or `nil` if it is not found.
+	@return Service
+	Gets the service by name. Throws an error if the service is not found.
 ]=]
 function KnitServer.GetService(serviceName: string): Service
 	assert(type(serviceName) == "string", "ServiceName must be a string; got " .. type(serviceName))

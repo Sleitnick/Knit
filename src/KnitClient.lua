@@ -69,13 +69,11 @@ KnitClient.Controllers = {} :: {[string]: Controller}
 KnitClient.Util = script.Parent.Parent
 
 local Promise = require(KnitClient.Util.Promise)
-local Loader = require(KnitClient.Util.Loader)
-local TableUtil = require(KnitClient.Util.TableUtil)
 local Comm = require(KnitClient.Util.Comm)
 local ClientComm = Comm.ClientComm
 
 local services: {[string]: Service} = {}
-local servicesFolder = script.Parent:WaitForChild("Services")
+local servicesFolder = nil
 
 local started = false
 local startedComplete = false
@@ -95,6 +93,14 @@ local function DoesControllerExist(controllerName: string): boolean
 end
 
 
+local function GetServicesFolder()
+	if not servicesFolder then
+		servicesFolder = script.Parent:WaitForChild("Services")
+	end
+	return servicesFolder
+end
+
+
 --[=[
 	@param controllerDefinition ControllerDef
 	@return Controller
@@ -105,9 +111,7 @@ function KnitClient.CreateController(controllerDef: ControllerDef): Controller
 	assert(type(controllerDef.Name) == "string", "Controller.Name must be a string; got " .. type(controllerDef.Name))
 	assert(#controllerDef.Name > 0, "Controller.Name must be a non-empty string")
 	assert(not DoesControllerExist(controllerDef.Name), "Controller \"" .. controllerDef.Name .. "\" already exists")
-	local controller: Controller = TableUtil.Assign(controllerDef, {
-		_knit_is_controller = true;
-	})
+	local controller = controllerDef :: Controller
 	KnitClient.Controllers[controller.Name] = controller
 	return controller
 end
@@ -115,25 +119,35 @@ end
 
 --[=[
 	@param parent Instance
-	@return {any}
+	@return controllers: {Controller}
 	Requires all the modules that are children of the given parent. This is an easy
 	way to quickly load all controllers that might be in a folder.
 	```lua
 	Knit.AddControllers(somewhere.Controllers)
 	```
 ]=]
-function KnitClient.AddControllers(parent: Instance): {any}
-	return Loader.LoadChildren(parent)
+function KnitClient.AddControllers(parent: Instance): {Controller}
+	local controllers = {}
+	for _,v in ipairs(parent:GetChildren()) do
+		if not v:IsA("ModuleScript") then continue end
+		table.insert(controllers, require(v))
+	end
+	return controllers
 end
 
 
 --[=[
 	@param parent Instance
-	@return {any}
+	@return controllers: {Controller}
 	Requires all the modules that are descendants of the given parent.
 ]=]
 function KnitClient.AddControllersDeep(parent: Instance): {any}
-	return Loader.LoadDescendants(parent)
+	local controllers = {}
+	for _,v in ipairs(parent:GetDescendants()) do
+		if not v:IsA("ModuleScript") then continue end
+		table.insert(controllers, require(v))
+	end
+	return controllers
 end
 
 
@@ -153,7 +167,7 @@ end
 ]=]
 function KnitClient.GetService(serviceName: string): Service
 	assert(type(serviceName) == "string", "ServiceName must be a string; got " .. type(serviceName))
-	local folder: Instance? = servicesFolder:FindFirstChild(serviceName)
+	local folder: Instance? = GetServicesFolder():FindFirstChild(serviceName)
 	assert(folder ~= nil, "Could not find service \"" .. serviceName .. "\". Check the service name and that the service has client-facing methods/RemoteSignals/RemoteProperties.")
 	return services[serviceName] or BuildService(serviceName, folder :: Instance)
 end
@@ -171,7 +185,8 @@ end
 
 
 --[=[
-	Starts Knit.
+	@return Promise
+	Starts Knit. Should only be called once per client.
 	```lua
 	Knit.Start():andThen(function()
 		print("Knit started!")
