@@ -210,7 +210,13 @@ end
 ]=]
 function KnitServer.GetService(serviceName: string): Service
 	assert(type(serviceName) == "string", "ServiceName must be a string; got " .. type(serviceName))
-	return assert(KnitServer.Services[serviceName], "Could not find service \"" .. serviceName .. "\"") :: Service
+	assert(DoesServiceExist(serviceName),
+	"Could not find controller \"" .. controllerName .. "\".
+	\n Check the service name and make sure you're accessing it in the right KnitFunction(KnitInit/KnitStart)
+	or chain promise Knit.OnStart():andThen(Function).
+	\n https://sleitnick.github.io/Knit
+	\n https://sleitnick.github.io/Knit/docs/executionmodel")
+	return 
 end
 
 

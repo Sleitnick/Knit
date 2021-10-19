@@ -168,7 +168,12 @@ end
 function KnitClient.GetService(serviceName: string): Service
 	assert(type(serviceName) == "string", "ServiceName must be a string; got " .. type(serviceName))
 	local folder: Instance? = GetServicesFolder():FindFirstChild(serviceName)
-	assert(folder ~= nil, "Could not find service \"" .. serviceName .. "\". Check the service name, make sure the service has client-facing methods/RemoteSignals/RemoteProperties and that you are accessing it in the right KnitFunction(KnitInit/KnitStart) or chain promise Knit.OnStart.\n https://sleitnick.github.io/Knit \n https://sleitnick.github.io/Knit/docs/executionmodel")
+	assert(folder ~= nil, "Could not find service \"" .. serviceName .. "\".
+	Check the service name, make sure the service has client-facing methods/RemoteSignals/RemoteProperties
+	and that you are accessing it in the right KnitFunction(KnitInit/KnitStart)
+	or chain promise Knit.OnStart.
+	\n https://sleitnick.github.io/Knit
+	\n https://sleitnick.github.io/Knit/docs/executionmodel")
 	return services[serviceName] or BuildService(serviceName, folder :: Instance)
 end
 
@@ -176,12 +181,17 @@ end
 --[=[
 	@param controllerName string
 	@return Controller
-	Errors if not found. Gets the controller by name. This is just
+	Throws an error if the Controller is not found.. Gets the controller by name. This is just
 	an alias for `KnitControllers.Controllers[controllerName]`.
 ]=]
 function KnitClient.GetController(controllerName: string): Controller
 	assert(type(controllerName) == "string", "controllerName must be a string; got " .. type(controllerName))
-	assert(DoesControllerExist(controllerName), "Could not find controller \"" .. controllerName .. "\". Check the controller name and make sure you're accessing it in the right KnitFunction(KnitInit/KnitStart) or chain promise Knit.OnStart().\n https://sleitnick.github.io/Knit \n https://sleitnick.github.io/Knit/docs/executionmodel"))
+	assert(DoesControllerExist(controllerName),
+	"Could not find controller \"" .. controllerName .. "\".
+	\n Check the controller name and make sure you're accessing it in the right KnitFunction(KnitInit/KnitStart)
+	or chain promise Knit.OnStart():andThen(Function).
+	\n https://sleitnick.github.io/Knit
+	\n https://sleitnick.github.io/Knit/docs/executionmodel")
 	return KnitClient.Controllers[controllerName]
 end
 
