@@ -1,4 +1,9 @@
-## 1.0.0
+## 1.0.0-rc.2
+
+- Removed `Services` and `Controllers` properties to force use of `GetService` and `GetController` functions
+- _TODO_
+
+## 1.0.0-rc.1
 
 - Migrated all core modules to Wally
 - Revamped documentation

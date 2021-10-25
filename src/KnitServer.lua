@@ -72,14 +72,13 @@ type ServiceClient = {
 local KnitServer = {}
 
 --[=[
-	@prop Services {[string]: Service}
-	@within KnitServer
-]=]
-KnitServer.Services = {} :: {[string]: Service}
-
---[=[
 	@prop Util Folder
 	@within KnitServer
+	@readonly
+	References the Util folder. Should only be accessed when using Knit as
+	a standalone module. If using Knit from Wally, modules should just be
+	pulled in via Wally instead of relying on Knit's Util folder, as this
+	folder only contains what is necessary for Knit to run in Wally mode.
 ]=]
 KnitServer.Util = script.Parent.Parent
 
@@ -95,6 +94,7 @@ local Promise = require(KnitServer.Util.Promise)
 local Comm = require(KnitServer.Util.Comm)
 local ServerComm = Comm.ServerComm
 
+local services: {[string]: Service} = {}
 local started = false
 local startedComplete = false
 local onStartedComplete = Instance.new("BindableEvent")
@@ -109,7 +109,7 @@ end
 
 
 local function DoesServiceExist(serviceName: string): boolean
-	local service: Service? = KnitServer.Services[serviceName]
+	local service: Service? = services[serviceName]
 	return service ~= nil
 end
 
@@ -164,7 +164,7 @@ function KnitServer.CreateService(serviceDef: ServiceDef): Service
 			end
 		end
 	end
-	KnitServer.Services[service.Name] = service
+	services[service.Name] = service
 	return service
 end
 
@@ -179,12 +179,12 @@ end
 	```
 ]=]
 function KnitServer.AddServices(parent: Instance): {Service}
-	local services = {}
+	local addedServices = {}
 	for _,v in ipairs(parent:GetChildren()) do
 		if not v:IsA("ModuleScript") then continue end
-		table.insert(services, require(v))
+		table.insert(addedServices, require(v))
 	end
-	return services
+	return addedServices
 end
 
 
@@ -194,12 +194,12 @@ end
 	Requires all the modules that are descendants of the given parent.
 ]=]
 function KnitServer.AddServicesDeep(parent: Instance): {Service}
-	local services = {}
+	local addedServices = {}
 	for _,v in ipairs(parent:GetDescendants()) do
 		if not v:IsA("ModuleScript") then continue end
-		table.insert(services, require(v))
+		table.insert(addedServices, require(v))
 	end
-	return services
+	return addedServices
 end
 
 
@@ -210,7 +210,7 @@ end
 ]=]
 function KnitServer.GetService(serviceName: string): Service
 	assert(type(serviceName) == "string", "ServiceName must be a string; got " .. type(serviceName))
-	return assert(KnitServer.Services[serviceName], "Could not find service \"" .. serviceName .. "\"") :: Service
+	return assert(services[serviceName], "Could not find service \"" .. serviceName .. "\"") :: Service
 end
 
 
@@ -260,8 +260,6 @@ function KnitServer.Start()
 	end
 
 	started = true
-
-	local services = KnitServer.Services
 
 	return Promise.new(function(resolve)
 
