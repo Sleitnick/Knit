@@ -6,11 +6,9 @@ sidebar_position: 4
 
 ## Controllers Defined
 
-Controllers are singleton objects that serve a specific purpose on the client. For instance, a game might have a CameraController, which manages a custom in-game camera for the player.
+Controllers are singleton provider objects that serve a specific purpose on the client. For instance, a game might have a CameraController, which manages a custom in-game camera for the player.
 
 A controller is essentially the client-side equivalent of a service on the server.
-
-A game might have many controllers. They serve as a core structure of the client within Knit.
 
 For the sake of example, we will develop a CameraController.
 
@@ -28,7 +26,7 @@ The `Name` field is required. The name is how code outside of your controller wi
 
 The last line (`return CameraController`) assumes this code is written in a ModuleScript, which is best practice for containing controllers.
 
-## Adding methods
+## Adding Methods
 
 Controllers are just simple tables at the end of the day. As such, it is very easy to add methods to controllers.
 
@@ -42,7 +40,7 @@ function CameraController:Unlock()
 end
 ```
 
-## Adding properties
+## Adding Properties
 
 Again, controllers are just tables. We can simply add in properties as we want. Let's add a property to describe how far away our camera should be from the part we lock onto, and another to describe if the camera is currently locked:
 
@@ -75,17 +73,18 @@ end
 Right now, when we lock onto a part, we simply set the camera's CFrame once. But what if the part moves? We need to constantly set the camera's CFrame to properly lock onto the part. We can bind to RenderStep to do this.
 
 ```lua
+local RunService = game:GetService("RunService")
+
 CameraController.RenderName = "CustomCamRender"
 CameraController.Priority = Enum.RenderPriority.Camera.Value
 
 function CameraController:LockTo(part)
 	if (self.Locked) then return end -- Stop if already locked
 	local cam = workspace.CurrentCamera
-	local runService = game:GetService("RunService")
 	self.Locked = true
 	cam.CameraType = Enum.CameraType.Scriptable
 	-- Bind to RenderStep:
-	runService:BindToRenderStep(self.RenderName, self.Priority, function()
+	RunService:BindToRenderStep(self.RenderName, self.Priority, function()
 		cam.CFrame = part.CFrame * CFrame.new(0, 0, self.Distance)
 	end)
 end
@@ -93,11 +92,10 @@ end
 function CameraController:Unlock()
 	if (not self.Locked) then return end -- Stop if already unlocked
 	local cam = workspace.CurrentCamera
-	local runService = game:GetService("RunService")
 	self.Locked = false
 	cam.CameraType = Enum.CameraType.Custom
 	-- Unbind:
-	runService:UnbindFromRenderStep(self.RenderName)
+	RunService:UnbindFromRenderStep(self.RenderName)
 end
 ```
 

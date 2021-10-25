@@ -6,7 +6,7 @@ sidebar_position: 3
 
 ## Services Defined
 
-Services are singleton objects that serve a specific purpose on the server. For instance, a game might have a PointsService, which manages in-game points for the players.
+Services are singleton provider objects that serve a specific purpose on the server. For instance, a game might have a PointsService, which manages in-game points for the players.
 
 A game might have many services. They will serve as the backbone of a game.
 
@@ -162,20 +162,29 @@ On the client, we could then invoke the service as such:
 local Knit = require(game:GetService("ReplicatedStorage").Packages.Knit)
 
 local PointsService = Knit.GetService("PointsService")
-local points = PointsService:GetPoints()
-
-print("Points for myself:", points)
+PointsService:GetPoints():andThen(function(points)
+	print("Points for myself:", points)
+end)
 ```
 
 ### Signals (Server-to-Client)
 
-We should also create a signal that we can fire events for the clients when their points change. We can use the RemoteSignal module (`Knit.Util.Remote.RemoteSignal`), and just put one within the `Client` table:
+We should also create a signal that we can fire events for the clients when their points change. We can use `Knit:CreateSignal()` to indicate we want a signal created for the service.
 
 ```lua
-PointsService.Client.PointsChanged = RemoteSignal.new()
+local PointsService = Knit.CreateService {
+	Name = "PointsService";
+	Client = {
+		PointsChanged = Knit.CreateSignal(); -- Create the signal
+	};
+}
 ```
 
-Under the hood, Knit is creating a RemoteEvent object linked to this event. This is a two-way signal (like a transceiver), so we can both send and receive data on both the server and the client.
+:::tip Remote Signal
+See the [RemoteSignal](https://sleitnick.github.io/RbxUtil/api/RemoteSignal) documentation for more info on how to use the RemoteSignal object.
+:::
+
+Under the hood, Knit is using the `Comm` module, which is creating a RemoteEvent object linked to this event. This is a two-way signal (like a transceiver), so we can both send and receive data on both the server and the client.
 
 We can then modify our `AddPoints` method again to fire this signal too:
 
@@ -184,7 +193,7 @@ function PointsService:AddPoints(player, amount)
 	local points = self:GetPoints(player)
 	points += amount
 	self.PointsPerPlayer[player] = points
-	if (amount ~= 0) then
+	if amount ~= 0 then
 		self.PointsChanged:Fire(player, points)
 		-- Fire the client signal:
 		self.Client.PointsChanged:Fire(player, points)
@@ -205,10 +214,6 @@ PointsService.PointsChanged:Connect(function(points)
 end)
 ```
 
-:::note
-Be sure to use `RemoteSignal` (_not_ `Signal`) for client-exposed events.
-:::
-
 ### Signals (Client-to-Server)
 
 Signal events can also be fired from the client. This is useful when the client needs to give the server information, but doesn't care about any response from the server. For instance, maybe the client wants to tell the PointsService that it wants some points. This is an odd use-case, but let's just roll with it.
@@ -217,7 +222,13 @@ We will create another client-exposed signal called `GiveMePoints` which will ra
 
 Let's create the signal on the PointsService:
 ```lua
-PointsService.Client.GiveMePoints = RemoteSignal.new()
+local PointsService = Knit.CreateService {
+	Name = "PointsService";
+	Client = {
+		PointsChanged = Knit.CreateSignal();
+		GiveMePoints = Knit.CreateSignal(); -- Create the new signal
+	};
+}
 ```
 
 Now, let's listen for the client to fire this signal. We can hook this up in our `KnitInit` method:
@@ -249,49 +260,9 @@ local PointsService = Knit.GetService("PointsService")
 PointsService.GiveMePoints:Fire()
 ```
 
-### Properties
-
-Knit provides a `RemoteProperty` module to easily expose values to the client. These values are read-only on the client.
-
-For our example, let's say that we want to show the most points in the game. First, let's create the `RemoteProperty` object:
-
-```lua
-local RemoteProperty = require(Knit.Util.Remote.RemoteProperty)
-
-PointsService.Client.MostPoints = RemoteProperty.new(0)
-```
-
-Now, let's change this object whenever we add points:
-
-```lua
-function PointsService:AddPoints(player, amount)
-	-- Other code from before...
-
-	-- Set MostPoints value:
-	if (points > self.Client.MostPoints:Get()) then
-		self.Client.MostPoints:Set(points)
-	end
-end
-```
-
-On the server, the `RemoteProperty` object has `Set` and `Get` methods, and also has a `Changed` event. On the client, it only has the `Get` method and `Changed` event (no `Set` method on the client; read-only).
-
-Let's grab this value on the client:
-
-```lua
--- From a LocalScript
-local Knit = require(game:GetService("ReplicatedStorage").Packages.Knit)
-
-local PointsService = Knit.GetService("PointsService")
-
--- Grab value:
-local mostPoints = PointsService.MostPoints:Get()
-
--- Keep it updated:
-PointsService.MostPoints.Changed:Connect(function(newMostPoints)
-	mostPoints = newMostPoints
-end)
-```
+:::tip Client Remote Signal
+See the [ClientRemoteSignal](https://sleitnick.github.io/RbxUtil/api/ClientRemoteSignal) documentation for more info on how to use the ClientRemoteSignal object.
+:::
 
 -----------------------------------------------------
 
@@ -304,21 +275,18 @@ At the end of this tutorial, we should have a PointsService that looks something
 ```lua
 local Knit = require(game:GetService("ReplicatedStorage").Packages.Knit)
 local Signal = require(Knit.Util.Signal)
-local RemoteSignal = require(Knit.Util.Remote.RemoteSignal)
-local RemoteProperty = require(Knit.Util.Remote.RemoteProperty)
 
-local PointsService = Knit.CreateService { Name = "PointsService", Client = {} }
-
--- Server-exposed signals/fields:
-PointsService.PointsPerPlayer = {}
-PointsService.PointsChanged = Signal.new()
-
--- Client exposed signals:
-PointsService.Client.PointsChanged = RemoteSignal.new()
-PointsService.Client.GiveMePoints = RemoteSignal.new()
-
--- Client exposed properties:
-PointsService.Client.MostPoints = RemoteProperty.new(0)
+local PointsService = Knit.CreateService {
+	Name = "PointsService";
+	-- Define some properties:
+	PointsPerPlayer = {};
+	PointsChanged = Signal.new();
+	Client = {
+		-- Expose signals to the client:
+		PointsChanged = Knit.CreateSignal();
+		GiveMePoints = Knit.CreateSignal();
+	};
+}
 
 -- Client exposed GetPoints method:
 function PointsService.Client:GetPoints(player)
@@ -330,12 +298,9 @@ function PointsService:AddPoints(player, amount)
 	local points = self:GetPoints(player)
 	points += amount
 	self.PointsPerPlayer[player] = points
-	if (amount ~= 0) then
+	if amount ~= 0 then
 		self.PointsChanged:Fire(player, points)
 		self.Client.PointsChanged:Fire(player, points)
-	end
-	if (points > self.Client.MostPoints:Get()) then
-		self.Client.MostPoints:Set(points)
 	end
 end
 
@@ -367,23 +332,6 @@ end
 return PointsService
 ```
 
-Alternatively, we could have put all non-methods within the `CreateService` constructor:
-
-```lua
-local PointsService = Knit.CreateService {
-	Name = "PointsService";
-	PointsPerPlayer = {};
-	PointsChanged = Signal.new();
-	Client = {
-		PointsChanged = RemoteSignal.new();
-		GiveMePoints = RemoteSignal.new();
-		MostPoints = RemoteProperty.new(0);
-	};
-}
-
--- The rest of code here
-```
-
 ### Client Consumer
 
 Example of client-side LocalScript consuming the PointsService:
@@ -391,6 +339,7 @@ Example of client-side LocalScript consuming the PointsService:
 ```lua
 -- From a LocalScript
 local Knit = require(game:GetService("ReplicatedStorage").Packages.Knit)
+Knit.Start():catch(warn):await()
 
 local PointsService = Knit.GetService("PointsService")
 
@@ -399,23 +348,9 @@ local function PointsChanged(points)
 end
 
 -- Get points and listen for changes:
-local initialPoints = PointsService:GetPoints()
-PointsChanged(initialPoints)
+PointsService:GetPoints():andThen(PointsChanged)
 PointsService.PointsChanged:Connect(PointsChanged)
 
 -- Ask server to give points randomly:
 PointsService.GiveMePoints:Fire()
-
--- Grab MostPoints value:
-local mostPoints = PointsService.MostPoints:Get()
-
--- Keep MostPoints value updated:
-PointsService.MostPoints.Changed:Connect(function(newMostPoints)
-	mostPoints = newMostPoints
-end)
-
--- Advanced example, using promises to get points:
-PointsService:GetPointsPromise():andThen(function(points)
-	print("Got points:", points)
-end)
 ```

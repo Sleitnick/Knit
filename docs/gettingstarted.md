@@ -15,7 +15,7 @@ Installing Knit is very simple. Just drop the module into ReplicatedStorage. Kni
 
 **Rojo/Wally workflow:**
 
-1. Add Knit to your `wally.toml` dependency list (e.g. `Knit = "sleitnick/knit@1.1.0-rc.1"`)
+1. Add Knit to your `wally.toml` dependency list (e.g. `Knit = "sleitnick/knit@1.1.0-rc.2"`)
 1. Require Knit like any other module grabbed from Wally
 
 	:::note Wally
@@ -95,14 +95,26 @@ We can write client-side code to fetch money from the service:
 local Knit = require(game:GetService("ReplicatedStorage").Packages.Knit)
 Knit.Start():catch(warn):await()
 
-local moneyService = Knit.GetService("MoneyService")
-local money = moneyService:GetMoney()
+local MoneyService = Knit.GetService("MoneyService")
 
--- Alternatively, using promises:
-moneyService:GetMoneyPromise():andThen(function(money)
+MoneyService:GetMoney():andThen(function(money)
 	print(money)
 end)
+
+-- Don't want to use promises? When you start Knit on the client,
+-- set the ServicePromises option to false:
 ```
+
+:::tip Turn Off Promises
+Don't want to use promises when the client calls a service method? Set the `ServicePromises` option to `false` when you start Knit on the client:
+```lua
+Knit.Start({ServicePromises = false}):catch(warn):await()
+
+local MoneyService = Knit.GetService("MoneyService")
+
+local money = MoneyService:GetMoney()
+```
+:::
 
 Under the hood, Knit is creating a RemoteFunction bound to the service's GetMoney method. Knit keeps RemoteFunctions and RemoteEvents out of the way so that developers can focus on writing code and not building communication infrastructure.
 
