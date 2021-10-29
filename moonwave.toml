@@ -1,3 +1,5 @@
+gitRepoUrl = "https://github.com/Sleitnick/Knit"
+
 classOrder = [
 	"KnitServer",
 	"KnitClient"
