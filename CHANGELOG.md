@@ -1,9 +1,10 @@
-## 1.0.0-rc.2
+## 1.1.0-rc.2
 
 - Removed `Services` and `Controllers` properties to force use of `GetService` and `GetController` functions
-- _TODO_
+- Add `KnitOptions` argument for KnitClient to toggle whether service methods simply yield or return promises (promises by default)
+- Various documentation improvements
 
-## 1.0.0-rc.1
+## 1.1.0-rc.1
 
 - Migrated all core modules to Wally
 - Revamped documentation
