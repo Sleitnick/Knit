@@ -51,8 +51,8 @@ type ServiceClient = {
 }
 
 type KnitOptions = {
-	CommInboundMiddleware: {{(...any) -> (boolean, ...any)}}?,
-	CommOutboundMiddleWare: {{(...any) -> (boolean, ...any)}}?
+	CommInboundMiddleware: {(...any) -> (boolean, ...any)}?,
+	CommOutboundMiddleWare: {(...any) -> (boolean, ...any)}?
 }
 
 local defaultOptions: KnitOptions = {
