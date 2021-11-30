@@ -50,6 +50,17 @@ type ServiceClient = {
 	[any]: any,
 }
 
+type KnitOptions = {
+	CommInboundMiddleware: {(...any) -> (boolean, ...any)}?,
+	CommOutboundMiddleWare: {(...any) -> (boolean, ...any)}?
+}
+
+local defaultOptions: KnitOptions = {
+	CommInboundMiddleware = nil,
+	CommOutboundMiddleWare = nil
+}
+
+local selectedOptions = nil
 
 --[=[
 	@class KnitServer
@@ -160,7 +171,7 @@ function KnitServer.CreateService(serviceDef: ServiceDef): Service
 		end
 		for k,v in pairs(service.Client) do
 			if v == SIGNAL_MARKER then
-				service.Client[k] = service.KnitComm:CreateSignal(k)
+				service.Client[k] = service.KnitComm:CreateSignal(k, selectedOptions.CommInboundMiddleware, selectedOptions.CommOutboundMiddleWare)
 			end
 		end
 	end
@@ -253,7 +264,7 @@ end
 	end):catch(warn)
 	```
 ]=]
-function KnitServer.Start()
+function KnitServer.Start(options: KnitOptions?)
 
 	if started then
 		return Promise.reject("Knit already started")
@@ -261,15 +272,22 @@ function KnitServer.Start()
 
 	started = true
 
+	if options == nil then
+		selectedOptions = defaultOptions
+	else
+		assert(typeof(options) == "table", "KnitOptions should be a table or nil; got " .. typeof(options))
+		selectedOptions = options
+	end
+
 	return Promise.new(function(resolve)
 
 		-- Bind remotes:
 		for _,service in pairs(services) do
 			for k,v in pairs(service.Client) do
 				if type(v) == "function" then
-					service.KnitComm:WrapMethod(service.Client, k)
+					service.KnitComm:WrapMethod(service.Client, k, selectedOptions.CommInboundMiddleware, selectedOptions.CommOutboundMiddleWare)
 				elseif v == SIGNAL_MARKER then
-					service.Client[k] = service.KnitComm:CreateSignal(k)
+					service.Client[k] = service.KnitComm:CreateSignal(k, selectedOptions.CommInboundMiddleware, selectedOptions.CommOutboundMiddleWare)
 				end
 			end
 		end
