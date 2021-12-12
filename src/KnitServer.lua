@@ -1,15 +1,3 @@
---[[
-
-	Knit.CreateService(service): Service
-	Knit.CreateSignal(): SIGNAL_MARKER
-	Knit.AddServices(folder): Service[]
-	Knit.AddServicesDeep(folder): Service[]
-	Knit.Start(): Promise<void>
-	Knit.OnStart(): Promise<void>
-
---]]
-
-
 --[=[
 	@interface ServiceDef
 	.Name string
@@ -50,6 +38,32 @@ type ServiceClient = {
 	[any]: any,
 }
 
+--[=[
+	@type ServerMiddlewareFn (player: Player, args: {any}) -> (shouldContinue: boolean, ...: any)
+	@within KnitServer
+
+	For more info, see [ServerComm](https://sleitnick.github.io/RbxUtil/api/ServerComm/) documentation.
+]=]
+
+--[=[
+	@interface KnitOptions
+	.InboundMiddleware ServerMiddlewareFn?
+	.OutboundMiddleware ServerMiddlewareFn?
+	@within KnitClient
+
+	- `InboundMiddleware` and `OutboundMiddleware` default to `nil`.
+]=]
+type KnitOptions = {
+	InboundMiddleware: {(...any) -> (boolean, ...any)}?,
+	OutboundMiddleware: {(...any) -> (boolean, ...any)}?,
+}
+
+local defaultOptions: KnitOptions = {
+	InboundMiddleware = nil;
+	OutboundMiddleware = nil;
+}
+
+local selectedOptions = nil
 
 --[=[
 	@class KnitServer
@@ -160,7 +174,7 @@ function KnitServer.CreateService(serviceDef: ServiceDef): Service
 		end
 		for k,v in pairs(service.Client) do
 			if v == SIGNAL_MARKER then
-				service.Client[k] = service.KnitComm:CreateSignal(k)
+				service.Client[k] = service.KnitComm:CreateSignal(k, selectedOptions.InboundMiddleware, selectedOptions.OutboundMiddleware)
 			end
 		end
 	end
@@ -209,6 +223,7 @@ end
 	Gets the service by name. Throws an error if the service is not found.
 ]=]
 function KnitServer.GetService(serviceName: string): Service
+	assert(started, "Cannot call GetService until Knit has been started")
 	assert(type(serviceName) == "string", "ServiceName must be a string; got " .. type(serviceName))
 	return assert(services[serviceName], "Could not find service \"" .. serviceName .. "\"") :: Service
 end
@@ -253,7 +268,7 @@ end
 	end):catch(warn)
 	```
 ]=]
-function KnitServer.Start()
+function KnitServer.Start(options: KnitOptions?)
 
 	if started then
 		return Promise.reject("Knit already started")
@@ -261,15 +276,27 @@ function KnitServer.Start()
 
 	started = true
 
+	if options == nil then
+		selectedOptions = defaultOptions
+	else
+		assert(typeof(options) == "table", "KnitOptions should be a table or nil; got " .. typeof(options))
+		selectedOptions = options
+		for k,v in pairs(defaultOptions) do
+			if selectedOptions[k] == nil then
+				selectedOptions[k] = v
+			end
+		end
+	end
+
 	return Promise.new(function(resolve)
 
 		-- Bind remotes:
 		for _,service in pairs(services) do
 			for k,v in pairs(service.Client) do
 				if type(v) == "function" then
-					service.KnitComm:WrapMethod(service.Client, k)
+					service.KnitComm:WrapMethod(service.Client, k, selectedOptions.InboundMiddleware, selectedOptions.OutboundMiddleware)
 				elseif v == SIGNAL_MARKER then
-					service.Client[k] = service.KnitComm:CreateSignal(k)
+					service.Client[k] = service.KnitComm:CreateSignal(k, selectedOptions.InboundMiddleware, selectedOptions.OutboundMiddleware)
 				end
 			end
 		end
