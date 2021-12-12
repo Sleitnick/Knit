@@ -31,8 +31,8 @@ Knit.Start():andThen(function()
 	print(&quot;Knit started&quot;)
 end):catch(warn)
 ```"><meta data-react-helmet="true" property="og:url" content="https://Sleitnick.github.io/Knit/api/KnitServer"><meta data-react-helmet="true" name="docusaurus_locale" content="en"><meta data-react-helmet="true" name="docusaurus_tag" content="default"><link data-react-helmet="true" rel="shortcut icon" href="/Knit/img/favicon.png"><link data-react-helmet="true" rel="canonical" href="https://Sleitnick.github.io/Knit/api/KnitServer"><link data-react-helmet="true" rel="alternate" href="https://Sleitnick.github.io/Knit/api/KnitServer" hreflang="en"><link data-react-helmet="true" rel="alternate" href="https://Sleitnick.github.io/Knit/api/KnitServer" hreflang="x-default"><link rel="stylesheet" href="/Knit/assets/css/styles.20141128.css">
-<link rel="preload" href="/Knit/assets/js/runtime~main.462df65b.js" as="script">
-<link rel="preload" href="/Knit/assets/js/main.375ab0cc.js" as="script">
+<link rel="preload" href="/Knit/assets/js/runtime~main.fb184368.js" as="script">
+<link rel="preload" href="/Knit/assets/js/main.f3f5bc4d.js" as="script">
 </head>
 <body>
 <script>!function(){function e(e){document.documentElement.setAttribute("data-theme",e)}var t=function(){var e=null;try{e=localStorage.getItem("theme")}catch(e){}return e}();null!==t?e(t):window.matchMedia("(prefers-color-scheme: dark)").matches?e("dark"):(window.matchMedia("(prefers-color-scheme: light)").matches,e("light"))}()</script><div id="__docusaurus">
@@ -55,6 +55,10 @@ Knit<span class="token punctuation">.</span><span class="token function">Start</
 <p>Used to define a service when creating it in <code>CreateService</code>.</p>
 </div><div class="divider_3z1R"></div><h3 class="anchor anchorWithStickyNavbar_31ik" id="Service"><code style="text-decoration:none">Service</code><a aria-hidden="true" class="hash-link" href="#Service" title="Direct link to heading">​</a></h3><div class="repositoryDetailsContainer_1UH0"><a class="sourceButton_2aE5" href="https://github.com/Sleitnick/Knit/blob/master/src/KnitServer.lua#L23"><div class="sourceButtonText_monK">&lt;/&gt;</div></a></div><div class="memberString_P8-X"><code class="purple__nFc">interface</code> <code>Service<!-- --> <!-- -->{</code><div class="inset_2cJr"><div><code>Name<!-- -->: </code><code class="blue_2Afy">string</code></div><div><code>Client<!-- -->: </code><code class="blue_2Afy"><a style="text-decoration:underline;color:inherit" href="/Knit/api/KnitServer#ServiceClient">ServiceClient</a></code></div><div><code>KnitComm<!-- -->: </code><code class="blue_2Afy">Comm</code></div><div><code>[any]<!-- -->: </code><code class="blue_2Afy">any</code></div></div><code>}</code></div><div></div><div class="divider_3z1R"></div><h3 class="anchor anchorWithStickyNavbar_31ik" id="ServiceClient"><code style="text-decoration:none">ServiceClient</code><a aria-hidden="true" class="hash-link" href="#ServiceClient" title="Direct link to heading">​</a></h3><div class="repositoryDetailsContainer_1UH0"><a class="sourceButton_2aE5" href="https://github.com/Sleitnick/Knit/blob/master/src/KnitServer.lua#L36"><div class="sourceButtonText_monK">&lt;/&gt;</div></a></div><div class="memberString_P8-X"><code class="purple__nFc">interface</code> <code>ServiceClient<!-- --> <!-- -->{</code><div class="inset_2cJr"><div><code>Server<!-- -->: </code><code class="blue_2Afy"><a style="text-decoration:underline;color:inherit" href="/Knit/api/KnitServer#Service">Service</a></code></div><div><code>[any]<!-- -->: </code><code class="blue_2Afy">any</code></div></div><code>}</code></div><div></div><div class="divider_3z1R"></div><h3 class="anchor anchorWithStickyNavbar_31ik" id="ServerMiddlewareFn"><code style="text-decoration:none">ServerMiddlewareFn</code><a aria-hidden="true" class="hash-link" href="#ServerMiddlewareFn" title="Direct link to heading">​</a></h3><div class="repositoryDetailsContainer_1UH0"><a class="sourceButton_2aE5" href="https://github.com/Sleitnick/Knit/blob/master/src/KnitServer.lua#L47"><div class="sourceButtonText_monK">&lt;/&gt;</div></a></div><div class="memberString_P8-X"><code class="purple__nFc">type</code> <code>ServerMiddlewareFn<!-- --> = </code> <code class="green_3LnD">(</code><div class="inset_2cJr"><code>player<!-- -->: </code><code class="blue_2Afy"><a style="text-decoration:underline;color:inherit" href="https://developer.roblox.com/en-us/api-reference/class/Player" target="_blank" rel="noopener noreferrer">Player<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound" style="color:gray;vertical-align:middle;margin-left:2px"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></code><code class="green_3LnD">,</code></div><div class="inset_2cJr"><code>args<!-- -->: </code><code class="op_1JtD">{</code><code class="blue_2Afy">any</code><code class="op_1JtD">}</code></div><code class="green_3LnD">)</code><code class="green_3LnD"> → </code><code class="green_3LnD">(</code><div class="inset_2cJr"><code>shouldContinue<!-- -->: </code><code class="blue_2Afy">boolean</code><code class="green_3LnD">,</code></div><div class="inset_2cJr"><code>...<!-- -->: </code><code class="blue_2Afy">any</code></div><code class="green_3LnD">)</code></div><div>
 <p>For more info, see <a href="https://sleitnick.github.io/RbxUtil/api/ServerComm/" target="_blank">ServerComm</a> documentation.</p>
+</div><div class="divider_3z1R"></div><h3 class="anchor anchorWithStickyNavbar_31ik" id="KnitOptions"><code style="text-decoration:none">KnitOptions</code><a aria-hidden="true" class="hash-link" href="#KnitOptions" title="Direct link to heading">​</a></h3><div class="repositoryDetailsContainer_1UH0"><a class="sourceButton_2aE5" href="https://github.com/Sleitnick/Knit/blob/master/src/KnitServer.lua#L56"><div class="sourceButtonText_monK">&lt;/&gt;</div></a></div><div class="memberString_P8-X"><code class="purple__nFc">interface</code> <code>KnitOptions<!-- --> <!-- -->{</code><div class="inset_2cJr"><div><code>InboundMiddleware<!-- -->: </code><code class="blue_2Afy"><a style="text-decoration:underline;color:inherit" href="/Knit/api/KnitServer#ServerMiddlewareFn">ServerMiddlewareFn?</a></code></div><div><code>OutboundMiddleware<!-- -->: </code><code class="blue_2Afy"><a style="text-decoration:underline;color:inherit" href="/Knit/api/KnitServer#ServerMiddlewareFn">ServerMiddlewareFn?</a></code></div></div><code>}</code></div><div>
+<ul>
+  <li><code>InboundMiddleware</code> and <code>OutboundMiddleware</code> default to <code>nil</code>.</li>
+</ul>
 </div><h2 class="anchor anchorWithStickyNavbar_31ik" id="properties">Properties<a aria-hidden="true" class="hash-link" href="#properties" title="Direct link to heading">​</a></h2><div class="divider_3z1R"></div><h3 class="anchor anchorWithStickyNavbar_31ik" id="Util"><code style="text-decoration:none">Util</code><a aria-hidden="true" class="hash-link" href="#Util" title="Direct link to heading">​</a></h3><span class="badge_3ZFo" style="color:#e74c3c"><span class="badgeTooltip_2qiw">This item is read only and cannot be modified.</span><span class="badgeToolTipTail_2yaQ"><svg xmlns="http://www.w3.org/2000/svg" height="300px" width="300px" fill="#e74c3c" x="0px" y="0px" viewBox="0 0 96 96"><path d="M70.354,15.662h-7.496H25.566c-3.282,0-5.19-0.776-5.728-1.169v-1.456c0.538-0.393,2.445-1.168,5.728-1.168h46.479V8H25.566  c-4.776,0-9.594,1.468-9.594,4.747v61.458C15.972,86.645,20.328,88,37.495,88h42.535V15.662H70.354z"></path></svg> <!-- -->Read Only</span></span><div class="repositoryDetailsContainer_1UH0"><a class="sourceButton_2aE5" href="https://github.com/Sleitnick/Knit/blob/master/src/KnitServer.lua#L97"><div class="sourceButtonText_monK">&lt;/&gt;</div></a></div><div class="memberString_P8-X"><code>KnitServer<!-- -->.<!-- -->Util<!-- -->:<!-- --> </code> <code class="blue_2Afy"><a style="text-decoration:underline;color:inherit" href="https://developer.roblox.com/en-us/api-reference/class/Folder" target="_blank" rel="noopener noreferrer">Folder<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound" style="color:gray;vertical-align:middle;margin-left:2px"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></code></div><div>
 <p>
   References the Util folder. Should only be accessed when using Knit as
@@ -126,8 +130,12 @@ Knit<span class="token punctuation">.</span><span class="token function">Start</
 <span class="token comment">-- Connect to the signal:</span>
 MyService<span class="token punctuation">.</span>Client<span class="token punctuation">.</span>MySignal<span class="token punctuation">:</span><span class="token function">Connect</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span>player<span class="token punctuation">,</span> <span class="token punctuation">...</span><span class="token punctuation">)</span> <span class="token keyword">end</span><span class="token punctuation">)</span>
 </code></pre>
-</div><div class="divider_3z1R"></div><h3 class="anchor anchorWithStickyNavbar_31ik" id="Start"><code style="text-decoration:none">Start</code><a aria-hidden="true" class="hash-link" href="#Start" title="Direct link to heading">​</a></h3><div class="repositoryDetailsContainer_1UH0"><a class="sourceButton_2aE5" href="https://github.com/Sleitnick/Knit/blob/master/src/KnitServer.lua#L271"><div class="sourceButtonText_monK">&lt;/&gt;</div></a></div><div class="memberString_P8-X"><code>KnitServer<!-- -->.</code><code class="green_3LnD">Start</code><code>(</code><code>) → </code><code class="blue_2Afy">Promise</code></div><div>
+</div><div class="divider_3z1R"></div><h3 class="anchor anchorWithStickyNavbar_31ik" id="Start"><code style="text-decoration:none">Start</code><a aria-hidden="true" class="hash-link" href="#Start" title="Direct link to heading">​</a></h3><div class="repositoryDetailsContainer_1UH0"><a class="sourceButton_2aE5" href="https://github.com/Sleitnick/Knit/blob/master/src/KnitServer.lua#L289"><div class="sourceButtonText_monK">&lt;/&gt;</div></a></div><div class="memberString_P8-X"><code>KnitServer<!-- -->.</code><code class="green_3LnD">Start</code><code>(</code><code>options<!-- -->: </code><code class="blue_2Afy"><a style="text-decoration:underline;color:inherit" href="/Knit/api/KnitServer#KnitOptions">KnitOptions?</a></code><code>) → </code><code class="blue_2Afy">Promise</code></div><div>
 <p>Starts Knit. Should only be called once.</p>
+<p>
+  Optionally, <code>KnitOptions</code> can be passed in order to set
+  Knit's custom configurations.
+</p>
 <div class="admonition admonition-caution alert alert--warning">
   <div class="admonition-heading">
     <h5><span class="admonition-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
@@ -142,7 +150,19 @@ MyService<span class="token punctuation">.</span>Client<span class="token punctu
 	<span class="token function">print</span><span class="token punctuation">(</span><span class="token string">"Knit started!"</span><span class="token punctuation">)</span>
 <span class="token keyword">end</span><span class="token punctuation">)</span><span class="token punctuation">:</span><span class="token function">catch</span><span class="token punctuation">(</span>warn<span class="token punctuation">)</span>
 </code></pre>
-</div><div class="divider_3z1R"></div><h3 class="anchor anchorWithStickyNavbar_31ik" id="OnStart"><code style="text-decoration:none">OnStart</code><a aria-hidden="true" class="hash-link" href="#OnStart" title="Direct link to heading">​</a></h3><div class="repositoryDetailsContainer_1UH0"><a class="sourceButton_2aE5" href="https://github.com/Sleitnick/Knit/blob/master/src/KnitServer.lua#L353"><div class="sourceButtonText_monK">&lt;/&gt;</div></a></div><div class="memberString_P8-X"><code>KnitServer<!-- -->.</code><code class="green_3LnD">OnStart</code><code>(</code><code>) → </code><code class="blue_2Afy">Promise</code></div><div>
+<p>Example of Knit started with options:</p>
+<pre class="language-lua"><code class="language-lua">Knit<span class="token punctuation">.</span><span class="token function">Start</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+	InboundMiddleware<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+		<span class="token keyword">function</span><span class="token punctuation">(</span>player<span class="token punctuation">,</span> args<span class="token punctuation">)</span>
+			<span class="token function">print</span><span class="token punctuation">(</span><span class="token string">"Player is giving following args to server:"</span><span class="token punctuation">,</span> args<span class="token punctuation">)</span>
+			<span class="token keyword">return</span> <span class="token keyword">true</span>
+		<span class="token keyword">end</span>
+	<span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">:</span><span class="token function">andThen</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token function">print</span><span class="token punctuation">(</span><span class="token string">"Knit started!"</span><span class="token punctuation">)</span>
+<span class="token keyword">end</span><span class="token punctuation">)</span><span class="token punctuation">:</span><span class="token function">catch</span><span class="token punctuation">(</span>warn<span class="token punctuation">)</span>
+</code></pre>
+</div><div class="divider_3z1R"></div><h3 class="anchor anchorWithStickyNavbar_31ik" id="OnStart"><code style="text-decoration:none">OnStart</code><a aria-hidden="true" class="hash-link" href="#OnStart" title="Direct link to heading">​</a></h3><div class="repositoryDetailsContainer_1UH0"><a class="sourceButton_2aE5" href="https://github.com/Sleitnick/Knit/blob/master/src/KnitServer.lua#L371"><div class="sourceButtonText_monK">&lt;/&gt;</div></a></div><div class="memberString_P8-X"><code>KnitServer<!-- -->.</code><code class="green_3LnD">OnStart</code><code>(</code><code>) → </code><code class="blue_2Afy">Promise</code></div><div>
 <p>
   Returns a promise that is resolved once Knit has started. This is useful
   for any code that needs to tie into Knit services but is not the script
@@ -261,8 +281,14 @@ MyService<span class="token punctuation">.</span>Client<span class="token punctu
         },
         {
             &quot;name&quot;: &quot;Start&quot;,
-            &quot;desc&quot;: &quot;Starts Knit. Should only be called once.\n\n:::caution\nBe sure that all services have been created _before_ calling `Start`. Services cannot be added later.\n:::\n\n```lua\nKnit.Start():andThen(function()\n\tprint(\&quot;Knit started!\&quot;)\nend):catch(warn)\n```&quot;,
-            &quot;params&quot;: [],
+            &quot;desc&quot;: &quot;Starts Knit. Should only be called once.\n\nOptionally, `KnitOptions` can be passed in order to set\nKnit&#x27;s custom configurations.\n\n:::caution\nBe sure that all services have been created _before_ calling `Start`. Services cannot be added later.\n:::\n\n```lua\nKnit.Start():andThen(function()\n\tprint(\&quot;Knit started!\&quot;)\nend):catch(warn)\n```\n\nExample of Knit started with options:\n```lua\nKnit.Start({\n\tInboundMiddleware: {\n\t\tfunction(player, args)\n\t\t\tprint(\&quot;Player is giving following args to server:\&quot;, args)\n\t\t\treturn true\n\t\tend\n\t}\n}):andThen(function()\n\tprint(\&quot;Knit started!\&quot;)\nend):catch(warn)\n```&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;options&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;KnitOptions?&quot;
+                }
+            ],
             &quot;returns&quot;: [
                 {
                     &quot;desc&quot;: &quot;&quot;,
@@ -271,7 +297,7 @@ MyService<span class="token punctuation">.</span>Client<span class="token punctu
             ],
             &quot;function_type&quot;: &quot;static&quot;,
             &quot;source&quot;: {
-                &quot;line&quot;: 271,
+                &quot;line&quot;: 289,
                 &quot;path&quot;: &quot;src/KnitServer.lua&quot;
             }
         },
@@ -287,7 +313,7 @@ MyService<span class="token punctuation">.</span>Client<span class="token punctu
             ],
             &quot;function_type&quot;: &quot;static&quot;,
             &quot;source&quot;: {
-                &quot;line&quot;: 353,
+                &quot;line&quot;: 371,
                 &quot;path&quot;: &quot;src/KnitServer.lua&quot;
             }
         }
@@ -388,6 +414,26 @@ MyService<span class="token punctuation">.</span>Client<span class="token punctu
                 &quot;line&quot;: 47,
                 &quot;path&quot;: &quot;src/KnitServer.lua&quot;
             }
+        },
+        {
+            &quot;name&quot;: &quot;KnitOptions&quot;,
+            &quot;desc&quot;: &quot;- `InboundMiddleware` and `OutboundMiddleware` default to `nil`.&quot;,
+            &quot;fields&quot;: [
+                {
+                    &quot;name&quot;: &quot;InboundMiddleware&quot;,
+                    &quot;lua_type&quot;: &quot;ServerMiddlewareFn?&quot;,
+                    &quot;desc&quot;: &quot;&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;OutboundMiddleware&quot;,
+                    &quot;lua_type&quot;: &quot;ServerMiddlewareFn?&quot;,
+                    &quot;desc&quot;: &quot;&quot;
+                }
+            ],
+            &quot;source&quot;: {
+                &quot;line&quot;: 56,
+                &quot;path&quot;: &quot;src/KnitServer.lua&quot;
+            }
         }
     ],
     &quot;name&quot;: &quot;KnitServer&quot;,
@@ -399,8 +445,8 @@ MyService<span class="token punctuation">.</span>Client<span class="token punctu
         &quot;line&quot;: 86,
         &quot;path&quot;: &quot;src/KnitServer.lua&quot;
     }
-}</pre></details></div><div class="col col--3"><div class="tableOfContents_35-E thin-scrollbar"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#types" class="table-of-contents__link toc-highlight">Types</a><ul><li><a href="#ServerMiddlewareFn" class="table-of-contents__link toc-highlight">ServerMiddlewareFn</a></li><li><a href="#Service" class="table-of-contents__link toc-highlight">Service</a></li><li><a href="#ServiceClient" class="table-of-contents__link toc-highlight">ServiceClient</a></li><li><a href="#ServiceDef" class="table-of-contents__link toc-highlight">ServiceDef</a></li></ul></li><li><a href="#properties" class="table-of-contents__link toc-highlight">Properties</a><ul><li><a href="#Util" class="table-of-contents__link toc-highlight">Util</a></li></ul></li><li><a href="#functions" class="table-of-contents__link toc-highlight">Functions</a><ul><li><a href="#AddServices" class="table-of-contents__link toc-highlight">.AddServices</a></li><li><a href="#AddServicesDeep" class="table-of-contents__link toc-highlight">.AddServicesDeep</a></li><li><a href="#CreateService" class="table-of-contents__link toc-highlight">.CreateService</a></li><li><a href="#CreateSignal" class="table-of-contents__link toc-highlight">.CreateSignal</a></li><li><a href="#GetService" class="table-of-contents__link toc-highlight">.GetService</a></li><li><a href="#OnStart" class="table-of-contents__link toc-highlight">.OnStart</a></li><li><a href="#Start" class="table-of-contents__link toc-highlight">.Start</a></li></ul></li></ul></div></div></div></div></main></div></div><footer class="footer footer--dark"><div class="container"><div class="footer__bottom text--center"><div class="footer__copyright">Copyright © 2021 Sleitnick. Built with Moonwave and Docusaurus.</div></div></div></footer></div>
-<script src="/Knit/assets/js/runtime~main.462df65b.js"></script>
-<script src="/Knit/assets/js/main.375ab0cc.js"></script>
+}</pre></details></div><div class="col col--3"><div class="tableOfContents_35-E thin-scrollbar"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#types" class="table-of-contents__link toc-highlight">Types</a><ul><li><a href="#KnitOptions" class="table-of-contents__link toc-highlight">KnitOptions</a></li><li><a href="#ServerMiddlewareFn" class="table-of-contents__link toc-highlight">ServerMiddlewareFn</a></li><li><a href="#Service" class="table-of-contents__link toc-highlight">Service</a></li><li><a href="#ServiceClient" class="table-of-contents__link toc-highlight">ServiceClient</a></li><li><a href="#ServiceDef" class="table-of-contents__link toc-highlight">ServiceDef</a></li></ul></li><li><a href="#properties" class="table-of-contents__link toc-highlight">Properties</a><ul><li><a href="#Util" class="table-of-contents__link toc-highlight">Util</a></li></ul></li><li><a href="#functions" class="table-of-contents__link toc-highlight">Functions</a><ul><li><a href="#AddServices" class="table-of-contents__link toc-highlight">.AddServices</a></li><li><a href="#AddServicesDeep" class="table-of-contents__link toc-highlight">.AddServicesDeep</a></li><li><a href="#CreateService" class="table-of-contents__link toc-highlight">.CreateService</a></li><li><a href="#CreateSignal" class="table-of-contents__link toc-highlight">.CreateSignal</a></li><li><a href="#GetService" class="table-of-contents__link toc-highlight">.GetService</a></li><li><a href="#OnStart" class="table-of-contents__link toc-highlight">.OnStart</a></li><li><a href="#Start" class="table-of-contents__link toc-highlight">.Start</a></li></ul></li></ul></div></div></div></div></main></div></div><footer class="footer footer--dark"><div class="container"><div class="footer__bottom text--center"><div class="footer__copyright">Copyright © 2021 Sleitnick. Built with Moonwave and Docusaurus.</div></div></div></footer></div>
+<script src="/Knit/assets/js/runtime~main.fb184368.js"></script>
+<script src="/Knit/assets/js/main.f3f5bc4d.js"></script>
 </body>
 </html>
