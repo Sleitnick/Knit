@@ -49,7 +49,7 @@ type ServiceClient = {
 	@interface KnitOptions
 	.InboundMiddleware ServerMiddlewareFn?
 	.OutboundMiddleware ServerMiddlewareFn?
-	@within KnitClient
+	@within KnitServer
 
 	- `InboundMiddleware` and `OutboundMiddleware` default to `nil`.
 ]=]
@@ -172,11 +172,11 @@ function KnitServer.CreateService(serviceDef: ServiceDef): Service
 		if service.Client.Server ~= service then
 			service.Client.Server = service
 		end
-		for k,v in pairs(service.Client) do
-			if v == SIGNAL_MARKER then
-				service.Client[k] = service.KnitComm:CreateSignal(k, selectedOptions.InboundMiddleware, selectedOptions.OutboundMiddleware)
-			end
-		end
+		-- for k,v in pairs(service.Client) do
+		-- 	if v == SIGNAL_MARKER then
+		-- 		service.Client[k] = service.KnitComm:CreateSignal(k, selectedOptions.InboundMiddleware, selectedOptions.OutboundMiddleware)
+		-- 	end
+		-- end
 	end
 	services[service.Name] = service
 	return service
@@ -255,8 +255,12 @@ end
 
 
 --[=[
+	@param options KnitOptions?
 	@return Promise
 	Starts Knit. Should only be called once.
+
+	Optionally, `KnitOptions` can be passed in order to set
+	Knit's custom configurations.
 
 	:::caution
 	Be sure that all services have been created _before_ calling `Start`. Services cannot be added later.
@@ -264,6 +268,20 @@ end
 
 	```lua
 	Knit.Start():andThen(function()
+		print("Knit started!")
+	end):catch(warn)
+	```
+	
+	Example of Knit started with options:
+	```lua
+	Knit.Start({
+		InboundMiddleware: {
+			function(player, args)
+				print("Player is giving following args to server:", args)
+				return true
+			end
+		}
+	}):andThen(function()
 		print("Knit started!")
 	end):catch(warn)
 	```

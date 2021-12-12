@@ -12,4 +12,5 @@ site/
 *.rbxm
 Packages/
 src/Packages/
+src/wally.lock
 build/
