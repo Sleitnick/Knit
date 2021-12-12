@@ -172,11 +172,6 @@ function KnitServer.CreateService(serviceDef: ServiceDef): Service
 		if service.Client.Server ~= service then
 			service.Client.Server = service
 		end
-		-- for k,v in pairs(service.Client) do
-		-- 	if v == SIGNAL_MARKER then
-		-- 		service.Client[k] = service.KnitComm:CreateSignal(k, selectedOptions.InboundMiddleware, selectedOptions.OutboundMiddleware)
-		-- 	end
-		-- end
 	end
 	services[service.Name] = service
 	return service

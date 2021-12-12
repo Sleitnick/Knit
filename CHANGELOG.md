@@ -1,3 +1,7 @@
+## 1.2.0
+
+- Added options to include middleware
+
 ## 1.1.0-rc.2
 
 - Removed `Services` and `Controllers` properties to force use of `GetService` and `GetController` functions
