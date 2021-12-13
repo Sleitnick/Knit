@@ -100,6 +100,7 @@ local function InboundClass(args)
 			args[i] = MyClass.deserialize(v)
 		end
 	end
+	return true
 end
 
 local function OutboundClass(args)
@@ -108,6 +109,7 @@ local function OutboundClass(args)
 			args[i] = v:Serialize()
 		end
 	end
+	return true
 end
 
 Knit.Start({
