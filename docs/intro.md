@@ -4,23 +4,23 @@ sidebar_position: 1
 
 # About
 
-A lightweight framework for Roblox that simplifies communication between core parts of your game and seamlessly bridges the gap between the server and the client.
+A lightweight framework that simplifies communication between core parts of your Roblox experience and seamlessly bridges the gap between the server and the client.
 
 See the [Getting Started](gettingstarted.md) guide to start using Knit.
 
 ## Why Choose Knit?
 
-### Structure (Where you want it)
-At the core of Knit are services and controllers, which are just singleton classes that can be easily created. These providers give basic structure to a game. However, not all code is required to live within this sytem. External code in your game can still tie into Knit's services and controllers.
+### Structure
+Services and controllers are the core of Knit. These objects provide a foundation for Roblox experiences. By orienting core game logic around services and controllers, developers will inherit cleaner organization across codebases and easier maintainability. Services and controllers are easy to create, and provide a built-in networking layer.
 
-### Server / Client Bridge
-Knit bridges the server/client boundary through declarative code that is easy to set up and easy to use. No need to manually create RemoteEvents and RemoteFunctions anymore. Knit handles the core networking for you.
+### Networking Layer
+Knit automatically provides networking between the client and services. Since Knit handles the networking infrastructure, developers are not left with the burden of manually creating RemoteEvent and RemoteFunction objects throughout the hierarchy. Each service has the ability to expose specific endpoints to the client through declarative code.
 
-### Framework / Library Hybrid
-While advertised as a game framework, Knit straddles the line between a framework and a library. While Knit provides optional structure using services and controllers, developers can choose if and how these structures are utilized. Developers are also responsible for creating the runtime scripts for Knit (i.e. bootstrapping), which allows easy extensibility of the framework.
+### Extensible
+Knit is built to be extensible. Developers write their own bootstrapping code to start and configure Knit, which gives developers the freedom to extend how Knit functions.
 
 ### For Everyone
-Knit is designed to be used by everyone, from professional game studios to someone just diving into Roblox development. For the pros, Knit is available via Wally and can be synced into Studio with Rojo. For the beginners, Knit is available as a standalone model that can be drag-and-dropped into Studio.
+From professional game studios to independent developers, Knit offers a powerful and easy-to-use foundation for Roblox experiences. Knit is available from both Wally and from the Roblox library, allowing developers to choose between a Rojo-based or Studio-based workflow.
 
 ### Widely Used
-Knit is battle-tested in the Roblox ecosystem, as it has been used by many games across the platform.
+Knit has been battle-tested in the Roblox ecosystem, and has proven itself to be reliable in both stability and scale. Knit is also open-source and encourages developers to contribute to the growth of the framework.
