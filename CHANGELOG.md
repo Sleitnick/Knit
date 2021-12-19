@@ -1,3 +1,7 @@
+## 1.2.1
+
+- Add updated dependencies to the `wally_bundle.toml` dependency list
+
 ## 1.2.0
 
 - Added options to include middleware
