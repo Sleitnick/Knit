@@ -1,3 +1,7 @@
+## 1.3.0
+
+- Add support for RemoteProperties via Comm library
+
 ## 1.2.1
 
 - Add updated dependencies to the `wally_bundle.toml` dependency list

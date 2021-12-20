@@ -101,6 +101,11 @@ getmetatable(SIGNAL_MARKER).__tostring = function()
 	return "SIGNAL_MARKER"
 end
 
+local PROPERTY_MARKER = newproxy(true)
+getmetatable(PROPERTY_MARKER).__tostring = function()
+	return "PROPERTY_MARKER"
+end
+
 local knitRepServiceFolder = Instance.new("Folder")
 knitRepServiceFolder.Name = "Services"
 
@@ -249,6 +254,11 @@ function KnitServer.CreateSignal()
 end
 
 
+function KnitServer.CreateProperty(initialValue: any)
+	return {PROPERTY_MARKER, initialValue}
+end
+
+
 --[=[
 	@param options KnitOptions?
 	@return Promise
@@ -310,6 +320,8 @@ function KnitServer.Start(options: KnitOptions?)
 					service.KnitComm:WrapMethod(service.Client, k, selectedOptions.InboundMiddleware, selectedOptions.OutboundMiddleware)
 				elseif v == SIGNAL_MARKER then
 					service.Client[k] = service.KnitComm:CreateSignal(k, selectedOptions.InboundMiddleware, selectedOptions.OutboundMiddleware)
+				elseif type(v) == "table" and v[1] == PROPERTY_MARKER then
+					service.Client[k] = service.KnitComm:CreateProperty(k, v[2], selectedOptions.InboundMiddleware, selectedOptions.OutboundMiddleware)
 				end
 			end
 		end
