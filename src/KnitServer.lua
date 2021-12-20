@@ -241,12 +241,16 @@ end
 	local MyService = Knit.CreateService {
 		Name = "MyService";
 		Client = {
-			MySignal = Knit.CreateSignal(); -- Create the signal marker
+			-- Create the signal marker, which will turn into a
+			-- RemoteSignal when Knit.Start() is called:
+			MySignal = Knit.CreateSignal()
 		}
 	}
 
-	-- Connect to the signal:
-	MyService.Client.MySignal:Connect(function(player, ...) end)
+	function MyService:KnitInit()
+		-- Connect to the signal:
+		self.Client.MySignal:Connect(function(player, ...) end)
+	end
 	```
 ]=]
 function KnitServer.CreateSignal()
@@ -254,6 +258,36 @@ function KnitServer.CreateSignal()
 end
 
 
+--[=[
+	@param initialValue any
+	@return PROPERTY_MARKER
+	Returns a marker that will transform the current key into
+	a RemoteProperty once the service is created. Should only
+	be called within the Client table of a service. An initial
+	value can be passed along as well.
+
+	RemoteProperties are great for replicating data to all of
+	the clients. Different data can also be set per client.
+
+	See [RemoteProperty](https://sleitnick.github.io/RbxUtil/api/RemoteProperty)
+	documentation for more info.
+
+	```lua
+	local MyService = Knit.CreateService {
+		Name = "MyService";
+		Client = {
+			-- Create the property marker, which will turn into a
+			-- RemoteProperty when Knit.Start() is called:
+			MyProperty = Knit.CreateProperty("HelloWorld")
+		}
+	}
+
+	function MyService:KnitInit()
+		-- Change the value of the property:
+		self.Client.MyProperty:Set("HelloWorldAgain")
+	end
+	```
+]=]
 function KnitServer.CreateProperty(initialValue: any)
 	return {PROPERTY_MARKER, initialValue}
 end
@@ -268,7 +302,8 @@ end
 	Knit's custom configurations.
 
 	:::caution
-	Be sure that all services have been created _before_ calling `Start`. Services cannot be added later.
+	Be sure that all services have been created _before_
+	calling `Start`. Services cannot be added later.
 	:::
 
 	```lua

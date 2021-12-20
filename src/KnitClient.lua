@@ -177,6 +177,46 @@ end
 	within the Client table of the given service. Returns `nil` if the
 	service is not found.
 
+	If a service's Client table contains RemoteSignals and/or RemoteProperties,
+	these values are reflected as
+	[ClientRemoteSignals](https://sleitnick.github.io/RbxUtil/api/ClientRemoteSignal) and
+	[ClientRemoteProperties](https://sleitnick.github.io/RbxUtil/api/ClientRemoteProperty).
+
+	```lua
+	-- Server-side service creation:
+	local MyService = Knit.CreateService {
+		Name = "MyService";
+		Client = {
+			MySignal = Knit.CreateSignal();
+			MyProperty = Knit.CreateProperty("Hello");
+		};
+	}
+	function MyService:AddOne(player, number)
+		return number + 1
+	end
+
+	-------------------------------------------------
+
+	-- Client-side service reflection:
+	local MyService = Knit.GetService("MyService")
+
+	-- Call a method:
+	local num = MyService:AddOne(5) --> 6
+
+	-- Fire a signal to the server:
+	MyService.MySignal:Fire("Hello")
+
+	-- Listen for signals from the server:
+	MyService.MySignal:Connect(function(message)
+		print(message)
+	end)
+
+	-- Observe the initial value and changes to properties:
+	MyService.MyProperty:Observe(function(value)
+		print(value)
+	end)
+	```
+
 	:::caution
 	Services are only exposed to the client if the service has remote-based
 	content in the Client table. If not, the service will not be visible
