@@ -4,6 +4,7 @@ local MyService = Knit.CreateService {
 	Name = "MyService";
 	Client = {
 		TestEvent = Knit.CreateSignal();
+		TestProperty = Knit.CreateProperty("Hello");
 	};
 }
 

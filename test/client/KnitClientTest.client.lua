@@ -13,6 +13,9 @@ function MyController:KnitInit()
 	MyService:TestMethod("Hello world from client"):andThen(function(result)
 		print("Result from server:", result)
 	end)
+	MyService.TestProperty:Observe(function(value)
+		print("TestProperty value:", value)
+	end)
 end
 
 Knit.Start({ServicePromises = true}):andThen(function()
