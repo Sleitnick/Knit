@@ -1,8 +1,41 @@
 --[=[
+	@interface Middleware
+	.Inbound ClientMiddleware?
+	.Outbound ClientMiddleware?
+	@within KnitClient
+]=]
+type Middleware = {
+	Inbound: ClientMiddleware?,
+	Outbound: ClientMiddleware?,
+}
+
+--[=[
+	@type ClientMiddlewareFn (args: {any}) -> (shouldContinue: boolean, ...: any)
+	@within KnitClient
+
+	For more info, see [ClientComm](https://sleitnick.github.io/RbxUtil/api/ClientComm/) documentation.
+]=]
+type ClientMiddlewareFn = (args: {any}) -> (boolean, ...any)
+
+--[=[
+	@type ClientMiddleware {ClientMiddlewareFn}
+	@within KnitClient
+	An array of client middleware functions.
+]=]
+type ClientMiddleware = {ClientMiddlewareFn}
+
+--[=[
+	@type PerServiceMiddleware {[string]: Middleware}
+	@within KnitClient
+]=]
+type PerServiceMiddleware = {[string]: Middleware}
+
+--[=[
 	@interface ControllerDef
 	.Name string
 	.[any] any
 	@within KnitClient
+	Used to define a controller when creating it in `CreateController`.
 ]=]
 type ControllerDef = {
 	Name: string,
@@ -30,32 +63,26 @@ type Service = {
 }
 
 --[=[
-	@type ClientMiddlewareFn (args: {any}) -> (shouldContinue: boolean, ...: any)
-	@within KnitClient
-
-	For more info, see [ClientComm](https://sleitnick.github.io/RbxUtil/api/ClientComm/) documentation.
-]=]
-
---[=[
 	@interface KnitOptions
 	.ServicePromises boolean?
-	.InboundMiddleware ClientMiddlewareFn?
-	.OutboundMiddleware ClientMiddlewareFn?
+	.Middleware Middleware?
+	.PerServiceMiddleware PerServiceMiddleware?
 	@within KnitClient
 
 	- `ServicePromises` defaults to `true` and indicates if service methods use promises.
-	- `InboundMiddleware` and `OutboundMiddleware` default to `nil`.
+	- Each service will go through the defined middleware, unless the service
+	has middleware defined in `PerServiceMiddleware`.
 ]=]
 type KnitOptions = {
 	ServicePromises: boolean,
-	InboundMiddleware: {(...any) -> (boolean, ...any)}?,
-	OutboundMiddleware: {(...any) -> (boolean, ...any)}?,
+	Middleware: Middleware?,
+	PerServiceMiddleware: PerServiceMiddleware?
 }
 
 local defaultOptions: KnitOptions = {
 	ServicePromises = true;
-	InboundMiddleware = nil;
-	OutboundMiddleware = nil;
+	Middleware = nil;
+	PerServiceMiddleware = {};
 }
 
 local selectedOptions = nil
@@ -99,13 +126,6 @@ local startedComplete = false
 local onStartedComplete = Instance.new("BindableEvent")
 
 
-local function BuildService(serviceName: string, folder: Instance): Service
-	local service = ClientComm.new(folder, selectedOptions.ServicePromises):BuildObject(selectedOptions.InboundMiddleware, selectedOptions.OutboundMiddleware)
-	services[serviceName] = service
-	return service
-end
-
-
 local function DoesControllerExist(controllerName: string): boolean
 	local controller: Controller? = controllers[controllerName]
 	return controller ~= nil
@@ -117,6 +137,23 @@ local function GetServicesFolder()
 		servicesFolder = script.Parent:WaitForChild("Services")
 	end
 	return servicesFolder
+end
+
+
+local function GetMiddlewareForService(serviceName: string)
+	local knitMiddleware = selectedOptions.Middleware or {}
+	local serviceMiddleware = selectedOptions.PerServiceMiddleware[serviceName]
+	return serviceMiddleware or knitMiddleware
+end
+
+
+local function BuildService(serviceName: string)
+	local folder = GetServicesFolder()
+	local middleware = GetMiddlewareForService(serviceName)
+	local clientComm = ClientComm.new(folder, selectedOptions.ServicePromises, serviceName)
+	local service = clientComm:BuildObject(middleware.Inbound, middleware.Outbound)
+	services[serviceName] = service
+	return service
 end
 
 
@@ -225,11 +262,13 @@ end
 	:::
 ]=]
 function KnitClient.GetService(serviceName: string): Service
+	local service = services[serviceName]
+	if service then
+		return service
+	end
 	assert(started, "Cannot call GetService until Knit has been started")
 	assert(type(serviceName) == "string", "ServiceName must be a string; got " .. type(serviceName))
-	local folder: Instance? = GetServicesFolder():FindFirstChild(serviceName)
-	assert(folder ~= nil, "Could not find service \"" .. serviceName .. "\". Check the service name and that the service has client-facing methods/RemoteSignals/RemoteProperties.")
-	return services[serviceName] or BuildService(serviceName, folder :: Instance)
+	return BuildService(serviceName)
 end
 
 
@@ -240,11 +279,13 @@ end
 	is not found.
 ]=]
 function KnitClient.GetController(controllerName: string): Controller
+	local controller = controllers[controllerName]
+	if controller then
+		return controller
+	end
 	assert(started, "Cannot call GetController until Knit has been started")
 	assert(type(controllerName) == "string", "ControllerName must be a string; got " .. type(controllerName))
-	local controller = controllers[controllerName]
-	assert(controller ~= nil, " Could not find controller \"" .. controllerName .. "\". Check to verify a controller with this name exists.")
-	return controller
+	error("Could not find controller \"" .. controllerName .. "\". Check to verify a controller with this name exists.", 2)
 end
 
 
@@ -284,6 +325,9 @@ function KnitClient.Start(options: KnitOptions?)
 				selectedOptions[k] = v
 			end
 		end
+	end
+	if type(selectedOptions.PerServiceMiddleware) ~= "table" then
+		selectedOptions.PerServiceMiddleware = {}
 	end
 
 	return Promise.new(function(resolve)
