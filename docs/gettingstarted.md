@@ -6,7 +6,7 @@ sidebar_position: 2
 
 ## Tutorial Video
 
-For anyone who prefers a video tutorial, check out the [Knit Tutorial](https://youtu.be/q-wLraP2hF8), which goes into the process of setting up a Knit project using the Rojo/Wally workflow and shows examples of writing services and controllers.
+For anyone who prefers a video tutorial, check out the [Knit Tutorial](https://youtu.be/tgndvNQ5agA), which goes into the process of setting up a Knit project using the Rojo/Wally workflow and shows examples of writing services and controllers.
 
 ## Install
 
