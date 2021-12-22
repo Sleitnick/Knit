@@ -4,9 +4,12 @@ sidebar_position: 2
 
 # Getting Started
 
-## Tutorial Video
+## Tutorial Videos
 
-For anyone who prefers a video tutorial, check out the [Knit Tutorial](https://youtu.be/tgndvNQ5agA), which goes into the process of setting up a Knit project using the Rojo/Wally workflow and shows examples of writing services and controllers.
+Knit can be used via two workflows: Roblox Studio and externally with Rojo and Wally. To help explain how Knit is used through both workflows, check out the tutorial videos for each:
+
+- [Knit Tutorial for Studio](https://youtu.be/0Ty2ojfdOnA)
+- [Knit Tutorial for Rojo/Wally](https://youtu.be/tgndvNQ5agA)
 
 ## Install
 
@@ -14,13 +17,13 @@ Installing Knit is very simple. Just drop the module into ReplicatedStorage. Kni
 
 **Roblox Studio workflow:**
 
-1. Get [Knit](https://www.roblox.com/library/5530714855/Knit) from the Roblox library.
-1. Place Knit directly within ReplicatedStorage.
+- Get [Knit](https://www.roblox.com/library/5530714855/Knit) from the Roblox library.
+- Place Knit directly within ReplicatedStorage.
 
 **Rojo/Wally workflow:**
 
-1. Add Knit to your `wally.toml` dependency list (e.g. `Knit = "sleitnick/knit@^1.2"`)
-1. Require Knit like any other module grabbed from Wally
+- Add Knit to your `wally.toml` dependency list (e.g. `Knit = "sleitnick/knit@^1.2"`)
+- Require Knit like any other module grabbed from Wally
 
 	:::note Wally
 	Not familiar with Wally? Wally is a package manager (like NPM) for the Roblox ecosystem.
