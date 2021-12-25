@@ -9,11 +9,15 @@ local MyService = Knit.CreateService {
 	Middleware = {
 		Inbound = {
 			function(player, args)
+				print("MyService Inbound", player, args)
 				return true
 			end,
 		};
 		Outbound = {
-
+			function(player, args)
+				print("MyService Outbound", player, args)
+				return true
+			end,
 		};
 	};
 }
