@@ -330,11 +330,13 @@ end
 	Example of Knit started with options:
 	```lua
 	Knit.Start({
-		InboundMiddleware: {
-			function(player, args)
-				print("Player is giving following args to server:", args)
-				return true
-			end
+		Middleware = {
+			Inbound = {
+				function(player, args)
+					print("Player is giving following args to server:", args)
+					return true
+				end
+			}
 		}
 	}):andThen(function()
 		print("Knit started!")
