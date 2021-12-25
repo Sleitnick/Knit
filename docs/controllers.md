@@ -123,7 +123,7 @@ Other code could then listen in for that event:
 
 ```lua
 -- Somewhere else on the client
-local CameraController = Knit.Controllers.CameraController
+local CameraController = Knit.GetController("CameraController")
 
 CameraController.LockedChanged:Connect(function(isLocked)
 	print(isLocked and "Camera is now locked" or "Camera was unlocked")
