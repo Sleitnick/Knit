@@ -1,3 +1,12 @@
+## 1.4.0
+
+- Add ability to set independent middleware per service, but on the server and the client
+- Added tutorial video links
+- Add short-circuit evaluation to `GetService` and `GetController` functions for better performance when the service/controller exists
+- Change Comm module to use service name as namespace instead of nested `__comm__` folder
+- Documentation improvements
+- Breaking changes to middleware assignment (now within one `Middleware` table instead of two for inbound/outbound)
+
 ## 1.3.0
 
 - Add support for RemoteProperties via Comm library

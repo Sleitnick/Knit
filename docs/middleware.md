@@ -8,13 +8,11 @@ Knit's networking layer uses the [Comm](https://sleitnick.github.io/RbxUtil/api/
 
 Middleware can be used to both transform inbound/outbound arguments, and also decide to drop requests/responses. This is useful for many use-cases, such as automatically serializing/deserializing complex data types over the network, or sanitizing incoming data.
 
-Middleware can be added on both the server and client, and affects functions and signals.
-
-As of right now, middleware is only at a global level across Knit. In the future, it will be possible to have custom middleware per service and controller.
+Middleware can be added on both the server and client, and affects functions and signals. Middleware can either be added at the Knit global level, or per service.
 
 ## Usage
 
-Middleware is added when Knit is started: `Knit.Start({InboundMiddleware: {...}, OutboundMiddleware: {...}})`. Each "middleware" item in the tables is a function. On the client, this function takes an array table containing all the arguments passed along. On the server, it is nearly the same, except the first argument before the arguments table is the player.
+Middleware is added when Knit is started: `Knit.Start({Middleware = {Inbound = {...}, Outbound = {...}}})` _or_ on each service. Each "middleware" item in the tables is a function. On the client, this function takes an array table containing all the arguments passed along. On the server, it is nearly the same, except the first argument before the arguments table is the player.
 
 Each function should return a boolean, indicating whether or not to continue to the request/response. If `false`, an optional variadic list of items can be returned, which will be returned back to the caller (essentially a short-circuit, but still returning data).
 
@@ -33,7 +31,7 @@ local function Logger(args: {any})
 end
 
 Knit.Start({
-	InboundMiddleware = {Logger}
+	Middleware = {Inbound = {Logger}}
 })
 ```
 
@@ -45,7 +43,7 @@ local function Logger(player: Player, args: {any})
 end
 
 Knit.Start({
-	InboundMiddleware = {Logger}
+	Middleware = {Inbound = {Logger}}
 })
 ```
 
@@ -62,7 +60,36 @@ local function DoubleNumbers(args)
 	return true
 end
 
-Knit.Start({InboundMiddleware = {DoubleNumbers}})
+Knit.Start({Middleware = {Inbound = {DoubleNumbers}}})
+```
+
+#### Per-Service Example
+
+Middleware can also be targeted per-service, which will override the global level middleware for the given service.
+```lua
+-- Server-side:
+local MyService = Knit.CreateService {
+	Name = "MyService",
+	Client = {},
+	Middleware = {
+		Inbound = {Logger},
+		Outbound = {},
+	},
+}
+```
+
+On the client, things look a little different. Middleware is still per-service, not controller, so the definitions of per-service middleware need to go within `Knit.Start()` on the client:
+```lua
+-- Client-side:
+Knit.Start({
+	PerServiceMiddleware = {
+		-- Mapped by name of the service
+		MyService = {
+			Inbound = {Logger},
+			Outbound = {},
+		},
+	},
+})
 ```
 
 #### Serialization
@@ -113,7 +140,9 @@ local function OutboundClass(args)
 end
 
 Knit.Start({
-	InboundMiddleware = {InboundClass},
-	OutboundMiddleware = {OutboundClass}
+	Middleware = {
+		Inbound = {InboundClass},
+		Outbound = {OutboundClass},
+	},
 })
 ```

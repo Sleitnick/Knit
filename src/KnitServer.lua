@@ -1,14 +1,46 @@
 --[=[
+	@interface Middleware
+	.Inbound ServerMiddleware?
+	.Outbound ServerMiddleware?
+	@within KnitServer
+]=]
+type Middleware = {
+	Inbound: ServerMiddleware?,
+	Outbound: ServerMiddleware?,
+}
+
+--[=[
+	@type ServerMiddlewareFn (player: Player, args: {any}) -> (shouldContinue: boolean, ...: any)
+	@within KnitServer
+
+	For more info, see [ServerComm](https://sleitnick.github.io/RbxUtil/api/ServerComm/) documentation.
+]=]
+type ServerMiddlewareFn = (player: Player, args: {any}) -> (boolean, ...any)
+
+--[=[
+	@type ServerMiddleware {ServerMiddlewareFn}
+	@within KnitServer
+	An array of server middleware functions.
+]=]
+type ServerMiddleware = {ServerMiddlewareFn}
+
+--[=[
 	@interface ServiceDef
 	.Name string
 	.Client table?
+	.Middleware Middleware?
 	.[any] any
 	@within KnitServer
 	Used to define a service when creating it in `CreateService`.
+
+	The middleware tables provided will be used instead of the Knit-level
+	middleware (if any). This allows fine-tuning each service's middleware.
+	These can also be left out or `nil` to not include middleware.
 ]=]
 type ServiceDef = {
 	Name: string,
 	Client: {[any]: any}?,
+	Middleware: Middleware?,
 	[any]: any,
 }
 
@@ -39,28 +71,19 @@ type ServiceClient = {
 }
 
 --[=[
-	@type ServerMiddlewareFn (player: Player, args: {any}) -> (shouldContinue: boolean, ...: any)
-	@within KnitServer
-
-	For more info, see [ServerComm](https://sleitnick.github.io/RbxUtil/api/ServerComm/) documentation.
-]=]
-
---[=[
 	@interface KnitOptions
-	.InboundMiddleware ServerMiddlewareFn?
-	.OutboundMiddleware ServerMiddlewareFn?
+	.Middleware Middleware?
 	@within KnitServer
 
-	- `InboundMiddleware` and `OutboundMiddleware` default to `nil`.
+	- Middleware will apply to all services _except_ ones that define
+	their own middleware.
 ]=]
 type KnitOptions = {
-	InboundMiddleware: {(...any) -> (boolean, ...any)}?,
-	OutboundMiddleware: {(...any) -> (boolean, ...any)}?,
+	Middleware: Middleware?,
 }
 
 local defaultOptions: KnitOptions = {
-	InboundMiddleware = nil;
-	OutboundMiddleware = nil;
+	Middleware = nil;
 }
 
 local selectedOptions = nil
@@ -119,14 +142,6 @@ local startedComplete = false
 local onStartedComplete = Instance.new("BindableEvent")
 
 
-local function CreateRepFolder(serviceName: string): Instance
-	local folder = Instance.new("Folder")
-	folder.Name = serviceName
-	folder.Parent = knitRepServiceFolder
-	return folder
-end
-
-
 local function DoesServiceExist(serviceName: string): boolean
 	local service: Service? = services[serviceName]
 	return service ~= nil
@@ -170,7 +185,7 @@ function KnitServer.CreateService(serviceDef: ServiceDef): Service
 	assert(#serviceDef.Name > 0, "Service.Name must be a non-empty string")
 	assert(not DoesServiceExist(serviceDef.Name), "Service \"" .. serviceDef.Name .. "\" already exists")
 	local service = serviceDef
-	service.KnitComm = ServerComm.new(CreateRepFolder(serviceDef.Name))
+	service.KnitComm = ServerComm.new(knitRepServiceFolder, serviceDef.Name)
 	if type(service.Client) ~= "table" then
 		service.Client = {Server = service}
 	else
@@ -315,11 +330,13 @@ end
 	Example of Knit started with options:
 	```lua
 	Knit.Start({
-		InboundMiddleware: {
-			function(player, args)
-				print("Player is giving following args to server:", args)
-				return true
-			end
+		Middleware = {
+			Inbound = {
+				function(player, args)
+					print("Player is giving following args to server:", args)
+					return true
+				end
+			}
 		}
 	}):andThen(function()
 		print("Knit started!")
@@ -348,15 +365,21 @@ function KnitServer.Start(options: KnitOptions?)
 
 	return Promise.new(function(resolve)
 
+		local knitMiddleware = selectedOptions.Middleware or {}
+
 		-- Bind remotes:
 		for _,service in pairs(services) do
+			local middleware = service.Middleware or {}
+			local inbound = middleware.Inbound or knitMiddleware.Inbound
+			local outbound = middleware.Outbound or knitMiddleware.Outbound
+			service.Middleware = nil
 			for k,v in pairs(service.Client) do
 				if type(v) == "function" then
-					service.KnitComm:WrapMethod(service.Client, k, selectedOptions.InboundMiddleware, selectedOptions.OutboundMiddleware)
+					service.KnitComm:WrapMethod(service.Client, k, inbound, outbound)
 				elseif v == SIGNAL_MARKER then
-					service.Client[k] = service.KnitComm:CreateSignal(k, selectedOptions.InboundMiddleware, selectedOptions.OutboundMiddleware)
+					service.Client[k] = service.KnitComm:CreateSignal(k, inbound, outbound)
 				elseif type(v) == "table" and v[1] == PROPERTY_MARKER then
-					service.Client[k] = service.KnitComm:CreateProperty(k, v[2], selectedOptions.InboundMiddleware, selectedOptions.OutboundMiddleware)
+					service.Client[k] = service.KnitComm:CreateProperty(k, v[2], inbound, outbound)
 				end
 			end
 		end

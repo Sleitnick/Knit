@@ -6,6 +6,20 @@ local MyService = Knit.CreateService {
 		TestEvent = Knit.CreateSignal();
 		TestProperty = Knit.CreateProperty("Hello");
 	};
+	Middleware = {
+		Inbound = {
+			function(player, args)
+				print("MyService Inbound", player, args)
+				return true
+			end,
+		};
+		Outbound = {
+			function(player, args)
+				print("MyService Outbound", player, args)
+				return true
+			end,
+		};
+	};
 }
 
 function MyService:KnitInit()
@@ -20,6 +34,21 @@ function MyService.Client:TestMethod(player, msg)
 	return msg:upper()
 end
 
-Knit.Start():andThen(function()
+Knit.Start({
+	Middleware = {
+		Inbound = {
+			function(player, ...)
+				print("INBOUND", player, ...)
+				return true
+			end,
+		},
+		Outbound = {
+			function(player, ...)
+				print("OUTBOUND", player, ...)
+				return true
+			end,
+		},
+	}
+}):andThen(function()
 	print("KnitServer started")
 end):catch(warn)
