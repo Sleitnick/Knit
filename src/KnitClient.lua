@@ -158,9 +158,25 @@ end
 
 
 --[=[
-	@param controllerDefinition ControllerDef
-	@return Controller
 	Creates a new controller.
+
+	:::caution
+	Controllers must be created _before_ calling `Knit.Start()`.
+	:::
+	```lua
+	-- Create a controller
+	local MyController = Knit.CreateController {
+		Name = "MyController",
+	}
+
+	function MyController:KnitStart()
+		print("MyController started")
+	end
+
+	function MyController:KnitInit()
+		print("MyController initialized")
+	end
+	```
 ]=]
 function KnitClient.CreateController(controllerDef: ControllerDef): Controller
 	assert(type(controllerDef) == "table", "Controller must be a table; got " .. type(controllerDef))
@@ -174,8 +190,6 @@ end
 
 
 --[=[
-	@param parent Instance
-	@return controllers: {Controller}
 	Requires all the modules that are children of the given parent. This is an easy
 	way to quickly load all controllers that might be in a folder.
 	```lua
@@ -193,11 +207,9 @@ end
 
 
 --[=[
-	@param parent Instance
-	@return controllers: {Controller}
 	Requires all the modules that are descendants of the given parent.
 ]=]
-function KnitClient.AddControllersDeep(parent: Instance): {any}
+function KnitClient.AddControllersDeep(parent: Instance): {Controller}
 	local addedControllers = {}
 	for _,v in ipairs(parent:GetDescendants()) do
 		if not v:IsA("ModuleScript") then continue end
@@ -208,10 +220,8 @@ end
 
 
 --[=[
-	@param serviceName string
-	@return Service?
 	Returns a Service object which is a reflection of the remote objects
-	within the Client table of the given service. Returns `nil` if the
+	within the Client table of the given service. Throws an error if the
 	service is not found.
 
 	If a service's Client table contains RemoteSignals and/or RemoteProperties,
@@ -273,8 +283,6 @@ end
 
 
 --[=[
-	@param controllerName string
-	@return Controller?
 	Gets the controller by name. Throws an error if the controller
 	is not found.
 ]=]
@@ -290,7 +298,6 @@ end
 
 
 --[=[
-	@param options KnitOptions?
 	@return Promise
 	Starts Knit. Should only be called once per client.
 	```lua

@@ -149,8 +149,6 @@ end
 
 
 --[=[
-	@param serviceDefinition ServiceDef
-	@return Service
 	Constructs a new service.
 
 	:::caution
@@ -159,8 +157,8 @@ end
 	```lua
 	-- Create a service
 	local MyService = Knit.CreateService {
-		Name = "MyService";
-		Client = {};
+		Name = "MyService",
+		Client = {},
 	}
 
 	-- Expose a ToAllCaps remote function to the clients
@@ -199,8 +197,6 @@ end
 
 
 --[=[
-	@param parent Instance
-	@return services: {Service}
 	Requires all the modules that are children of the given parent. This is an easy
 	way to quickly load all services that might be in a folder.
 	```lua
@@ -218,8 +214,6 @@ end
 
 
 --[=[
-	@param parent Instance
-	@return services: {Service}
 	Requires all the modules that are descendants of the given parent.
 ]=]
 function KnitServer.AddServicesDeep(parent: Instance): {Service}
@@ -233,8 +227,6 @@ end
 
 
 --[=[
-	@param serviceName string
-	@return Service
 	Gets the service by name. Throws an error if the service is not found.
 ]=]
 function KnitServer.GetService(serviceName: string): Service
@@ -274,7 +266,6 @@ end
 
 
 --[=[
-	@param initialValue any
 	@return PROPERTY_MARKER
 	Returns a marker that will transform the current key into
 	a RemoteProperty once the service is created. Should only
@@ -309,7 +300,6 @@ end
 
 
 --[=[
-	@param options KnitOptions?
 	@return Promise
 	Starts Knit. Should only be called once.
 
