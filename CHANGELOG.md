@@ -1,6 +1,7 @@
 ## 1.4.1
 
 - Update the Comm module to patch a [middleware bug](https://github.com/Sleitnick/RbxUtil/pull/27) only affecting middleware that tries to change number of arguments (i.e. injecting custom arguments will now be fixed)
+- Documentation improvements
 
 ## 1.4.0
 
