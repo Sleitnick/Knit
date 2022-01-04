@@ -5,7 +5,7 @@ registry = "https://github.com/UpliftGames/wally-index"
 realm = "shared"
 
 [dependencies]
-Comm = "sleitnick/comm^0.2"
+Comm = "sleitnick/comm@^0.2"
 Component = "sleitnick/component@^2"
 EnumList = "sleitnick/enum-list@^2"
 Input = "sleitnick/input@^1"
