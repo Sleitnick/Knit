@@ -11,4 +11,4 @@ includeReadme = false
 
 [docusaurus]
 tagline = "Lightweight game framework for Roblox"
-favicon = "/img/favicon.png"
+favicon = "/favicon.png"

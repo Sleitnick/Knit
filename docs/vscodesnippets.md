@@ -6,7 +6,7 @@ sidebar_position: 9
 
 Being able to quickly create services, controllers, or other Knit-related items is very useful when using Knit as a framework. To keep Knit lightweight, there are no required extensions or plugins. Instead, below are some VS Code snippets that can be used to speed up development.
 
-![Snippets](img/snippets.gif)
+![Snippets](/snippets.gif)
 
 ## Using Snippets
 Snippets are a Visual Studio Code feature. Check out the [Snippets documentation](https://code.visualstudio.com/docs/editor/userdefinedsnippets) for more info. Adding Snippets for Lua is very easy.
