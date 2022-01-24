@@ -32,7 +32,7 @@ Include a `require` statement for Knit.
 ```json
 "Knit": {
 	"prefix": ["knit"],
-	"body": ["local Knit = require(game:GetService(\"ReplicatedStorage\").Packages.Knit)"],
+	"body": ["local Knit = require(ReplicatedStorage.Packages.Knit)"],
 	"description": "Require the Knit module"
 }
 ```
@@ -42,7 +42,7 @@ Include a `require` statement for Knit.
 <summary>Code Result</summary>
 
 ```lua
-local Knit = require(game:GetService("ReplicatedStorage").Packages.Knit)
+local Knit = require(ReplicatedStorage.Packages.Knit)
 ```
 
 </details>
@@ -83,11 +83,11 @@ Reference Knit, create a service, and return the service.
 "Knit Service": {
 	"prefix": ["knitservice"],
 	"body": [
-		"local Knit = require(game:GetService(\"ReplicatedStorage\").Packages.Knit)",
+		"local Knit = require(ReplicatedStorage.Packages.Knit)",
 		"",
 		"local ${0:$TM_FILENAME_BASE} = Knit.CreateService {",
-		"\tName = \"${0:$TM_FILENAME_BASE}\";",
-		"\tClient = {};",
+		"\tName = \"${0:$TM_FILENAME_BASE}\",",
+		"\tClient = {},",
 		"}",
 		"",
 		"",
@@ -113,11 +113,11 @@ Reference Knit, create a service, and return the service.
 <summary>Code Result</summary>
 
 ```lua
-local Knit = require(game:GetService("ReplicatedStorage").Packages.Knit)
+local Knit = require(ReplicatedStorage.Packages.Knit)
 
 local MyService = Knit.CreateService {
-	Name = "MyService";
-	Client = {};
+	Name = "MyService",
+	Client = {},
 }
 
 function MyService:KnitStart()
@@ -142,7 +142,7 @@ Reference Knit, create a controller, and return the controller.
 "Knit Controller": {
 	"prefix": ["knitcontroller"],
 	"body": [
-		"local Knit = require(game:GetService(\"ReplicatedStorage\").Packages.Knit)",
+		"local Knit = require(ReplicatedStorage.Packages.Knit)",
 		"",
 		"local ${0:$TM_FILENAME_BASE} = Knit.CreateController { Name = \"${0:$TM_FILENAME_BASE}\" }",
 		"",
@@ -169,10 +169,10 @@ Reference Knit, create a controller, and return the controller.
 <summary>Code Result</summary>
 
 ```lua
-local Knit = require(game:GetService("ReplicatedStorage").Packages.Knit)
+local Knit = require(ReplicatedStorage.Packages.Knit)
 
 local MyController = Knit.CreateController {
-	Name = "MyController";
+	Name = "MyController",
 }
 
 function MyController:KnitStart()
@@ -310,18 +310,18 @@ All the above snippets together.
 
 	"Knit": {
 		"prefix": ["knit"],
-		"body": ["local Knit = require(game:GetService(\"ReplicatedStorage\").Packages.Knit)"],
+		"body": ["local Knit = require(ReplicatedStorage.Packages.Knit)"],
 		"description": "Require the Knit module"
 	},
 
 	"Knit Service": {
 		"prefix": ["knitservice"],
 		"body": [
-			"local Knit = require(game:GetService(\"ReplicatedStorage\").Packages.Knit)",
+			"local Knit = require(ReplicatedStorage.Packages.Knit)",
 			"",
 			"local ${0:$TM_FILENAME_BASE} = Knit.CreateService {",
-			"\tName = \"${0:$TM_FILENAME_BASE}\";",
-			"\tClient = {};",
+			"\tName = \"${0:$TM_FILENAME_BASE}\",",
+			"\tClient = {},",
 			"}",
 			"",
 			"",
@@ -344,7 +344,7 @@ All the above snippets together.
 	"Knit Controller": {
 		"prefix": ["knitcontroller"],
 		"body": [
-			"local Knit = require(game:GetService(\"ReplicatedStorage\").Packages.Knit)",
+			"local Knit = require(ReplicatedStorage.Packages.Knit)",
 			"",
 			"local ${0:$TM_FILENAME_BASE} = Knit.CreateController { Name = \"${0:$TM_FILENAME_BASE}\" }",
 			"",

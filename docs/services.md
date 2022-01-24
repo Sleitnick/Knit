@@ -173,10 +173,10 @@ We should also create a signal that we can fire events for the clients when thei
 
 ```lua
 local PointsService = Knit.CreateService {
-	Name = "PointsService";
+	Name = "PointsService",
 	Client = {
-		PointsChanged = Knit.CreateSignal(); -- Create the signal
-	};
+		PointsChanged = Knit.CreateSignal(), -- Create the signal
+	},
 }
 ```
 
@@ -223,11 +223,11 @@ We will create another client-exposed signal called `GiveMePoints` which will ra
 Let's create the signal on the PointsService:
 ```lua
 local PointsService = Knit.CreateService {
-	Name = "PointsService";
+	Name = "PointsService",
 	Client = {
-		PointsChanged = Knit.CreateSignal();
-		GiveMePoints = Knit.CreateSignal(); -- Create the new signal
-	};
+		PointsChanged = Knit.CreateSignal(),
+		GiveMePoints = Knit.CreateSignal(), -- Create the new signal
+	},
 }
 ```
 
@@ -264,6 +264,48 @@ PointsService.GiveMePoints:Fire()
 See the [ClientRemoteSignal](https://sleitnick.github.io/RbxUtil/api/ClientRemoteSignal) documentation for more info on how to use the ClientRemoteSignal object.
 :::
 
+### Properties
+
+It is often useful to replicate data to all or individual players. Instead of creating methods and signals to communicate this data, RemoteProperties
+can be used.
+
+For example, let's refactor the `AddPoints` method to set a RemoteProperty of the number of points the player has. The client will then be able to
+easily read this property:
+
+```lua
+-- Create the RemoteProperty:
+PointsService.Client.Points = Knit.CreateProperty(0)
+
+function PointsService:AddPoints(player, amount)
+	local points = self:GetPoints(player)
+	points += amount
+	self.PointsPerPlayer[player] = points
+	self.Client.Points:SetFor(player, points)
+end
+```
+
+On the client, we can now easily read the `Points` property:
+
+```lua
+-- LocalScript
+local Knit = require(game:GetService("ReplicatedStorage").Packages.Knit)
+
+local PointsService = Knit.GetService("PointsService")
+
+-- The 'Observe' method will fire for the current value and any time the value changes:
+PointsService.Points:Observe(function(points)
+	print("Current number of points:", points)
+end)
+```
+
+Using `Observe` is the easiest way to track the value of a RemoteProperty on the client.
+
+:::tip Remote Property
+See the [RemoteProperty](https://sleitnick.github.io/RbxUtil/api/RemoteProperty) and
+[ClientRemoteProperty](https://sleitnick.github.io/RbxUtil/api/ClientRemoteProperty)
+documentation for more info on how to use the RemoteProperty and ClientRemoteProperty objects.
+:::
+
 -----------------------------------------------------
 
 ## Full Example
@@ -277,15 +319,16 @@ local Knit = require(game:GetService("ReplicatedStorage").Packages.Knit)
 local Signal = require(Knit.Util.Signal)
 
 local PointsService = Knit.CreateService {
-	Name = "PointsService";
+	Name = "PointsService",
 	-- Define some properties:
-	PointsPerPlayer = {};
-	PointsChanged = Signal.new();
+	PointsPerPlayer = {},
+	PointsChanged = Signal.new(),
 	Client = {
 		-- Expose signals to the client:
-		PointsChanged = Knit.CreateSignal();
-		GiveMePoints = Knit.CreateSignal();
-	};
+		PointsChanged = Knit.CreateSignal(),
+		GiveMePoints = Knit.CreateSignal(),
+		Points = Knit.CreateProperty(0),
+	},
 }
 
 -- Client exposed GetPoints method:
@@ -302,6 +345,7 @@ function PointsService:AddPoints(player, amount)
 		self.PointsChanged:Fire(player, points)
 		self.Client.PointsChanged:Fire(player, points)
 	end
+	self.Client.Points:SetFor(player, points)
 end
 
 -- Get Points:
