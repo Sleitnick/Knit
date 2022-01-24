@@ -18,8 +18,10 @@ The following modules are available:
 - [`Knit.Util.Comm`](https://sleitnick.github.io/RbxUtil/api/Comm)
 - [`Knit.Util.Component`](https://sleitnick.github.io/RbxUtil/api/Component)
 - [`Knit.Util.EnumList`](https://sleitnick.github.io/RbxUtil/api/EnumList)
+- [`Knit.Util.Input`](https://sleitnick.github.io/RbxUtil/api/Input)
 - [`Knit.Util.Option`](https://sleitnick.github.io/RbxUtil/api/Option)
 - [`Knit.Util.Signal`](https://sleitnick.github.io/RbxUtil/api/Signal)
+- [`Knit.Util.Streamable`](https://sleitnick.github.io/RbxUtil/api/Streamable)
 - [`Knit.Util.TableUtil`](https://sleitnick.github.io/RbxUtil/api/TableUtil)
 - [`Knit.Util.Timer`](https://sleitnick.github.io/RbxUtil/api/Timer)
 - [`Knit.Util.Trove`](https://sleitnick.github.io/RbxUtil/api/Trove)
@@ -31,7 +33,7 @@ Below is an example of the Signal class being used in a service:
 local Signal = require(Knit.Util.Signal)
 
 local MyService = Knit.CreateService {
-	Name = "MyService";
-	SomeSignal = Signal.new();
+	Name = "MyService",
+	SomeSignal = Signal.new(),
 }
 ```

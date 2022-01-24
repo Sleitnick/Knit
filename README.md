@@ -48,7 +48,7 @@ local Knit = require(game:GetService("ReplicatedStorage").Packages.Knit)
 
 -- Create the service:
 local MoneyService = Knit.CreateService {
-	Name = "MoneyService";
+	Name = "MoneyService",
 }
 
 -- Add some methods to the service:
