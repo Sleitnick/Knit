@@ -126,7 +126,7 @@ Alright, back to our PointsService! We have a problem... We have created a [memo
 ```lua
 function PointsService:KnitInit()
 	game:GetService("Players").PlayerRemoving:Connect(function(player)
-		-- Clear out the data for hte player when the player leaves:
+		-- Clear out the data for the player when the player leaves:
 		self.PointsPerPlayer[player] = nil
 	end)
 end
