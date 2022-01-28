@@ -1,3 +1,11 @@
+## 1.4.3
+
+- Update Component dependency
+- Update Input dependency
+- Update Signal dependency
+- Update Timer dependency
+- Update Trove dependency
+
 ## 1.4.2
 
 - Update dependencies to latest
