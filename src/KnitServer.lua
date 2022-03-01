@@ -83,7 +83,7 @@ type KnitOptions = {
 }
 
 local defaultOptions: KnitOptions = {
-	Middleware = nil;
+	Middleware = nil,
 }
 
 local selectedOptions = nil
@@ -246,12 +246,12 @@ end
 	documentation for more info.
 	```lua
 	local MyService = Knit.CreateService {
-		Name = "MyService";
+		Name = "MyService",
 		Client = {
 			-- Create the signal marker, which will turn into a
 			-- RemoteSignal when Knit.Start() is called:
-			MySignal = Knit.CreateSignal()
-		}
+			MySignal = Knit.CreateSignal(),
+		},
 	}
 
 	function MyService:KnitInit()
@@ -280,12 +280,12 @@ end
 
 	```lua
 	local MyService = Knit.CreateService {
-		Name = "MyService";
+		Name = "MyService",
 		Client = {
 			-- Create the property marker, which will turn into a
 			-- RemoteProperty when Knit.Start() is called:
-			MyProperty = Knit.CreateProperty("HelloWorld")
-		}
+			MyProperty = Knit.CreateProperty("HelloWorld"),
+		},
 	}
 
 	function MyService:KnitInit()
@@ -326,8 +326,8 @@ end
 					print("Player is giving following args to server:", args)
 					return true
 				end
-			}
-		}
+			},
+		},
 	}):andThen(function()
 		print("Knit started!")
 	end):catch(warn)
@@ -375,15 +375,20 @@ function KnitServer.Start(options: KnitOptions?)
 		end
 
 		-- Init:
+		debug.profilebegin("KnitInit")
 		local promisesInitServices = {}
 		for _,service in pairs(services) do
 			if type(service.KnitInit) == "function" then
 				table.insert(promisesInitServices, Promise.new(function(r)
+					debug.setmemorycategory(service.Name)
+					debug.profilebegin("KnitInit_" .. service.Name)
 					service:KnitInit()
+					debug.profileend()
 					r()
 				end))
 			end
 		end
+		debug.profileend()
 
 		resolve(Promise.all(promisesInitServices))
 
@@ -392,7 +397,10 @@ function KnitServer.Start(options: KnitOptions?)
 		-- Start:
 		for _,service in pairs(services) do
 			if type(service.KnitStart) == "function" then
-				task.spawn(service.KnitStart, service)
+				task.spawn(function()
+					debug.setmemorycategory(service.Name)
+					service:KnitStart()
+				end)
 			end
 		end
 

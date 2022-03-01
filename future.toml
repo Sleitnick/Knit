@@ -1,0 +1,5 @@
+[[debug.setmemorycategory.args]]
+type = "string"
+
+[debug.resetmemorycategory]
+args = []

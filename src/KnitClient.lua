@@ -76,13 +76,13 @@ type Service = {
 type KnitOptions = {
 	ServicePromises: boolean,
 	Middleware: Middleware?,
-	PerServiceMiddleware: PerServiceMiddleware?
+	PerServiceMiddleware: PerServiceMiddleware?,
 }
 
 local defaultOptions: KnitOptions = {
-	ServicePromises = true;
-	Middleware = nil;
-	PerServiceMiddleware = {};
+	ServicePromises = true,
+	Middleware = nil,
+	PerServiceMiddleware = {},
 }
 
 local selectedOptions = nil
@@ -232,11 +232,11 @@ end
 	```lua
 	-- Server-side service creation:
 	local MyService = Knit.CreateService {
-		Name = "MyService";
+		Name = "MyService",
 		Client = {
-			MySignal = Knit.CreateSignal();
-			MyProperty = Knit.CreateProperty("Hello");
-		};
+			MySignal = Knit.CreateSignal(),
+			MyProperty = Knit.CreateProperty("Hello"),
+		},
 	}
 	function MyService:AddOne(player, number)
 		return number + 1
@@ -341,14 +341,20 @@ function KnitClient.Start(options: KnitOptions?)
 
 		-- Init:
 		local promisesStartControllers = {}
+
+		debug.profilebegin("KnitInit")
 		for _,controller in pairs(controllers) do
 			if type(controller.KnitInit) == "function" then
 				table.insert(promisesStartControllers, Promise.new(function(r)
+					debug.setmemorycategory(controller.Name)
+					debug.profilebegin("KnitInit_" .. controller.Name)
 					controller:KnitInit()
+					debug.profileend()
 					r()
 				end))
 			end
 		end
+		debug.profileend()
 
 		resolve(Promise.all(promisesStartControllers))
 
@@ -357,7 +363,10 @@ function KnitClient.Start(options: KnitOptions?)
 		-- Start:
 		for _,controller in pairs(controllers) do
 			if type(controller.KnitStart) == "function" then
-				task.spawn(controller.KnitStart, controller)
+				task.spawn(function()
+					debug.setmemorycategory(controller.Name)
+					controller:KnitStart()
+				end)
 			end
 		end
 
