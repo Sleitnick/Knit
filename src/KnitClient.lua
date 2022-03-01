@@ -342,7 +342,6 @@ function KnitClient.Start(options: KnitOptions?)
 		-- Init:
 		local promisesStartControllers = {}
 
-		debug.profilebegin("KnitInit")
 		for _,controller in pairs(controllers) do
 			if type(controller.KnitInit) == "function" then
 				table.insert(promisesStartControllers, Promise.new(function(r)
@@ -354,7 +353,6 @@ function KnitClient.Start(options: KnitOptions?)
 				end))
 			end
 		end
-		debug.profileend()
 
 		resolve(Promise.all(promisesStartControllers))
 

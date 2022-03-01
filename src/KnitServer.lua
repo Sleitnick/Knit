@@ -375,7 +375,6 @@ function KnitServer.Start(options: KnitOptions?)
 		end
 
 		-- Init:
-		debug.profilebegin("KnitInit")
 		local promisesInitServices = {}
 		for _,service in pairs(services) do
 			if type(service.KnitInit) == "function" then
@@ -388,7 +387,6 @@ function KnitServer.Start(options: KnitOptions?)
 				end))
 			end
 		end
-		debug.profileend()
 
 		resolve(Promise.all(promisesInitServices))
 
