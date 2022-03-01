@@ -380,9 +380,7 @@ function KnitServer.Start(options: KnitOptions?)
 			if type(service.KnitInit) == "function" then
 				table.insert(promisesInitServices, Promise.new(function(r)
 					debug.setmemorycategory(service.Name)
-					debug.profilebegin("KnitInit_" .. service.Name)
 					service:KnitInit()
-					debug.profileend()
 					r()
 				end))
 			end

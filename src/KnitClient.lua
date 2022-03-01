@@ -346,9 +346,7 @@ function KnitClient.Start(options: KnitOptions?)
 			if type(controller.KnitInit) == "function" then
 				table.insert(promisesStartControllers, Promise.new(function(r)
 					debug.setmemorycategory(controller.Name)
-					debug.profilebegin("KnitInit_" .. controller.Name)
 					controller:KnitInit()
-					debug.profileend()
 					r()
 				end))
 			end
