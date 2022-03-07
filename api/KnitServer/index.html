@@ -31,8 +31,8 @@ Knit.Start():andThen(function()
 	print(&quot;Knit started&quot;)
 end):catch(warn)
 ```"><meta data-react-helmet="true" property="og:url" content="https://Sleitnick.github.io/Knit/api/KnitServer"><meta data-react-helmet="true" name="docusaurus_locale" content="en"><meta data-react-helmet="true" name="docusaurus_tag" content="default"><link data-react-helmet="true" rel="shortcut icon" href="/Knit/favicon.png"><link data-react-helmet="true" rel="canonical" href="https://Sleitnick.github.io/Knit/api/KnitServer"><link data-react-helmet="true" rel="alternate" href="https://Sleitnick.github.io/Knit/api/KnitServer" hreflang="en"><link data-react-helmet="true" rel="alternate" href="https://Sleitnick.github.io/Knit/api/KnitServer" hreflang="x-default"><link rel="stylesheet" href="/Knit/assets/css/styles.fb20d3d5.css">
-<link rel="preload" href="/Knit/assets/js/runtime~main.1890e652.js" as="script">
-<link rel="preload" href="/Knit/assets/js/main.f3c84b7f.js" as="script">
+<link rel="preload" href="/Knit/assets/js/runtime~main.e2a380d8.js" as="script">
+<link rel="preload" href="/Knit/assets/js/main.b179ffff.js" as="script">
 </head>
 <body>
 <script>!function(){function e(e){document.documentElement.setAttribute("data-theme",e)}var t=function(){var e=null;try{e=localStorage.getItem("theme")}catch(e){}return e}();null!==t?e(t):window.matchMedia("(prefers-color-scheme: dark)").matches?e("dark"):(window.matchMedia("(prefers-color-scheme: light)").matches,e("light"))}()</script><div id="__docusaurus">
@@ -131,12 +131,12 @@ Knit<span class="token punctuation">.</span><span class="token function">Start</
   documentation for more info.
 </p>
 <pre class="language-lua"><code class="language-lua"><span class="token keyword">local</span> MyService <span class="token operator">=</span> Knit<span class="token punctuation">.</span><span class="token function">CreateService</span> <span class="token punctuation">{</span>
-	Name <span class="token operator">=</span> <span class="token string">"MyService"</span><span class="token punctuation">;</span>
+	Name <span class="token operator">=</span> <span class="token string">"MyService"</span><span class="token punctuation">,</span>
 	Client <span class="token operator">=</span> <span class="token punctuation">{</span>
 		<span class="token comment">-- Create the signal marker, which will turn into a</span>
 		<span class="token comment">-- RemoteSignal when Knit.Start() is called:</span>
-		MySignal <span class="token operator">=</span> Knit<span class="token punctuation">.</span><span class="token function">CreateSignal</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-	<span class="token punctuation">}</span>
+		MySignal <span class="token operator">=</span> Knit<span class="token punctuation">.</span><span class="token function">CreateSignal</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+	<span class="token punctuation">}</span><span class="token punctuation">,</span>
 <span class="token punctuation">}</span>
 
 <span class="token keyword">function</span> MyService<span class="token punctuation">:</span><span class="token function">KnitInit</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
@@ -160,12 +160,12 @@ Knit<span class="token punctuation">.</span><span class="token function">Start</
   documentation for more info.
 </p>
 <pre class="language-lua"><code class="language-lua"><span class="token keyword">local</span> MyService <span class="token operator">=</span> Knit<span class="token punctuation">.</span><span class="token function">CreateService</span> <span class="token punctuation">{</span>
-	Name <span class="token operator">=</span> <span class="token string">"MyService"</span><span class="token punctuation">;</span>
+	Name <span class="token operator">=</span> <span class="token string">"MyService"</span><span class="token punctuation">,</span>
 	Client <span class="token operator">=</span> <span class="token punctuation">{</span>
 		<span class="token comment">-- Create the property marker, which will turn into a</span>
 		<span class="token comment">-- RemoteProperty when Knit.Start() is called:</span>
-		MyProperty <span class="token operator">=</span> Knit<span class="token punctuation">.</span><span class="token function">CreateProperty</span><span class="token punctuation">(</span><span class="token string">"HelloWorld"</span><span class="token punctuation">)</span>
-	<span class="token punctuation">}</span>
+		MyProperty <span class="token operator">=</span> Knit<span class="token punctuation">.</span><span class="token function">CreateProperty</span><span class="token punctuation">(</span><span class="token string">"HelloWorld"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+	<span class="token punctuation">}</span><span class="token punctuation">,</span>
 <span class="token punctuation">}</span>
 
 <span class="token keyword">function</span> MyService<span class="token punctuation">:</span><span class="token function">KnitInit</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
@@ -204,13 +204,13 @@ Knit<span class="token punctuation">.</span><span class="token function">Start</
 				<span class="token function">print</span><span class="token punctuation">(</span><span class="token string">"Player is giving following args to server:"</span><span class="token punctuation">,</span> args<span class="token punctuation">)</span>
 				<span class="token keyword">return</span> <span class="token keyword">true</span>
 			<span class="token keyword">end</span>
-		<span class="token punctuation">}</span>
-	<span class="token punctuation">}</span>
+		<span class="token punctuation">}</span><span class="token punctuation">,</span>
+	<span class="token punctuation">}</span><span class="token punctuation">,</span>
 <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">:</span><span class="token function">andThen</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 	<span class="token function">print</span><span class="token punctuation">(</span><span class="token string">"Knit started!"</span><span class="token punctuation">)</span>
 <span class="token keyword">end</span><span class="token punctuation">)</span><span class="token punctuation">:</span><span class="token function">catch</span><span class="token punctuation">(</span>warn<span class="token punctuation">)</span>
 </code></pre>
-</div><div class="divider_3z1R"></div><h3 class="anchor anchorWithStickyNavbar_31ik" id="OnStart"><code style="text-decoration:none">OnStart</code><a aria-hidden="true" class="hash-link" href="#OnStart" title="Direct link to heading">​</a></h3><div class="repositoryDetailsContainer_1UH0"><a class="sourceButton_2aE5" href="https://github.com/Sleitnick/Knit/blob/master/src/KnitServer.lua#L426"><div class="sourceButtonText_monK">&lt;/&gt;</div></a></div><div class="memberString_P8-X"><code>KnitServer<!-- -->.</code><code class="green_3LnD">OnStart</code><code>(</code><code>) → </code><code class="blue_2Afy">Promise</code></div><div>
+</div><div class="divider_3z1R"></div><h3 class="anchor anchorWithStickyNavbar_31ik" id="OnStart"><code style="text-decoration:none">OnStart</code><a aria-hidden="true" class="hash-link" href="#OnStart" title="Direct link to heading">​</a></h3><div class="repositoryDetailsContainer_1UH0"><a class="sourceButton_2aE5" href="https://github.com/Sleitnick/Knit/blob/master/src/KnitServer.lua#L430"><div class="sourceButtonText_monK">&lt;/&gt;</div></a></div><div class="memberString_P8-X"><code>KnitServer<!-- -->.</code><code class="green_3LnD">OnStart</code><code>(</code><code>) → </code><code class="blue_2Afy">Promise</code></div><div>
 <p>
   Returns a promise that is resolved once Knit has started. This is useful
   for any code that needs to tie into Knit services but is not the script
@@ -313,7 +313,7 @@ Knit<span class="token punctuation">.</span><span class="token function">Start</
         },
         {
             &quot;name&quot;: &quot;CreateSignal&quot;,
-            &quot;desc&quot;: &quot;Returns a marker that will transform the current key into\na RemoteSignal once the service is created. Should only\nbe called within the Client table of a service.\n\nSee [RemoteSignal](https://sleitnick.github.io/RbxUtil/api/RemoteSignal)\ndocumentation for more info.\n```lua\nlocal MyService = Knit.CreateService {\n\tName = \&quot;MyService\&quot;;\n\tClient = {\n\t\t-- Create the signal marker, which will turn into a\n\t\t-- RemoteSignal when Knit.Start() is called:\n\t\tMySignal = Knit.CreateSignal()\n\t}\n}\n\nfunction MyService:KnitInit()\n\t-- Connect to the signal:\n\tself.Client.MySignal:Connect(function(player, ...) end)\nend\n```&quot;,
+            &quot;desc&quot;: &quot;Returns a marker that will transform the current key into\na RemoteSignal once the service is created. Should only\nbe called within the Client table of a service.\n\nSee [RemoteSignal](https://sleitnick.github.io/RbxUtil/api/RemoteSignal)\ndocumentation for more info.\n```lua\nlocal MyService = Knit.CreateService {\n\tName = \&quot;MyService\&quot;,\n\tClient = {\n\t\t-- Create the signal marker, which will turn into a\n\t\t-- RemoteSignal when Knit.Start() is called:\n\t\tMySignal = Knit.CreateSignal(),\n\t},\n}\n\nfunction MyService:KnitInit()\n\t-- Connect to the signal:\n\tself.Client.MySignal:Connect(function(player, ...) end)\nend\n```&quot;,
             &quot;params&quot;: [],
             &quot;returns&quot;: [
                 {
@@ -329,7 +329,7 @@ Knit<span class="token punctuation">.</span><span class="token function">Start</
         },
         {
             &quot;name&quot;: &quot;CreateProperty&quot;,
-            &quot;desc&quot;: &quot;Returns a marker that will transform the current key into\na RemoteProperty once the service is created. Should only\nbe called within the Client table of a service. An initial\nvalue can be passed along as well.\n\nRemoteProperties are great for replicating data to all of\nthe clients. Different data can also be set per client.\n\nSee [RemoteProperty](https://sleitnick.github.io/RbxUtil/api/RemoteProperty)\ndocumentation for more info.\n\n```lua\nlocal MyService = Knit.CreateService {\n\tName = \&quot;MyService\&quot;;\n\tClient = {\n\t\t-- Create the property marker, which will turn into a\n\t\t-- RemoteProperty when Knit.Start() is called:\n\t\tMyProperty = Knit.CreateProperty(\&quot;HelloWorld\&quot;)\n\t}\n}\n\nfunction MyService:KnitInit()\n\t-- Change the value of the property:\n\tself.Client.MyProperty:Set(\&quot;HelloWorldAgain\&quot;)\nend\n```&quot;,
+            &quot;desc&quot;: &quot;Returns a marker that will transform the current key into\na RemoteProperty once the service is created. Should only\nbe called within the Client table of a service. An initial\nvalue can be passed along as well.\n\nRemoteProperties are great for replicating data to all of\nthe clients. Different data can also be set per client.\n\nSee [RemoteProperty](https://sleitnick.github.io/RbxUtil/api/RemoteProperty)\ndocumentation for more info.\n\n```lua\nlocal MyService = Knit.CreateService {\n\tName = \&quot;MyService\&quot;,\n\tClient = {\n\t\t-- Create the property marker, which will turn into a\n\t\t-- RemoteProperty when Knit.Start() is called:\n\t\tMyProperty = Knit.CreateProperty(\&quot;HelloWorld\&quot;),\n\t},\n}\n\nfunction MyService:KnitInit()\n\t-- Change the value of the property:\n\tself.Client.MyProperty:Set(\&quot;HelloWorldAgain\&quot;)\nend\n```&quot;,
             &quot;params&quot;: [
                 {
                     &quot;name&quot;: &quot;initialValue&quot;,
@@ -351,7 +351,7 @@ Knit<span class="token punctuation">.</span><span class="token function">Start</
         },
         {
             &quot;name&quot;: &quot;Start&quot;,
-            &quot;desc&quot;: &quot;Starts Knit. Should only be called once.\n\nOptionally, `KnitOptions` can be passed in order to set\nKnit&#x27;s custom configurations.\n\n:::caution\nBe sure that all services have been created _before_\ncalling `Start`. Services cannot be added later.\n:::\n\n```lua\nKnit.Start():andThen(function()\n\tprint(\&quot;Knit started!\&quot;)\nend):catch(warn)\n```\n\nExample of Knit started with options:\n```lua\nKnit.Start({\n\tMiddleware = {\n\t\tInbound = {\n\t\t\tfunction(player, args)\n\t\t\t\tprint(\&quot;Player is giving following args to server:\&quot;, args)\n\t\t\t\treturn true\n\t\t\tend\n\t\t}\n\t}\n}):andThen(function()\n\tprint(\&quot;Knit started!\&quot;)\nend):catch(warn)\n```&quot;,
+            &quot;desc&quot;: &quot;Starts Knit. Should only be called once.\n\nOptionally, `KnitOptions` can be passed in order to set\nKnit&#x27;s custom configurations.\n\n:::caution\nBe sure that all services have been created _before_\ncalling `Start`. Services cannot be added later.\n:::\n\n```lua\nKnit.Start():andThen(function()\n\tprint(\&quot;Knit started!\&quot;)\nend):catch(warn)\n```\n\nExample of Knit started with options:\n```lua\nKnit.Start({\n\tMiddleware = {\n\t\tInbound = {\n\t\t\tfunction(player, args)\n\t\t\t\tprint(\&quot;Player is giving following args to server:\&quot;, args)\n\t\t\t\treturn true\n\t\t\tend\n\t\t},\n\t},\n}):andThen(function()\n\tprint(\&quot;Knit started!\&quot;)\nend):catch(warn)\n```&quot;,
             &quot;params&quot;: [
                 {
                     &quot;name&quot;: &quot;options&quot;,
@@ -383,7 +383,7 @@ Knit<span class="token punctuation">.</span><span class="token function">Start</
             ],
             &quot;function_type&quot;: &quot;static&quot;,
             &quot;source&quot;: {
-                &quot;line&quot;: 426,
+                &quot;line&quot;: 430,
                 &quot;path&quot;: &quot;src/KnitServer.lua&quot;
             }
         }
@@ -545,7 +545,7 @@ Knit<span class="token punctuation">.</span><span class="token function">Start</
         &quot;path&quot;: &quot;src/KnitServer.lua&quot;
     }
 }</pre></details></div><div class="col col--3"><div class="tableOfContents_35-E thin-scrollbar"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#types" class="table-of-contents__link toc-highlight">Types</a><ul><li><a href="#KnitOptions" class="table-of-contents__link toc-highlight">KnitOptions</a></li><li><a href="#Middleware" class="table-of-contents__link toc-highlight">Middleware</a></li><li><a href="#ServerMiddleware" class="table-of-contents__link toc-highlight">ServerMiddleware</a></li><li><a href="#ServerMiddlewareFn" class="table-of-contents__link toc-highlight">ServerMiddlewareFn</a></li><li><a href="#Service" class="table-of-contents__link toc-highlight">Service</a></li><li><a href="#ServiceClient" class="table-of-contents__link toc-highlight">ServiceClient</a></li><li><a href="#ServiceDef" class="table-of-contents__link toc-highlight">ServiceDef</a></li></ul></li><li><a href="#properties" class="table-of-contents__link toc-highlight">Properties</a><ul><li><a href="#Util" class="table-of-contents__link toc-highlight">Util</a></li></ul></li><li><a href="#functions" class="table-of-contents__link toc-highlight">Functions</a><ul><li><a href="#AddServices" class="table-of-contents__link toc-highlight">.AddServices</a></li><li><a href="#AddServicesDeep" class="table-of-contents__link toc-highlight">.AddServicesDeep</a></li><li><a href="#CreateProperty" class="table-of-contents__link toc-highlight">.CreateProperty</a></li><li><a href="#CreateService" class="table-of-contents__link toc-highlight">.CreateService</a></li><li><a href="#CreateSignal" class="table-of-contents__link toc-highlight">.CreateSignal</a></li><li><a href="#GetService" class="table-of-contents__link toc-highlight">.GetService</a></li><li><a href="#OnStart" class="table-of-contents__link toc-highlight">.OnStart</a></li><li><a href="#Start" class="table-of-contents__link toc-highlight">.Start</a></li></ul></li></ul></div></div></div></div></main></div></div><footer class="footer footer--dark"><div class="container"><div class="footer__bottom text--center"><div class="footer__copyright">Copyright © 2022 Sleitnick. Built with Moonwave and Docusaurus.</div></div></div></footer></div>
-<script src="/Knit/assets/js/runtime~main.1890e652.js"></script>
-<script src="/Knit/assets/js/main.f3c84b7f.js"></script>
+<script src="/Knit/assets/js/runtime~main.e2a380d8.js"></script>
+<script src="/Knit/assets/js/main.b179ffff.js"></script>
 </body>
 </html>
