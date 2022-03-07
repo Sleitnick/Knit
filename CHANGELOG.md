@@ -1,6 +1,5 @@
 ## 1.4.4
 - Add memory categories per service and controller to help track memory usage
-- Add profile labels for KnitInit as well as per-service/controller KnitInit usage
 - Update dependencies
 
 ## 1.4.3
