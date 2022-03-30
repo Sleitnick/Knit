@@ -100,7 +100,7 @@ Another service could then listen for the changes on that event:
 
 ```lua
 function SomeOtherService:KnitStart()
-	local PointsService = Knit.Services.PointsService
+	local PointsService = Knit.GetService("PointsService")
 	PointsService.PointsChanged:Connect(function(player, points)
 		print("Points changed for " .. player.Name .. ":", points)
 	end)
