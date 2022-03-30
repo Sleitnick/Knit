@@ -1,3 +1,7 @@
+## 1.4.5
+- Update dependencies
+- Use Promise v4
+
 ## 1.4.4
 - Add memory categories per service and controller to help track memory usage
 - Update dependencies
