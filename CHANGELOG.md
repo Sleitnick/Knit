@@ -1,8 +1,15 @@
+## 1.4.6
+
+- Update Comm dependency with new methods
+- Update TableUtil (in bundled version) to use `table.clone` internally where appropriate
+
 ## 1.4.5
+
 - Update dependencies
 - Use Promise v4
 
 ## 1.4.4
+
 - Add memory categories per service and controller to help track memory usage
 - Update dependencies
 
