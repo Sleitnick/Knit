@@ -1,3 +1,7 @@
+## 1.4.7
+
+- Update dependencies for bundled version of Knit
+
 ## 1.4.6
 
 - Update Comm dependency with new methods
