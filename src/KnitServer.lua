@@ -262,7 +262,6 @@ end
 	Gets the service by name. Throws an error if the service is not found.
 ]=]
 function KnitServer.GetService(serviceName: string): Service
-	--assert(started, "Cannot call GetService until Knit has been started")
 	assert(type(serviceName) == "string", "ServiceName must be a string; got " .. type(serviceName))
 	return GetServiceTable(serviceName) :: Service
 end
