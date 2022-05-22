@@ -59,6 +59,11 @@ type Service = {
 	[any]: any,
 }
 
+-- internal
+type ServiceTable = {
+	Name: string
+}
+
 --[=[
 	@interface ServiceClient
 	.Server Service
@@ -137,6 +142,7 @@ local Comm = require(KnitServer.Util.Comm)
 local ServerComm = Comm.ServerComm
 
 local services: {[string]: Service} = {}
+local serviceTables: {[string]: ServiceTable} = {}
 local started = false
 local startedComplete = false
 local onStartedComplete = Instance.new("BindableEvent")
@@ -177,12 +183,28 @@ end
 	end
 	```
 ]=]
-function KnitServer.CreateService(serviceDef: ServiceDef): Service
-	assert(type(serviceDef) == "table", "Service must be a table; got " .. type(serviceDef))
-	assert(type(serviceDef.Name) == "string", "Service.Name must be a string; got " .. type(serviceDef.Name))
-	assert(#serviceDef.Name > 0, "Service.Name must be a non-empty string")
-	assert(not DoesServiceExist(serviceDef.Name), "Service \"" .. serviceDef.Name .. "\" already exists")
-	local service = serviceDef
+
+local function GetServiceTable(name: string): ServiceTable
+	local serviceTable: ServiceTable = serviceTables[name]
+	if serviceTable then
+		return serviceTable
+	end
+	
+	serviceTable = {
+		Name = name;
+	}
+	
+	serviceTables[name] = serviceTable
+	
+	return serviceTable
+end
+
+local function GetServiceFromDef(serviceDef: ServiceDef): Service
+	local service = GetServiceTable(serviceDef.Name)
+	for k, v in pairs(serviceDef) do
+		service[k] = v
+	end
+	
 	service.KnitComm = ServerComm.new(knitRepServiceFolder, serviceDef.Name)
 	if type(service.Client) ~= "table" then
 		service.Client = {Server = service}
@@ -192,7 +214,17 @@ function KnitServer.CreateService(serviceDef: ServiceDef): Service
 		end
 	end
 	services[service.Name] = service
+	
 	return service
+end
+
+function KnitServer.CreateService(serviceDef: ServiceDef): Service
+	assert(type(serviceDef) == "table", "Service must be a table; got " .. type(serviceDef))
+	assert(type(serviceDef.Name) == "string", "Service.Name must be a string; got " .. type(serviceDef.Name))
+	assert(#serviceDef.Name > 0, "Service.Name must be a non-empty string")
+	assert(not DoesServiceExist(serviceDef.Name), "Service \"" .. serviceDef.Name .. "\" already exists")
+	
+	return GetServiceFromDef(serviceDef)
 end
 
 
@@ -230,9 +262,8 @@ end
 	Gets the service by name. Throws an error if the service is not found.
 ]=]
 function KnitServer.GetService(serviceName: string): Service
-	assert(started, "Cannot call GetService until Knit has been started")
 	assert(type(serviceName) == "string", "ServiceName must be a string; got " .. type(serviceName))
-	return assert(services[serviceName], "Could not find service \"" .. serviceName .. "\"") :: Service
+	return GetServiceTable(serviceName) :: Service
 end
 
 
@@ -351,6 +382,10 @@ function KnitServer.Start(options: KnitOptions?)
 				selectedOptions[k] = v
 			end
 		end
+	end
+	
+	for serviceName in pairs(serviceTables) do
+		assert(services[serviceName] ~= nil, "Service "..serviceName.." is not defined")
 	end
 
 	return Promise.new(function(resolve)
