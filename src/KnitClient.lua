@@ -53,6 +53,10 @@ type Controller = {
 	[any]: any,
 }
 
+type ControllerTable = {
+	Name: string,
+}
+
 --[=[
 	@interface Service
 	.[any] any
@@ -117,6 +121,7 @@ local Promise = require(KnitClient.Util.Promise)
 local Comm = require(KnitClient.Util.Comm)
 local ClientComm = Comm.ClientComm
 
+local controllerTables: {[string]: ControllerTable} = {}
 local controllers: {[string]: Controller} = {}
 local services: {[string]: Service} = {}
 local servicesFolder = nil
@@ -157,6 +162,32 @@ local function BuildService(serviceName: string)
 end
 
 
+local function GetControllerTable(name: string): ControllerTable
+	local controllerTable: ControllerTable = controllerTables[name]
+	if controllerTable then
+		return controllerTable
+	end
+
+	controllerTable = {
+		Name = name;
+	}
+
+	controllerTables[name] = controllerTable
+
+	return controllerTable
+end
+
+local function GetControllerFromDef(controllerDef: ControllerDef): Controller
+	local controller: Controller = GetControllerTable(controllerDef.Name)
+	for k, v in pairs(controllerDef) do
+		controller[k] = v
+	end
+	
+	controllers[controller.Name] = controller
+
+	return controller
+end
+
 --[=[
 	Creates a new controller.
 
@@ -183,9 +214,8 @@ function KnitClient.CreateController(controllerDef: ControllerDef): Controller
 	assert(type(controllerDef.Name) == "string", "Controller.Name must be a string; got " .. type(controllerDef.Name))
 	assert(#controllerDef.Name > 0, "Controller.Name must be a non-empty string")
 	assert(not DoesControllerExist(controllerDef.Name), "Controller \"" .. controllerDef.Name .. "\" already exists")
-	local controller = controllerDef :: Controller
-	controllers[controller.Name] = controller
-	return controller
+	
+	return GetControllerFromDef(controllerDef)
 end
 
 
@@ -287,13 +317,11 @@ end
 	is not found.
 ]=]
 function KnitClient.GetController(controllerName: string): Controller
-	local controller = controllers[controllerName]
+	local controller = GetControllerTable(controllerName)
 	if controller then
-		return controller
+		return controller :: Controller
 	end
-	assert(started, "Cannot call GetController until Knit has been started")
 	assert(type(controllerName) == "string", "ControllerName must be a string; got " .. type(controllerName))
-	error("Could not find controller \"" .. controllerName .. "\". Check to verify a controller with this name exists.", 2)
 end
 
 
@@ -335,6 +363,10 @@ function KnitClient.Start(options: KnitOptions?)
 	end
 	if type(selectedOptions.PerServiceMiddleware) ~= "table" then
 		selectedOptions.PerServiceMiddleware = {}
+	end
+	
+	for controllerName in pairs(controllerTables) do
+		assert(controllers[controllerName] ~= nil, "Controller "..controllerName.." is not defined")
 	end
 
 	return Promise.new(function(resolve)
