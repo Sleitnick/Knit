@@ -190,16 +190,17 @@ end
 
 
 --[=[
-	Requires all the modules that are children of the given parent. This is an easy
+	Requires all the modules that are children of the given parent with an optional affix. This is an easy
 	way to quickly load all controllers that might be in a folder.
 	```lua
 	Knit.AddControllers(somewhere.Controllers)
 	```
 ]=]
-function KnitClient.AddControllers(parent: Instance): {Controller}
+function KnitClient.AddControllers(parent: Instance, affix: string): {Controller}
 	local addedControllers = {}
 	for _,v in ipairs(parent:GetChildren()) do
 		if not v:IsA("ModuleScript") then continue end
+		if not v.Name:match(affix or "") then continue end
 		table.insert(addedControllers, require(v))
 	end
 	return addedControllers
@@ -207,12 +208,13 @@ end
 
 
 --[=[
-	Requires all the modules that are descendants of the given parent.
+	Requires all the modules that are descendants of the given parent with an optional affix.
 ]=]
-function KnitClient.AddControllersDeep(parent: Instance): {Controller}
+function KnitClient.AddControllersDeep(parent: Instance, affix: string): {Controller}
 	local addedControllers = {}
 	for _,v in ipairs(parent:GetDescendants()) do
 		if not v:IsA("ModuleScript") then continue end
+		if not v.Name:match(affix or "") then continue end
 		table.insert(addedControllers, require(v))
 	end
 	return addedControllers

@@ -197,16 +197,17 @@ end
 
 
 --[=[
-	Requires all the modules that are children of the given parent. This is an easy
+	Requires all the modules that are children of the given parent with an optional affix. This is an easy
 	way to quickly load all services that might be in a folder.
 	```lua
 	Knit.AddServices(somewhere.Services)
 	```
 ]=]
-function KnitServer.AddServices(parent: Instance): {Service}
+function KnitServer.AddServices(parent: Instance, affix: string): {Service}
 	local addedServices = {}
 	for _,v in ipairs(parent:GetChildren()) do
 		if not v:IsA("ModuleScript") then continue end
+		if not v.Name:match(affix or "") then continue end
 		table.insert(addedServices, require(v))
 	end
 	return addedServices
@@ -214,12 +215,13 @@ end
 
 
 --[=[
-	Requires all the modules that are descendants of the given parent.
+	Requires all the modules that are descendants of the given parent with an optional affix.
 ]=]
-function KnitServer.AddServicesDeep(parent: Instance): {Service}
+function KnitServer.AddServicesDeep(parent: Instance, affix: string): {Service}
 	local addedServices = {}
 	for _,v in ipairs(parent:GetDescendants()) do
 		if not v:IsA("ModuleScript") then continue end
+		if not v.Name:match(affix or "") then continue end
 		table.insert(addedServices, require(v))
 	end
 	return addedServices
