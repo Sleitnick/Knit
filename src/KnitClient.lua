@@ -15,20 +15,20 @@ type Middleware = {
 
 	For more info, see [ClientComm](https://sleitnick.github.io/RbxUtil/api/ClientComm/) documentation.
 ]=]
-type ClientMiddlewareFn = (args: {any}) -> (boolean, ...any)
+type ClientMiddlewareFn = (args: { any }) -> (boolean, ...any)
 
 --[=[
 	@type ClientMiddleware {ClientMiddlewareFn}
 	@within KnitClient
 	An array of client middleware functions.
 ]=]
-type ClientMiddleware = {ClientMiddlewareFn}
+type ClientMiddleware = { ClientMiddlewareFn }
 
 --[=[
 	@type PerServiceMiddleware {[string]: Middleware}
 	@within KnitClient
 ]=]
-type PerServiceMiddleware = {[string]: Middleware}
+type PerServiceMiddleware = { [string]: Middleware }
 
 --[=[
 	@interface ControllerDef
@@ -87,7 +87,6 @@ local defaultOptions: KnitOptions = {
 
 local selectedOptions = nil
 
-
 --[=[
 	@class KnitClient
 	@client
@@ -114,23 +113,22 @@ KnitClient.Player = game:GetService("Players").LocalPlayer
 KnitClient.Util = script.Parent.Parent
 
 local Promise = require(KnitClient.Util.Promise)
+local Loader = require(KnitClient.Util.Loader)
 local Comm = require(KnitClient.Util.Comm)
 local ClientComm = Comm.ClientComm
 
-local controllers: {[string]: Controller} = {}
-local services: {[string]: Service} = {}
+local controllers: { [string]: Controller } = {}
+local services: { [string]: Service } = {}
 local servicesFolder = nil
 
 local started = false
 local startedComplete = false
 local onStartedComplete = Instance.new("BindableEvent")
 
-
 local function DoesControllerExist(controllerName: string): boolean
 	local controller: Controller? = controllers[controllerName]
 	return controller ~= nil
 end
-
 
 local function GetServicesFolder()
 	if not servicesFolder then
@@ -139,13 +137,11 @@ local function GetServicesFolder()
 	return servicesFolder
 end
 
-
 local function GetMiddlewareForService(serviceName: string)
 	local knitMiddleware = selectedOptions.Middleware or {}
 	local serviceMiddleware = selectedOptions.PerServiceMiddleware[serviceName]
 	return serviceMiddleware or knitMiddleware
 end
-
 
 local function BuildService(serviceName: string)
 	local folder = GetServicesFolder()
@@ -155,7 +151,6 @@ local function BuildService(serviceName: string)
 	services[serviceName] = service
 	return service
 end
-
 
 --[=[
 	Creates a new controller.
@@ -182,12 +177,11 @@ function KnitClient.CreateController(controllerDef: ControllerDef): Controller
 	assert(type(controllerDef) == "table", "Controller must be a table; got " .. type(controllerDef))
 	assert(type(controllerDef.Name) == "string", "Controller.Name must be a string; got " .. type(controllerDef.Name))
 	assert(#controllerDef.Name > 0, "Controller.Name must be a non-empty string")
-	assert(not DoesControllerExist(controllerDef.Name), "Controller \"" .. controllerDef.Name .. "\" already exists")
+	assert(not DoesControllerExist(controllerDef.Name), 'Controller "' .. controllerDef.Name .. '" already exists')
 	local controller = controllerDef :: Controller
 	controllers[controller.Name] = controller
 	return controller
 end
-
 
 --[=[
 	Requires all the modules that are children of the given parent. This is an easy
@@ -196,28 +190,20 @@ end
 	Knit.AddControllers(somewhere.Controllers)
 	```
 ]=]
-function KnitClient.AddControllers(parent: Instance): {Controller}
-	local addedControllers = {}
-	for _,v in ipairs(parent:GetChildren()) do
-		if not v:IsA("ModuleScript") then continue end
-		table.insert(addedControllers, require(v))
-	end
+function KnitClient.AddControllers(parent: Instance): { Controller }
+	local addedControllers = Loader.LoadChildren(parent)
+
 	return addedControllers
 end
-
 
 --[=[
 	Requires all the modules that are descendants of the given parent.
 ]=]
-function KnitClient.AddControllersDeep(parent: Instance): {Controller}
-	local addedControllers = {}
-	for _,v in ipairs(parent:GetDescendants()) do
-		if not v:IsA("ModuleScript") then continue end
-		table.insert(addedControllers, require(v))
-	end
+function KnitClient.AddControllersDeep(parent: Instance): { Controller }
+	local addedControllers = Loader.LoadDescendants(parent)
+
 	return addedControllers
 end
-
 
 --[=[
 	Returns a Service object which is a reflection of the remote objects
@@ -281,7 +267,6 @@ function KnitClient.GetService(serviceName: string): Service
 	return BuildService(serviceName)
 end
 
-
 --[=[
 	Gets the controller by name. Throws an error if the controller
 	is not found.
@@ -293,9 +278,11 @@ function KnitClient.GetController(controllerName: string): Controller
 	end
 	assert(started, "Cannot call GetController until Knit has been started")
 	assert(type(controllerName) == "string", "ControllerName must be a string; got " .. type(controllerName))
-	error("Could not find controller \"" .. controllerName .. "\". Check to verify a controller with this name exists.", 2)
+	error(
+		'Could not find controller "' .. controllerName .. '". Check to verify a controller with this name exists.',
+		2
+	)
 end
-
 
 --[=[
 	@return Promise
@@ -315,7 +302,6 @@ end
 	```
 ]=]
 function KnitClient.Start(options: KnitOptions?)
-
 	if started then
 		return Promise.reject("Knit already started")
 	end
@@ -327,7 +313,7 @@ function KnitClient.Start(options: KnitOptions?)
 	else
 		assert(typeof(options) == "table", "KnitOptions should be a table or nil; got " .. typeof(options))
 		selectedOptions = options
-		for k,v in pairs(defaultOptions) do
+		for k, v in pairs(defaultOptions) do
 			if selectedOptions[k] == nil then
 				selectedOptions[k] = v
 			end
@@ -338,26 +324,26 @@ function KnitClient.Start(options: KnitOptions?)
 	end
 
 	return Promise.new(function(resolve)
-
 		-- Init:
 		local promisesStartControllers = {}
 
-		for _,controller in pairs(controllers) do
+		for _, controller in pairs(controllers) do
 			if type(controller.KnitInit) == "function" then
-				table.insert(promisesStartControllers, Promise.new(function(r)
-					debug.setmemorycategory(controller.Name)
-					controller:KnitInit()
-					r()
-				end))
+				table.insert(
+					promisesStartControllers,
+					Promise.new(function(r)
+						debug.setmemorycategory(controller.Name)
+						controller:KnitInit()
+						r()
+					end)
+				)
 			end
 		end
 
 		resolve(Promise.all(promisesStartControllers))
-
 	end):andThen(function()
-
 		-- Start:
-		for _,controller in pairs(controllers) do
+		for _, controller in pairs(controllers) do
 			if type(controller.KnitStart) == "function" then
 				task.spawn(function()
 					debug.setmemorycategory(controller.Name)
@@ -372,11 +358,8 @@ function KnitClient.Start(options: KnitOptions?)
 		task.defer(function()
 			onStartedComplete:Destroy()
 		end)
-
 	end)
-
 end
-
 
 --[=[
 	@return Promise
@@ -397,6 +380,5 @@ function KnitClient.OnStart()
 		return Promise.fromEvent(onStartedComplete.Event)
 	end
 end
-
 
 return KnitClient

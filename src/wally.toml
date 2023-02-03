@@ -8,4 +8,5 @@ realm = "shared"
 
 [dependencies]
 Comm = "sleitnick/comm@^0.3"
+Loader = "sleitnick/loader@2.0.0"
 Promise = "evaera/promise@^4"
