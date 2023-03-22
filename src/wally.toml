@@ -7,5 +7,5 @@ registry = "https://github.com/UpliftGames/wally-index"
 realm = "shared"
 
 [dependencies]
-Comm = "sleitnick/comm@^0.3"
+Comm = "sleitnick/comm@0.3.1"
 Promise = "evaera/promise@^4"
