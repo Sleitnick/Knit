@@ -1,3 +1,7 @@
+## 1.5.1
+
+- Bugfix for main Knit init file
+
 ## 1.5.0
 
 - Code styling
