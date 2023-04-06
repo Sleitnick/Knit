@@ -1,4 +1,6 @@
-if game:GetService("RunService"):IsServer() then
+local RunService = game:GetService("RunService"):IsServer()
+
+if RunService:IsServer() then
 	return require(script.KnitServer)
 else
 	local KnitServer = script:FindFirstChild("KnitServer")

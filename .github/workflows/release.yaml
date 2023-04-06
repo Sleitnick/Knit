@@ -11,18 +11,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Install foreman
-        uses: Roblox/setup-foreman@v1
-        with:
-          version: "^1.0.0"
-          token: ${{ SECRETS.GITHUB_TOKEN }}
+        uses: actions/checkout@v3
+      - name: Install Aftman
+        uses: ok-nick/setup-aftman@v0
       - name: Publish release to Wally
         shell: bash
         env:
           WALLY_AUTH: ${{ secrets.WALLY_AUTH }}
         run: |
-          rm -rf .foreman-install
           mkdir -p ~/.wally
           echo "$WALLY_AUTH" > ~/.wally/auth.toml
           cd src
