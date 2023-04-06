@@ -137,9 +137,9 @@ local function GetServicesFolder()
 end
 
 local function GetMiddlewareForService(serviceName: string)
-	local knitMiddleware = selectedOptions.Middleware or {}
+	local knitMiddleware = if selectedOptions.Middleware ~= nil then selectedOptions.Middleware else {}
 	local serviceMiddleware = selectedOptions.PerServiceMiddleware[serviceName]
-	return serviceMiddleware or knitMiddleware
+	return if serviceMiddleware ~= nil then serviceMiddleware else knitMiddleware
 end
 
 local function BuildService(serviceName: string)

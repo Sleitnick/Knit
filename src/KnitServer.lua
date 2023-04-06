@@ -349,13 +349,13 @@ function KnitServer.Start(options: KnitOptions?)
 	end
 
 	return Promise.new(function(resolve)
-		local knitMiddleware = selectedOptions.Middleware or {}
+		local knitMiddleware = if selectedOptions.Middleware ~= nil then selectedOptions.Middleware else {}
 
 		-- Bind remotes:
 		for _, service in services do
-			local middleware = service.Middleware or {}
-			local inbound = middleware.Inbound or knitMiddleware.Inbound
-			local outbound = middleware.Outbound or knitMiddleware.Outbound
+			local middleware = if service.Middleware ~= nil then service.Middleware else {}
+			local inbound = if middleware.Inbound ~= nil then middleware.Inbound else knitMiddleware.Inbound
+			local outbound = if middleware.Outbound ~= nil then middleware.Outbound else knitMiddleware.Outbound
 			service.Middleware = nil
 			for k, v in service.Client do
 				if type(v) == "function" then
