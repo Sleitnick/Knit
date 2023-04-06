@@ -205,7 +205,7 @@ end
 ]=]
 function KnitClient.AddControllersDeep(parent: Instance): { Controller }
 	local addedControllers = {}
-	for _, v in ipairs(parent:GetDescendants()) do
+	for _, v in parent:GetDescendants() do
 		if not v:IsA("ModuleScript") then
 			continue
 		end
@@ -322,7 +322,7 @@ function KnitClient.Start(options: KnitOptions?)
 	else
 		assert(typeof(options) == "table", "KnitOptions should be a table or nil; got " .. typeof(options))
 		selectedOptions = options
-		for k, v in pairs(defaultOptions) do
+		for k, v in defaultOptions do
 			if selectedOptions[k] == nil then
 				selectedOptions[k] = v
 			end
@@ -336,7 +336,7 @@ function KnitClient.Start(options: KnitOptions?)
 		-- Init:
 		local promisesStartControllers = {}
 
-		for _, controller in pairs(controllers) do
+		for _, controller in controllers do
 			if type(controller.KnitInit) == "function" then
 				table.insert(
 					promisesStartControllers,
@@ -352,7 +352,7 @@ function KnitClient.Start(options: KnitOptions?)
 		resolve(Promise.all(promisesStartControllers))
 	end):andThen(function()
 		-- Start:
-		for _, controller in pairs(controllers) do
+		for _, controller in controllers do
 			if type(controller.KnitStart) == "function" then
 				task.spawn(function()
 					debug.setmemorycategory(controller.Name)

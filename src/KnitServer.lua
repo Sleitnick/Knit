@@ -202,7 +202,7 @@ end
 ]=]
 function KnitServer.AddServices(parent: Instance): { Service }
 	local addedServices = {}
-	for _, v in ipairs(parent:GetChildren()) do
+	for _, v in parent:GetChildren() do
 		if not v:IsA("ModuleScript") then
 			continue
 		end
@@ -216,7 +216,7 @@ end
 ]=]
 function KnitServer.AddServicesDeep(parent: Instance): { Service }
 	local addedServices = {}
-	for _, v in ipairs(parent:GetDescendants()) do
+	for _, v in parent:GetDescendants() do
 		if not v:IsA("ModuleScript") then
 			continue
 		end
@@ -341,7 +341,7 @@ function KnitServer.Start(options: KnitOptions?)
 	else
 		assert(typeof(options) == "table", "KnitOptions should be a table or nil; got " .. typeof(options))
 		selectedOptions = options
-		for k, v in pairs(defaultOptions) do
+		for k, v in defaultOptions do
 			if selectedOptions[k] == nil then
 				selectedOptions[k] = v
 			end
@@ -352,12 +352,12 @@ function KnitServer.Start(options: KnitOptions?)
 		local knitMiddleware = selectedOptions.Middleware or {}
 
 		-- Bind remotes:
-		for _, service in pairs(services) do
+		for _, service in services do
 			local middleware = service.Middleware or {}
 			local inbound = middleware.Inbound or knitMiddleware.Inbound
 			local outbound = middleware.Outbound or knitMiddleware.Outbound
 			service.Middleware = nil
-			for k, v in pairs(service.Client) do
+			for k, v in service.Client do
 				if type(v) == "function" then
 					service.KnitComm:WrapMethod(service.Client, k, inbound, outbound)
 				elseif v == SIGNAL_MARKER then
@@ -370,7 +370,7 @@ function KnitServer.Start(options: KnitOptions?)
 
 		-- Init:
 		local promisesInitServices = {}
-		for _, service in pairs(services) do
+		for _, service in services do
 			if type(service.KnitInit) == "function" then
 				table.insert(
 					promisesInitServices,
@@ -386,7 +386,7 @@ function KnitServer.Start(options: KnitOptions?)
 		resolve(Promise.all(promisesInitServices))
 	end):andThen(function()
 		-- Start:
-		for _, service in pairs(services) do
+		for _, service in services do
 			if type(service.KnitStart) == "function" then
 				task.spawn(function()
 					debug.setmemorycategory(service.Name)
