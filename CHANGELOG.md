@@ -1,3 +1,10 @@
+## 1.5.0
+
+- Update dependencies for bundled version of Knit
+- Migrate to Aftman
+- Integrate Stylua
+- General repository cleanup
+
 ## 1.4.7
 
 - Update dependencies for bundled version of Knit
