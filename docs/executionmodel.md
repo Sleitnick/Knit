@@ -38,7 +38,7 @@ Due to the way Promises work, errors that occur within `KnitInit` methods of ser
 
 ```lua
 local success, err = Knit.Start():await()
-if (not success) then
+if not success then
 	-- Handle error
 	error(tostring(err))
 end

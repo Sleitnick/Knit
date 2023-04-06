@@ -1,8 +1,8 @@
 local Knit = require(game:GetService("ReplicatedStorage").Test.Knit)
 
-local MyController = Knit.CreateController {
-	Name = "MyController";
-}
+local MyController = Knit.CreateController({
+	Name = "MyController",
+})
 
 function MyController:KnitInit()
 	local MyService = Knit.GetService("MyService")
@@ -18,6 +18,8 @@ function MyController:KnitInit()
 	end)
 end
 
-Knit.Start({ServicePromises = true}):andThen(function()
-	print("KnitClient started")
-end):catch(warn)
+Knit.Start({ ServicePromises = true })
+	:andThen(function()
+		print("KnitClient started")
+	end)
+	:catch(warn)

@@ -25,25 +25,25 @@ Each function should return a boolean, indicating whether or not to continue to 
 
 Here's an example on the client which logs all inbound data from the server:
 ```lua
-local function Logger(args: {any})
+local function Logger(args: { any })
 	print(args)
 	return true
 end
 
 Knit.Start({
-	Middleware = {Inbound = {Logger}}
+	Middleware = { Inbound = { Logger } }
 })
 ```
 
 Here's the same thing, but on the server. As you can see, the only difference is that the `player` argument is added to the middleware function:
 ```lua
-local function Logger(player: Player, args: {any})
+local function Logger(player: Player, args: { any })
 	print(player, args)
 	return true
 end
 
 Knit.Start({
-	Middleware = {Inbound = {Logger}}
+	Middleware = { Inbound = { Logger } }
 })
 ```
 
@@ -52,7 +52,7 @@ Knit.Start({
 A more complex example, where any inbound number to the client is multiplied by 2:
 ```lua
 local function DoubleNumbers(args)
-	for i,v in ipairs(args) do
+	for i, v in args do
 		if type(v) == "number" then
 			args[i] *= 2
 		end
@@ -60,7 +60,7 @@ local function DoubleNumbers(args)
 	return true
 end
 
-Knit.Start({Middleware = {Inbound = {DoubleNumbers}}})
+Knit.Start({ Middleware = { Inbound = { DoubleNumbers } } })
 ```
 
 #### Per-Service Example
@@ -72,7 +72,7 @@ local MyService = Knit.CreateService {
 	Name = "MyService",
 	Client = {},
 	Middleware = {
-		Inbound = {Logger},
+		Inbound = { Logger },
 		Outbound = {},
 	},
 }
@@ -85,7 +85,7 @@ Knit.Start({
 	PerServiceMiddleware = {
 		-- Mapped by name of the service
 		MyService = {
-			Inbound = {Logger},
+			Inbound = { Logger },
 			Outbound = {},
 		},
 	},
@@ -109,7 +109,7 @@ function MyClass.new()
 end
 
 function MyClass:Serialize()
-	return {_CN = self.ClassName, D = self.SomeData}
+	return { _CN = self.ClassName, D = self.SomeData }
 end
 
 function MyClass.deserialize(data)
@@ -122,7 +122,7 @@ end
 -- Setup middleware for class serialization/deserialization on client:
 
 local function InboundClass(args)
-	for i,v in ipairs(args) do
+	for i, v in args do
 		if type(v) == "table" and v._CN == "MyClass" then
 			args[i] = MyClass.deserialize(v)
 		end
@@ -131,7 +131,7 @@ local function InboundClass(args)
 end
 
 local function OutboundClass(args)
-	for i,v in ipairs(args) do
+	for i, v in args do
 		if type(v) == "table" and v.ClassName == "MyClass" then
 			args[i] = v:Serialize()
 		end
@@ -141,8 +141,8 @@ end
 
 Knit.Start({
 	Middleware = {
-		Inbound = {InboundClass},
-		Outbound = {OutboundClass},
+		Inbound = { InboundClass },
+		Outbound = { OutboundClass },
 	},
 })
 ```

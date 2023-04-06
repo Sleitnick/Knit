@@ -126,7 +126,7 @@ Other code could then listen in for that event:
 local CameraController = Knit.GetController("CameraController")
 
 CameraController.LockedChanged:Connect(function(isLocked)
-	print(isLocked and "Camera is now locked" or "Camera was unlocked")
+	print(if isLocked then "Camera is now locked" else "Camera was unlocked")
 end)
 ```
 

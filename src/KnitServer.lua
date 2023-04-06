@@ -15,14 +15,14 @@ type Middleware = {
 
 	For more info, see [ServerComm](https://sleitnick.github.io/RbxUtil/api/ServerComm/) documentation.
 ]=]
-type ServerMiddlewareFn = (player: Player, args: {any}) -> (boolean, ...any)
+type ServerMiddlewareFn = (player: Player, args: { any }) -> (boolean, ...any)
 
 --[=[
 	@type ServerMiddleware {ServerMiddlewareFn}
 	@within KnitServer
 	An array of server middleware functions.
 ]=]
-type ServerMiddleware = {ServerMiddlewareFn}
+type ServerMiddleware = { ServerMiddlewareFn }
 
 --[=[
 	@interface ServiceDef
@@ -39,7 +39,7 @@ type ServerMiddleware = {ServerMiddlewareFn}
 ]=]
 type ServiceDef = {
 	Name: string,
-	Client: {[any]: any}?,
+	Client: { [any]: any }?,
 	Middleware: Middleware?,
 	[any]: any,
 }
@@ -136,17 +136,15 @@ local Promise = require(KnitServer.Util.Promise)
 local Comm = require(KnitServer.Util.Comm)
 local ServerComm = Comm.ServerComm
 
-local services: {[string]: Service} = {}
+local services: { [string]: Service } = {}
 local started = false
 local startedComplete = false
 local onStartedComplete = Instance.new("BindableEvent")
-
 
 local function DoesServiceExist(serviceName: string): boolean
 	local service: Service? = services[serviceName]
 	return service ~= nil
 end
-
 
 --[=[
 	Constructs a new service.
@@ -178,14 +176,14 @@ end
 	```
 ]=]
 function KnitServer.CreateService(serviceDef: ServiceDef): Service
-	assert(type(serviceDef) == "table", "Service must be a table; got " .. type(serviceDef))
-	assert(type(serviceDef.Name) == "string", "Service.Name must be a string; got " .. type(serviceDef.Name))
+	assert(type(serviceDef) == "table", `Service must be a table; got {type(serviceDef)}`)
+	assert(type(serviceDef.Name) == "string", `Service.Name must be a string; got {type(serviceDef.Name)}`)
 	assert(#serviceDef.Name > 0, "Service.Name must be a non-empty string")
-	assert(not DoesServiceExist(serviceDef.Name), "Service \"" .. serviceDef.Name .. "\" already exists")
+	assert(not DoesServiceExist(serviceDef.Name), `Service "{serviceDef.Name}" already exists`)
 	local service = serviceDef
 	service.KnitComm = ServerComm.new(knitRepServiceFolder, serviceDef.Name)
 	if type(service.Client) ~= "table" then
-		service.Client = {Server = service}
+		service.Client = { Server = service }
 	else
 		if service.Client.Server ~= service then
 			service.Client.Server = service
@@ -195,7 +193,6 @@ function KnitServer.CreateService(serviceDef: ServiceDef): Service
 	return service
 end
 
-
 --[=[
 	Requires all the modules that are children of the given parent. This is an easy
 	way to quickly load all services that might be in a folder.
@@ -203,38 +200,39 @@ end
 	Knit.AddServices(somewhere.Services)
 	```
 ]=]
-function KnitServer.AddServices(parent: Instance): {Service}
+function KnitServer.AddServices(parent: Instance): { Service }
 	local addedServices = {}
-	for _,v in ipairs(parent:GetChildren()) do
-		if not v:IsA("ModuleScript") then continue end
+	for _, v in parent:GetChildren() do
+		if not v:IsA("ModuleScript") then
+			continue
+		end
 		table.insert(addedServices, require(v))
 	end
 	return addedServices
 end
-
 
 --[=[
 	Requires all the modules that are descendants of the given parent.
 ]=]
-function KnitServer.AddServicesDeep(parent: Instance): {Service}
+function KnitServer.AddServicesDeep(parent: Instance): { Service }
 	local addedServices = {}
-	for _,v in ipairs(parent:GetDescendants()) do
-		if not v:IsA("ModuleScript") then continue end
+	for _, v in parent:GetDescendants() do
+		if not v:IsA("ModuleScript") then
+			continue
+		end
 		table.insert(addedServices, require(v))
 	end
 	return addedServices
 end
-
 
 --[=[
 	Gets the service by name. Throws an error if the service is not found.
 ]=]
 function KnitServer.GetService(serviceName: string): Service
 	assert(started, "Cannot call GetService until Knit has been started")
-	assert(type(serviceName) == "string", "ServiceName must be a string; got " .. type(serviceName))
-	return assert(services[serviceName], "Could not find service \"" .. serviceName .. "\"") :: Service
+	assert(type(serviceName) == "string", `ServiceName must be a string; got {type(serviceName)}`)
+	return assert(services[serviceName], `Could not find service "{serviceName}"`) :: Service
 end
-
 
 --[=[
 	@return SIGNAL_MARKER
@@ -263,7 +261,6 @@ end
 function KnitServer.CreateSignal()
 	return SIGNAL_MARKER
 end
-
 
 --[=[
 	@return PROPERTY_MARKER
@@ -295,9 +292,8 @@ end
 	```
 ]=]
 function KnitServer.CreateProperty(initialValue: any)
-	return {PROPERTY_MARKER, initialValue}
+	return { PROPERTY_MARKER, initialValue }
 end
-
 
 --[=[
 	@return Promise
@@ -334,7 +330,6 @@ end
 	```
 ]=]
 function KnitServer.Start(options: KnitOptions?)
-
 	if started then
 		return Promise.reject("Knit already started")
 	end
@@ -344,9 +339,9 @@ function KnitServer.Start(options: KnitOptions?)
 	if options == nil then
 		selectedOptions = defaultOptions
 	else
-		assert(typeof(options) == "table", "KnitOptions should be a table or nil; got " .. typeof(options))
+		assert(typeof(options) == "table", `KnitOptions should be a table or nil; got {typeof(options)}`)
 		selectedOptions = options
-		for k,v in pairs(defaultOptions) do
+		for k, v in defaultOptions do
 			if selectedOptions[k] == nil then
 				selectedOptions[k] = v
 			end
@@ -354,16 +349,15 @@ function KnitServer.Start(options: KnitOptions?)
 	end
 
 	return Promise.new(function(resolve)
-
-		local knitMiddleware = selectedOptions.Middleware or {}
+		local knitMiddleware = if selectedOptions.Middleware ~= nil then selectedOptions.Middleware else {}
 
 		-- Bind remotes:
-		for _,service in pairs(services) do
-			local middleware = service.Middleware or {}
-			local inbound = middleware.Inbound or knitMiddleware.Inbound
-			local outbound = middleware.Outbound or knitMiddleware.Outbound
+		for _, service in services do
+			local middleware = if service.Middleware ~= nil then service.Middleware else {}
+			local inbound = if middleware.Inbound ~= nil then middleware.Inbound else knitMiddleware.Inbound
+			local outbound = if middleware.Outbound ~= nil then middleware.Outbound else knitMiddleware.Outbound
 			service.Middleware = nil
-			for k,v in pairs(service.Client) do
+			for k, v in service.Client do
 				if type(v) == "function" then
 					service.KnitComm:WrapMethod(service.Client, k, inbound, outbound)
 				elseif v == SIGNAL_MARKER then
@@ -376,22 +370,23 @@ function KnitServer.Start(options: KnitOptions?)
 
 		-- Init:
 		local promisesInitServices = {}
-		for _,service in pairs(services) do
+		for _, service in services do
 			if type(service.KnitInit) == "function" then
-				table.insert(promisesInitServices, Promise.new(function(r)
-					debug.setmemorycategory(service.Name)
-					service:KnitInit()
-					r()
-				end))
+				table.insert(
+					promisesInitServices,
+					Promise.new(function(r)
+						debug.setmemorycategory(service.Name)
+						service:KnitInit()
+						r()
+					end)
+				)
 			end
 		end
 
 		resolve(Promise.all(promisesInitServices))
-
 	end):andThen(function()
-
 		-- Start:
-		for _,service in pairs(services) do
+		for _, service in services do
 			if type(service.KnitStart) == "function" then
 				task.spawn(function()
 					debug.setmemorycategory(service.Name)
@@ -409,11 +404,8 @@ function KnitServer.Start(options: KnitOptions?)
 
 		-- Expose service remotes to everyone:
 		knitRepServiceFolder.Parent = script.Parent
-
 	end)
-
 end
-
 
 --[=[
 	@return Promise
@@ -434,6 +426,5 @@ function KnitServer.OnStart()
 		return Promise.fromEvent(onStartedComplete.Event)
 	end
 end
-
 
 return KnitServer

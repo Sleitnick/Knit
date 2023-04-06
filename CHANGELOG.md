@@ -1,3 +1,11 @@
+## 1.5.0
+
+- Code styling
+- Utilize newer Luau features
+- Migrate to Aftman
+- General repository cleanup
+- Update dependencies
+
 ## 1.4.7
 
 - Update dependencies for bundled version of Knit

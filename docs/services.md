@@ -71,7 +71,7 @@ end
 
 function PointsService:GetPoints(player)
 	local points = self.PointsPerPlayer[player]
-	return points or 0 -- Return 0 if no points found for player
+	return if points ~= nil then points else 0 -- Return 0 if no points found for player
 end
 ```
 
@@ -90,7 +90,7 @@ function PointsService:AddPoints(player, amount)
 	points += amount
 	self.PointsPerPlayer[player] = points
 	-- Fire event signal, as long as we actually changed the points:
-	if (amount ~= 0) then
+	if amount ~= 0 then
 		self.PointsChanged:Fire(player, points)
 	end
 end
