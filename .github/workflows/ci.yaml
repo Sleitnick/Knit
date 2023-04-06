@@ -30,4 +30,4 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         version: v0.17.1
-        args: --check ./modules
+        args: --check ./src
