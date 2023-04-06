@@ -21,8 +21,8 @@ We can write our KnitRuntime script as such:
 local Knit = require(game:GetService("ReplicatedStorage").Packages.Knit)
 
 -- Load all services:
-for _,v in ipairs(script.Parent.Services:GetDescendants()) do
-	if (v:IsA("ModuleScript")) then
+for _, v in script.Parent.Services:GetDescendants() do
+	if v:IsA("ModuleScript") then
 		require(v)
 	end
 end

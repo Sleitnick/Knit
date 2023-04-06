@@ -1,9 +1,10 @@
 ## 1.5.0
 
-- Update dependencies for bundled version of Knit
+- Code styling
+- Utilize newer Luau features
 - Migrate to Aftman
-- Integrate Stylua
 - General repository cleanup
+- Update dependencies
 
 ## 1.4.7
 

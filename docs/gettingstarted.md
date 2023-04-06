@@ -22,7 +22,7 @@ Installing Knit is very simple. Just drop the module into ReplicatedStorage. Kni
 
 **Rojo/Wally workflow:**
 
-- Add Knit to your `wally.toml` dependency list (e.g. `Knit = "sleitnick/knit@^1.4"`)
+- Add Knit to your `wally.toml` dependency list (e.g. `Knit = "sleitnick/knit@^1.5"`)
 - Require Knit like any other module grabbed from Wally
 
 	:::note Wally
