@@ -8,7 +8,7 @@ local Packages = place.ReplicatedStorage.Packages
 Packages.Knit.Packages:Destroy()
 
 print("Writing Knit module to model file...")
-remodel.writeModelFile(Packages, "Knit.rbxm")
+remodel.writeModelFile("Knit.rbxm", Packages)
 print("Knit model written")
 
 print("Publishing Knit module to Roblox...")
