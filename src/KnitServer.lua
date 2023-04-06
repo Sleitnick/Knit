@@ -176,10 +176,10 @@ end
 	```
 ]=]
 function KnitServer.CreateService(serviceDef: ServiceDef): Service
-	assert(type(serviceDef) == "table", "Service must be a table; got " .. type(serviceDef))
-	assert(type(serviceDef.Name) == "string", "Service.Name must be a string; got " .. type(serviceDef.Name))
+	assert(type(serviceDef) == "table", `Service must be a table; got {type(serviceDef)}`)
+	assert(type(serviceDef.Name) == "string", `Service.Name must be a string; got {type(serviceDef.Name)}`)
 	assert(#serviceDef.Name > 0, "Service.Name must be a non-empty string")
-	assert(not DoesServiceExist(serviceDef.Name), 'Service "' .. serviceDef.Name .. '" already exists')
+	assert(not DoesServiceExist(serviceDef.Name), `Service "{serviceDef.Name}" already exists`)
 	local service = serviceDef
 	service.KnitComm = ServerComm.new(knitRepServiceFolder, serviceDef.Name)
 	if type(service.Client) ~= "table" then
@@ -230,8 +230,8 @@ end
 ]=]
 function KnitServer.GetService(serviceName: string): Service
 	assert(started, "Cannot call GetService until Knit has been started")
-	assert(type(serviceName) == "string", "ServiceName must be a string; got " .. type(serviceName))
-	return assert(services[serviceName], 'Could not find service "' .. serviceName .. '"') :: Service
+	assert(type(serviceName) == "string", `ServiceName must be a string; got {type(serviceName)}`)
+	return assert(services[serviceName], `Could not find service "{serviceName}"`) :: Service
 end
 
 --[=[
@@ -339,7 +339,7 @@ function KnitServer.Start(options: KnitOptions?)
 	if options == nil then
 		selectedOptions = defaultOptions
 	else
-		assert(typeof(options) == "table", "KnitOptions should be a table or nil; got " .. typeof(options))
+		assert(typeof(options) == "table", `KnitOptions should be a table or nil; got {typeof(options)}`)
 		selectedOptions = options
 		for k, v in defaultOptions do
 			if selectedOptions[k] == nil then
