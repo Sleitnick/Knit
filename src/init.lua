@@ -1,8 +1,9 @@
 local RunService = game:GetService("RunService")
 
-local IS_EDIT = pcall(function()
-	RunService:IsEdit()
+local success, v = pcall(function()
+	return RunService:IsEdit()
 end)
+local IS_EDIT = success and v
 
 if RunService:IsServer() then
 	return require(script.KnitServer)
