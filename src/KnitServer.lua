@@ -357,15 +357,25 @@ function KnitServer.Start(options: KnitOptions?)
 			local inbound = if middleware.Inbound ~= nil then middleware.Inbound else knitMiddleware.Inbound
 			local outbound = if middleware.Outbound ~= nil then middleware.Outbound else knitMiddleware.Outbound
 			service.Middleware = nil
-			for k, v in service.Client do
-				if type(v) == "function" then
-					service.KnitComm:WrapMethod(service.Client, k, inbound, outbound)
-				elseif v == SIGNAL_MARKER then
-					service.Client[k] = service.KnitComm:CreateSignal(k, inbound, outbound)
-				elseif type(v) == "table" and v[1] == PROPERTY_MARKER then
-					service.Client[k] = service.KnitComm:CreateProperty(k, v[2], inbound, outbound)
+
+			local depth = {}
+			local function recursive(t)
+				for k, v in t do
+					if type(v) == "function" then
+						service.KnitComm:WrapMethod(t, k, inbound, outbound, depth)
+					elseif v == SIGNAL_MARKER then
+						t[k] = service.KnitComm:CreateSignal(k, inbound, outbound, depth)
+					elseif type(v) == "table" and v[1] == PROPERTY_MARKER then
+						t[k] = service.KnitComm:CreateProperty(k, v[2], inbound, outbound, depth)
+					elseif type(v) == "table" and k ~= "Server" then
+						table.insert(depth, k)
+						recursive(v)
+						table.remove(depth)
+					end
 				end
 			end
+
+			recursive(service.Client)
 		end
 
 		-- Init:
