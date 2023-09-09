@@ -358,19 +358,19 @@ function KnitServer.Start(options: KnitOptions?)
 			local outbound = if middleware.Outbound ~= nil then middleware.Outbound else knitMiddleware.Outbound
 			service.Middleware = nil
 
-			local depth = {}
+			local subFolders = {}
 			local function recursive(t)
 				for k, v in t do
 					if type(v) == "function" then
-						service.KnitComm:WrapMethod(t, k, inbound, outbound, depth)
+						service.KnitComm:WrapMethod(t, k, inbound, outbound, subFolders)
 					elseif v == SIGNAL_MARKER then
-						t[k] = service.KnitComm:CreateSignal(k, inbound, outbound, depth)
+						t[k] = service.KnitComm:CreateSignal(k, inbound, outbound, subFolders)
 					elseif type(v) == "table" and v[1] == PROPERTY_MARKER then
-						t[k] = service.KnitComm:CreateProperty(k, v[2], inbound, outbound, depth)
+						t[k] = service.KnitComm:CreateProperty(k, v[2], inbound, outbound, subFolders)
 					elseif type(v) == "table" and k ~= "Server" then
-						table.insert(depth, k)
+						table.insert(subFolders, k)
 						recursive(v)
-						table.remove(depth)
+						table.remove(subFolders)
 					end
 				end
 			end
