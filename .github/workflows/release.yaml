@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Install Aftman
         uses: ok-nick/setup-aftman@v0
       - name: Publish release to Wally
@@ -43,7 +43,8 @@ jobs:
           remodel run publish.lua
       - name: Get version
         id: get_version
-        run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
+        # run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
       - name: Changelog
         run: python3 last_changelog.py CHANGELOG.md > log.md
       - name: Release

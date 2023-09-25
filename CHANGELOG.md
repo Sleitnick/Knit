@@ -1,3 +1,8 @@
+## 1.5.2
+
+- Update dependencies
+- Prevent KnitServer from destroying itself in edit mode
+
 ## 1.5.1
 
 - Bugfix for main Knit init file
