@@ -4,7 +4,7 @@ if RunService:IsServer() then
 	return require(script.KnitServer)
 else
 	local KnitServer = script:FindFirstChild("KnitServer")
-	if KnitServer and not RunService:IsEdit() then
+	if KnitServer and RunService:IsRunning() then
 		KnitServer:Destroy()
 	end
 	return require(script.KnitClient)
