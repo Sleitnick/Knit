@@ -1,6 +1,6 @@
-![Release](https://github.com/Sleitnick/Knit/workflows/Release/badge.svg)
-![Lint](https://github.com/Sleitnick/Knit/workflows/Lint/badge.svg)
-![Deploy Docs](https://github.com/Sleitnick/Knit/workflows/Deploy%20Docs/badge.svg)
+[![Release](https://github.com/Sleitnick/Knit/actions/workflows/release.yaml/badge.svg)](https://github.com/Sleitnick/Knit/actions/workflows/release.yaml)
+[![CI](https://github.com/Sleitnick/Knit/actions/workflows/ci.yaml/badge.svg)](https://github.com/Sleitnick/Knit/actions/workflows/ci.yaml)
+[![Docs](https://github.com/Sleitnick/Knit/actions/workflows/docs.yaml/badge.svg)](https://github.com/Sleitnick/Knit/actions/workflows/docs.yaml)
 
 # Knit
 
