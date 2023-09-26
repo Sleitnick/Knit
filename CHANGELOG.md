@@ -1,3 +1,7 @@
+## 1.5.3
+
+- Fix incorrect RunService call
+
 ## 1.5.2
 
 - Update dependencies
