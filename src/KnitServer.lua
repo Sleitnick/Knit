@@ -124,6 +124,11 @@ getmetatable(SIGNAL_MARKER).__tostring = function()
 	return "SIGNAL_MARKER"
 end
 
+local UNRELIABLE_SIGNAL_MARKER = newproxy(true)
+getmetatable(UNRELIABLE_SIGNAL_MARKER).__tostring = function()
+	return "UNRELIABLE_SIGNAL_MARKER"
+end
+
 local PROPERTY_MARKER = newproxy(true)
 getmetatable(PROPERTY_MARKER).__tostring = function()
 	return "PROPERTY_MARKER"
@@ -263,6 +268,13 @@ function KnitServer.CreateSignal()
 end
 
 --[=[
+	DOCS TODO
+]=]
+function KnitServer.CreateUnreliableSignal()
+	return SIGNAL_UNRELIABLE_MARKER
+end
+
+--[=[
 	@return PROPERTY_MARKER
 	Returns a marker that will transform the current key into
 	a RemoteProperty once the service is created. Should only
@@ -361,7 +373,9 @@ function KnitServer.Start(options: KnitOptions?)
 				if type(v) == "function" then
 					service.KnitComm:WrapMethod(service.Client, k, inbound, outbound)
 				elseif v == SIGNAL_MARKER then
-					service.Client[k] = service.KnitComm:CreateSignal(k, inbound, outbound)
+					service.Client[k] = service.KnitComm:CreateSignal(k, false, inbound, outbound)
+				elseif v == UNRELIABLE_SIGNAL_MARKER then
+					service.Client[k] = service.KnitComm:CreateSignal(k, true, inbound, outbound)
 				elseif type(v) == "table" and v[1] == PROPERTY_MARKER then
 					service.Client[k] = service.KnitComm:CreateProperty(k, v[2], inbound, outbound)
 				end
