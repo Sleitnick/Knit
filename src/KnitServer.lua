@@ -117,7 +117,7 @@ local KnitServer = {}
 	pulled in via Wally instead of relying on Knit's Util folder, as this
 	folder only contains what is necessary for Knit to run in Wally mode.
 ]=]
-KnitServer.Util = script.Parent.Parent
+KnitServer.Util = (script.Parent :: Instance).Parent
 
 local SIGNAL_MARKER = newproxy(true)
 getmetatable(SIGNAL_MARKER).__tostring = function()
