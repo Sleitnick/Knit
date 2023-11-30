@@ -1,3 +1,8 @@
+## 1.6.0
+
+- Add support for UnreliableRemoteEvents (using `Knit.CreateUnreliableSignal()` on server)
+- Update dependencies
+
 ## 1.5.3
 
 - Fix incorrect RunService call

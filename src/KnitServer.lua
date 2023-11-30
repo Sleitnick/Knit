@@ -268,7 +268,23 @@ function KnitServer.CreateSignal()
 end
 
 --[=[
-	DOCS TODO
+	@return UNRELIABLE_SIGNAL_MARKER
+
+	Returns a marker that will transform the current key into
+	an unreliable RemoteSignal once the service is created. Should
+	only be called within the Client table of a service.
+
+	See [RemoteSignal](https://sleitnick.github.io/RbxUtil/api/RemoteSignal)
+	documentation for more info.
+
+	:::info Unreliable Events
+	Internally, this uses UnreliableRemoteEvents, which allows for
+	network communication that is unreliable and unordered. This is
+	useful for events that are not crucial for gameplay, since the
+	delivery of the events may occur out of order or not at all.
+
+	See  the documentation for [UnreliableRemoteEvents](https://create.roblox.com/docs/reference/engine/classes/UnreliableRemoteEvent)
+	for more info.
 ]=]
 function KnitServer.CreateUnreliableSignal()
 	return UNRELIABLE_SIGNAL_MARKER
