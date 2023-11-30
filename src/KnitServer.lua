@@ -271,7 +271,7 @@ end
 	DOCS TODO
 ]=]
 function KnitServer.CreateUnreliableSignal()
-	return SIGNAL_UNRELIABLE_MARKER
+	return UNRELIABLE_SIGNAL_MARKER
 end
 
 --[=[
