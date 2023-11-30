@@ -117,11 +117,16 @@ local KnitServer = {}
 	pulled in via Wally instead of relying on Knit's Util folder, as this
 	folder only contains what is necessary for Knit to run in Wally mode.
 ]=]
-KnitServer.Util = script.Parent.Parent
+KnitServer.Util = (script.Parent :: Instance).Parent
 
 local SIGNAL_MARKER = newproxy(true)
 getmetatable(SIGNAL_MARKER).__tostring = function()
 	return "SIGNAL_MARKER"
+end
+
+local UNRELIABLE_SIGNAL_MARKER = newproxy(true)
+getmetatable(UNRELIABLE_SIGNAL_MARKER).__tostring = function()
+	return "UNRELIABLE_SIGNAL_MARKER"
 end
 
 local PROPERTY_MARKER = newproxy(true)
@@ -263,6 +268,29 @@ function KnitServer.CreateSignal()
 end
 
 --[=[
+	@return UNRELIABLE_SIGNAL_MARKER
+
+	Returns a marker that will transform the current key into
+	an unreliable RemoteSignal once the service is created. Should
+	only be called within the Client table of a service.
+
+	See [RemoteSignal](https://sleitnick.github.io/RbxUtil/api/RemoteSignal)
+	documentation for more info.
+
+	:::info Unreliable Events
+	Internally, this uses UnreliableRemoteEvents, which allows for
+	network communication that is unreliable and unordered. This is
+	useful for events that are not crucial for gameplay, since the
+	delivery of the events may occur out of order or not at all.
+
+	See  the documentation for [UnreliableRemoteEvents](https://create.roblox.com/docs/reference/engine/classes/UnreliableRemoteEvent)
+	for more info.
+]=]
+function KnitServer.CreateUnreliableSignal()
+	return UNRELIABLE_SIGNAL_MARKER
+end
+
+--[=[
 	@return PROPERTY_MARKER
 	Returns a marker that will transform the current key into
 	a RemoteProperty once the service is created. Should only
@@ -361,7 +389,9 @@ function KnitServer.Start(options: KnitOptions?)
 				if type(v) == "function" then
 					service.KnitComm:WrapMethod(service.Client, k, inbound, outbound)
 				elseif v == SIGNAL_MARKER then
-					service.Client[k] = service.KnitComm:CreateSignal(k, inbound, outbound)
+					service.Client[k] = service.KnitComm:CreateSignal(k, false, inbound, outbound)
+				elseif v == UNRELIABLE_SIGNAL_MARKER then
+					service.Client[k] = service.KnitComm:CreateSignal(k, true, inbound, outbound)
 				elseif type(v) == "table" and v[1] == PROPERTY_MARKER then
 					service.Client[k] = service.KnitComm:CreateProperty(k, v[2], inbound, outbound)
 				end

@@ -25,9 +25,9 @@ jobs:
     name: Styling
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - uses: JohnnyMorganz/stylua-action@v3
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-        version: v0.18.2
+        version: v0.19.1
         args: --check ./src

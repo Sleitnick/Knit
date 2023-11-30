@@ -167,9 +167,9 @@ PointsService:GetPoints():andThen(function(points)
 end)
 ```
 
-### Signals (Server-to-Client)
+### Events (Server-to-Client)
 
-We should also create a signal that we can fire events for the clients when their points change. We can use `Knit:CreateSignal()` to indicate we want a signal created for the service.
+We can use remote signals to fire events from the server to the clients. Continuing with the previous PointsService example, let's create a signal that fires when a client's points change. We can use `Knit:CreateSignal()` to indicate we want a signal created for the service.
 
 ```lua
 local PointsService = Knit.CreateService {
@@ -214,7 +214,7 @@ PointsService.PointsChanged:Connect(function(points)
 end)
 ```
 
-### Signals (Client-to-Server)
+### Events (Client-to-Server)
 
 Signal events can also be fired from the client. This is useful when the client needs to give the server information, but doesn't care about any response from the server. For instance, maybe the client wants to tell the PointsService that it wants some points. This is an odd use-case, but let's just roll with it.
 
@@ -263,6 +263,25 @@ PointsService.GiveMePoints:Fire()
 :::tip Client Remote Signal
 See the [ClientRemoteSignal](https://sleitnick.github.io/RbxUtil/api/ClientRemoteSignal) documentation for more info on how to use the ClientRemoteSignal object.
 :::
+
+### Unreliable Events
+
+Knit also supports [UnreliableRemoteEvents](https://create.roblox.com/docs/reference/engine/classes/UnreliableRemoteEvent), which is a special version of RemoteEvent. UnreliableRemoteEvents are, as the name suggests, unreliable. When an event is fired on an UnreliableRemoteEvent, the order and delivery of the event is not guaranteed. The listener of the event may receive the events out of order, or possibly not at all.
+
+Having unreliable events is useful in scenarios where the data being sent is not crucial to game state. For example, setting the tilt rotation of each avatar's head: if some packets are dropped, this won't affect actual gameplay. The benefit is that unreliable events take up less network bandwidth.
+
+To create an unreliable event, use `Knit.CreateUnreliableSignal()` within the client table of a service:
+
+```lua
+local MyService = Knit.CreateService {
+	Name = "MyService",
+	Client = {
+		PlayEffect = Knit.CreateUnreliableSignal(),
+	},
+}
+```
+
+Using the unreliable signal is the same as normal ones (see the two sections above on events).
 
 ### Properties
 

@@ -1,5 +1,0 @@
-[tools]
-selene = { source = "Kampfkarren/selene", version = "x" }
-rojo = { source = "rojo-rbx/rojo", version = "7" }
-remodel = { source = "rojo-rbx/remodel", version = "0.9.0" }
-wally = { source = "UpliftGames/wally", version = "0.3.1" }
