@@ -169,7 +169,7 @@ end)
 
 ### Events (Server-to-Client)
 
-We can use remote signals to fire events from the server to the clients. Continuing with the previous PointsService example, let's create a signal that fires when a client's points change. We can use `Knit:CreateSignal()` to indicate we want a signal created for the service.
+We can use remote signals to fire events from the server to the clients. Continuing with the previous PointsService example, let's create a signal that fires when a client's points change. We can use `Knit.CreateSignal()` to indicate we want a signal created for the service.
 
 ```lua
 local PointsService = Knit.CreateService {
