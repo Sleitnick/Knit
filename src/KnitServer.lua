@@ -240,6 +240,14 @@ function KnitServer.GetService(serviceName: string): Service
 end
 
 --[=[
+	Gets a table of all services.
+]=]
+function KnitServer.GetServices(): { [string]: Service }
+	assert(started, "Cannot call GetServices until Knit has been started")
+	return services
+end
+
+--[=[
 	@return SIGNAL_MARKER
 	Returns a marker that will transform the current key into
 	a RemoteSignal once the service is created. Should only
@@ -363,6 +371,8 @@ function KnitServer.Start(options: KnitOptions?)
 	end
 
 	started = true
+
+	table.freeze(services)
 
 	if options == nil then
 		selectedOptions = defaultOptions

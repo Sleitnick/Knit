@@ -291,6 +291,14 @@ function KnitClient.GetController(controllerName: string): Controller
 end
 
 --[=[
+	Gets a table of all controllers.
+]=]
+function KnitClient.GetControllers(): { [string]: Controller }
+	assert(started, "Cannot call GetControllers until Knit has been started")
+	return controllers
+end
+
+--[=[
 	@return Promise
 	Starts Knit. Should only be called once per client.
 	```lua
@@ -313,6 +321,8 @@ function KnitClient.Start(options: KnitOptions?)
 	end
 
 	started = true
+
+	table.freeze(controllers)
 
 	if options == nil then
 		selectedOptions = defaultOptions
