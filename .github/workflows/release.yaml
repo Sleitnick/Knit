@@ -13,7 +13,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Install Aftman
-        uses: ok-nick/setup-aftman@v0
+        uses: ok-nick/setup-aftman@v0.4.2
       - name: Publish release to Wally
         shell: bash
         env:

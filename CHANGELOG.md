@@ -1,3 +1,9 @@
+## 1.7.0
+- Adds `Knit.GetServices()` function server-side
+- Adds `Knit.GetControllers()` function client-side
+- Freezes `services`/`controllers` tables so that they can be safely returned in the functions listed above.
+- Update GitHub workflow dependencies
+
 ## 1.6.0
 
 - Add support for UnreliableRemoteEvents (using `Knit.CreateUnreliableSignal()` on server)
