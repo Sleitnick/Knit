@@ -185,6 +185,7 @@ function KnitServer.CreateService(serviceDef: ServiceDef): Service
 	assert(type(serviceDef.Name) == "string", `Service.Name must be a string; got {type(serviceDef.Name)}`)
 	assert(#serviceDef.Name > 0, "Service.Name must be a non-empty string")
 	assert(not DoesServiceExist(serviceDef.Name), `Service "{serviceDef.Name}" already exists`)
+	assert(not started, `Services cannot be created after calling "Knit.Start()"`)
 	local service = serviceDef
 	service.KnitComm = ServerComm.new(knitRepServiceFolder, serviceDef.Name)
 	if type(service.Client) ~= "table" then

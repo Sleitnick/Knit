@@ -177,6 +177,7 @@ function KnitClient.CreateController(controllerDef: ControllerDef): Controller
 	assert(type(controllerDef.Name) == "string", `Controller.Name must be a string; got {type(controllerDef.Name)}`)
 	assert(#controllerDef.Name > 0, "Controller.Name must be a non-empty string")
 	assert(not DoesControllerExist(controllerDef.Name), `Controller {controllerDef.Name} already exists`)
+	assert(not started, `Controllers cannot be created after calling "Knit.Start()"`)
 	local controller = controllerDef :: Controller
 	controllers[controller.Name] = controller
 	return controller
