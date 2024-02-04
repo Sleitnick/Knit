@@ -7,5 +7,6 @@ else
 	if KnitServer and RunService:IsRunning() then
 		KnitServer:Destroy()
 	end
+
 	return require(script.KnitClient)
 end

@@ -126,6 +126,7 @@ local onStartedComplete = Instance.new("BindableEvent")
 
 local function DoesControllerExist(controllerName: string): boolean
 	local controller: Controller? = controllers[controllerName]
+
 	return controller ~= nil
 end
 
@@ -133,12 +134,14 @@ local function GetServicesFolder()
 	if not servicesFolder then
 		servicesFolder = (script.Parent :: Instance):WaitForChild("Services")
 	end
+
 	return servicesFolder
 end
 
 local function GetMiddlewareForService(serviceName: string)
 	local knitMiddleware = if selectedOptions.Middleware ~= nil then selectedOptions.Middleware else {}
 	local serviceMiddleware = selectedOptions.PerServiceMiddleware[serviceName]
+
 	return if serviceMiddleware ~= nil then serviceMiddleware else knitMiddleware
 end
 
@@ -147,7 +150,9 @@ local function BuildService(serviceName: string)
 	local middleware = GetMiddlewareForService(serviceName)
 	local clientComm = ClientComm.new(folder, selectedOptions.ServicePromises, serviceName)
 	local service = clientComm:BuildObject(middleware.Inbound, middleware.Outbound)
+
 	services[serviceName] = service
+
 	return service
 end
 
@@ -178,8 +183,10 @@ function KnitClient.CreateController(controllerDef: ControllerDef): Controller
 	assert(#controllerDef.Name > 0, "Controller.Name must be a non-empty string")
 	assert(not DoesControllerExist(controllerDef.Name), `Controller {controllerDef.Name} already exists`)
 	assert(not started, `Controllers cannot be created after calling "Knit.Start()"`)
+
 	local controller = controllerDef :: Controller
 	controllers[controller.Name] = controller
+
 	return controller
 end
 
@@ -192,13 +199,16 @@ end
 ]=]
 function KnitClient.AddControllers(parent: Instance): { Controller }
 	assert(not started, `Controllers cannot be added after calling "Knit.Start()"`)
+
 	local addedControllers = {}
 	for _, v in parent:GetChildren() do
 		if not v:IsA("ModuleScript") then
 			continue
 		end
+
 		table.insert(addedControllers, require(v))
 	end
+
 	return addedControllers
 end
 
@@ -207,13 +217,16 @@ end
 ]=]
 function KnitClient.AddControllersDeep(parent: Instance): { Controller }
 	assert(not started, `Controllers cannot be added after calling "Knit.Start()"`)
+
 	local addedControllers = {}
 	for _, v in parent:GetDescendants() do
 		if not v:IsA("ModuleScript") then
 			continue
 		end
+
 		table.insert(addedControllers, require(v))
 	end
+
 	return addedControllers
 end
 
@@ -274,8 +287,10 @@ function KnitClient.GetService(serviceName: string): Service
 	if service then
 		return service
 	end
+
 	assert(started, "Cannot call GetService until Knit has been started")
 	assert(type(serviceName) == "string", `ServiceName must be a string; got {type(serviceName)}`)
+
 	return BuildService(serviceName)
 end
 
@@ -288,6 +303,7 @@ function KnitClient.GetController(controllerName: string): Controller
 	if controller then
 		return controller
 	end
+
 	assert(started, "Cannot call GetController until Knit has been started")
 	assert(type(controllerName) == "string", `ControllerName must be a string; got {type(controllerName)}`)
 	error(`Could not find controller "{controllerName}". Check to verify a controller with this name exists.`, 2)
@@ -298,6 +314,7 @@ end
 ]=]
 function KnitClient.GetControllers(): { [string]: Controller }
 	assert(started, "Cannot call GetControllers until Knit has been started")
+
 	return controllers
 end
 

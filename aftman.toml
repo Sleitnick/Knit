@@ -1,1 +1,1 @@
-tools = { rojo = "rojo-rbx/rojo@7.3.0" , wally = "UpliftGames/wally@0.3.2" , selene = "Kampfkarren/selene@0.26.1" , stylua = "JohnnyMorganz/StyLua@0.19.1" , remodel = "rojo-rbx/remodel@0.11.0" }
+tools = { rojo = "rojo-rbx/rojo@7.3.0" , wally = "UpliftGames/wally@0.3.2" , selene = "Kampfkarren/selene@0.26.1" , stylua = "JohnnyMorganz/StyLua@0.20.0" , remodel = "rojo-rbx/remodel@0.11.0" }

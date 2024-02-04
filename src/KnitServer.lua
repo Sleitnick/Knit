@@ -148,6 +148,7 @@ local onStartedComplete = Instance.new("BindableEvent")
 
 local function DoesServiceExist(serviceName: string): boolean
 	local service: Service? = services[serviceName]
+
 	return service ~= nil
 end
 
@@ -186,8 +187,10 @@ function KnitServer.CreateService(serviceDef: ServiceDef): Service
 	assert(#serviceDef.Name > 0, "Service.Name must be a non-empty string")
 	assert(not DoesServiceExist(serviceDef.Name), `Service "{serviceDef.Name}" already exists`)
 	assert(not started, `Services cannot be created after calling "Knit.Start()"`)
+
 	local service = serviceDef
 	service.KnitComm = ServerComm.new(knitRepServiceFolder, serviceDef.Name)
+
 	if type(service.Client) ~= "table" then
 		service.Client = { Server = service }
 	else
@@ -195,7 +198,9 @@ function KnitServer.CreateService(serviceDef: ServiceDef): Service
 			service.Client.Server = service
 		end
 	end
+
 	services[service.Name] = service
+
 	return service
 end
 
@@ -208,13 +213,16 @@ end
 ]=]
 function KnitServer.AddServices(parent: Instance): { Service }
 	assert(not started, `Services cannot be added after calling "Knit.Start()"`)
+
 	local addedServices = {}
 	for _, v in parent:GetChildren() do
 		if not v:IsA("ModuleScript") then
 			continue
 		end
+
 		table.insert(addedServices, require(v))
 	end
+
 	return addedServices
 end
 
@@ -223,13 +231,16 @@ end
 ]=]
 function KnitServer.AddServicesDeep(parent: Instance): { Service }
 	assert(not started, `Services cannot be added after calling "Knit.Start()"`)
+
 	local addedServices = {}
 	for _, v in parent:GetDescendants() do
 		if not v:IsA("ModuleScript") then
 			continue
 		end
+
 		table.insert(addedServices, require(v))
 	end
+
 	return addedServices
 end
 
@@ -239,6 +250,7 @@ end
 function KnitServer.GetService(serviceName: string): Service
 	assert(started, "Cannot call GetService until Knit has been started")
 	assert(type(serviceName) == "string", `ServiceName must be a string; got {type(serviceName)}`)
+
 	return assert(services[serviceName], `Could not find service "{serviceName}"`) :: Service
 end
 
@@ -247,6 +259,7 @@ end
 ]=]
 function KnitServer.GetServices(): { [string]: Service }
 	assert(started, "Cannot call GetServices until Knit has been started")
+
 	return services
 end
 
@@ -397,7 +410,9 @@ function KnitServer.Start(options: KnitOptions?)
 			local middleware = if service.Middleware ~= nil then service.Middleware else {}
 			local inbound = if middleware.Inbound ~= nil then middleware.Inbound else knitMiddleware.Inbound
 			local outbound = if middleware.Outbound ~= nil then middleware.Outbound else knitMiddleware.Outbound
+
 			service.Middleware = nil
+
 			for k, v in service.Client do
 				if type(v) == "function" then
 					service.KnitComm:WrapMethod(service.Client, k, inbound, outbound)
