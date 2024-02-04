@@ -207,6 +207,7 @@ end
 	```
 ]=]
 function KnitServer.AddServices(parent: Instance): { Service }
+	assert(not started, `Services cannot be added after calling "Knit.Start()"`)
 	local addedServices = {}
 	for _, v in parent:GetChildren() do
 		if not v:IsA("ModuleScript") then
@@ -221,6 +222,7 @@ end
 	Requires all the modules that are descendants of the given parent.
 ]=]
 function KnitServer.AddServicesDeep(parent: Instance): { Service }
+	assert(not started, `Services cannot be added after calling "Knit.Start()"`)
 	local addedServices = {}
 	for _, v in parent:GetDescendants() do
 		if not v:IsA("ModuleScript") then
