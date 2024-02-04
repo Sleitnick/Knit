@@ -104,6 +104,9 @@ A fair question to ask is: Why is this not the preferred setup for Knit?
 1. A lot of extra custom code has to be written.
 1. If you are willing to go to this length, then perhaps a custom-built framework would work better.
 
+### Client-accessed Services
+Services accessed from the client must still go through `Knit.GetService`, thus cannot benefit from this structural change. A secondary module could be used as the client-facing service module, but that would be a lot more work to maintain and handle. 
+
 ## Create-a-Knit
 
 Creating your own framework like Knit is quite easy. In this short section, we will set up a simple module loader that works similar to Knit's startup procedure. However, it will lack networking capabilities. There are plenty of third-party networking libraries that can be used. Choosing which networking library to use is out of scope for this section.
