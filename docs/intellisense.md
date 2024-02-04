@@ -11,7 +11,7 @@ There are a couple ways to help resolve this issue:
 2. Create your own Knit-like framework using plain ModuleScripts.
 
 :::note Service/Controller
-In this article, any references to "Service" or "GetService" can also be implied to also include "Controller" or "GetController". It's simply less wordy to always reference both.
+In this article, any references to "Service" or "GetService" can also be implied to also include "Controller" or "GetController". It's simply less wordy to avoid referencing both.
 :::
 
 ## Custom Bootstrapper
@@ -111,7 +111,7 @@ Creating your own framework like Knit is quite easy. In this short section, we w
 ### Using the RbxUtil Loader Module
 To help speed up this whole process, the [Loader](https://sleitnick.github.io/RbxUtil/api/Loader) module will be utilized. This will help us quickly load our modules and kick off any sort of startup method per module.
 
-In keeping with the Service/Controller naming scheme, we will make the same assumption for our custom framework.
+In keeping with the Service/Controller naming scheme, we will use the same names for our custom framework.
 
 ### Loading Services
 
@@ -127,7 +127,7 @@ However, this isn't very useful, as we probably have a lot of non-service Module
 local services = Loader.LoadDescendants(ServerScriptService, Loader.MatchesName("Service$"))
 ```
 
-Great, so now we have a key/value table of loaded services! To mirror a bit of Knit, lets call the `OnStart` method of each service.
+Great, so now we have a key/value table of loaded services! To mirror a bit of Knit, let's call the `OnStart` method of each service.
 
 ### Starting Services
 
