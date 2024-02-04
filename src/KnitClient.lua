@@ -177,6 +177,7 @@ function KnitClient.CreateController(controllerDef: ControllerDef): Controller
 	assert(type(controllerDef.Name) == "string", `Controller.Name must be a string; got {type(controllerDef.Name)}`)
 	assert(#controllerDef.Name > 0, "Controller.Name must be a non-empty string")
 	assert(not DoesControllerExist(controllerDef.Name), `Controller {controllerDef.Name} already exists`)
+	assert(not started, `Controllers cannot be created after calling "Knit.Start()"`)
 	local controller = controllerDef :: Controller
 	controllers[controller.Name] = controller
 	return controller
@@ -291,6 +292,14 @@ function KnitClient.GetController(controllerName: string): Controller
 end
 
 --[=[
+	Gets a table of all controllers.
+]=]
+function KnitClient.GetControllers(): { [string]: Controller }
+	assert(started, "Cannot call GetControllers until Knit has been started")
+	return controllers
+end
+
+--[=[
 	@return Promise
 	Starts Knit. Should only be called once per client.
 	```lua
@@ -313,6 +322,8 @@ function KnitClient.Start(options: KnitOptions?)
 	end
 
 	started = true
+
+	table.freeze(controllers)
 
 	if options == nil then
 		selectedOptions = defaultOptions

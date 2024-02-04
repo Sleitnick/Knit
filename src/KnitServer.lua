@@ -185,6 +185,7 @@ function KnitServer.CreateService(serviceDef: ServiceDef): Service
 	assert(type(serviceDef.Name) == "string", `Service.Name must be a string; got {type(serviceDef.Name)}`)
 	assert(#serviceDef.Name > 0, "Service.Name must be a non-empty string")
 	assert(not DoesServiceExist(serviceDef.Name), `Service "{serviceDef.Name}" already exists`)
+	assert(not started, `Services cannot be created after calling "Knit.Start()"`)
 	local service = serviceDef
 	service.KnitComm = ServerComm.new(knitRepServiceFolder, serviceDef.Name)
 	if type(service.Client) ~= "table" then
@@ -237,6 +238,14 @@ function KnitServer.GetService(serviceName: string): Service
 	assert(started, "Cannot call GetService until Knit has been started")
 	assert(type(serviceName) == "string", `ServiceName must be a string; got {type(serviceName)}`)
 	return assert(services[serviceName], `Could not find service "{serviceName}"`) :: Service
+end
+
+--[=[
+	Gets a table of all services.
+]=]
+function KnitServer.GetServices(): { [string]: Service }
+	assert(started, "Cannot call GetServices until Knit has been started")
+	return services
 end
 
 --[=[
@@ -363,6 +372,8 @@ function KnitServer.Start(options: KnitOptions?)
 	end
 
 	started = true
+
+	table.freeze(services)
 
 	if options == nil then
 		selectedOptions = defaultOptions
