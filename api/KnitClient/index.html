@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="generator" content="Docusaurus v2.3.1">
 <title data-rh="true">KnitClient | Knit</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:url" content="https://Sleitnick.github.io/Knit/api/KnitClient"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docusaurus_tag" content="default"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docsearch:docusaurus_tag" content="default"><meta data-rh="true" property="og:title" content="KnitClient | Knit"><link data-rh="true" rel="icon" href="/Knit/favicon.png"><link data-rh="true" rel="canonical" href="https://Sleitnick.github.io/Knit/api/KnitClient"><link data-rh="true" rel="alternate" href="https://Sleitnick.github.io/Knit/api/KnitClient" hreflang="en"><link data-rh="true" rel="alternate" href="https://Sleitnick.github.io/Knit/api/KnitClient" hreflang="x-default"><link rel="stylesheet" href="/Knit/assets/css/styles.fdfd902f.css">
-<link rel="preload" href="/Knit/assets/js/runtime~main.bff7bd60.js" as="script">
-<link rel="preload" href="/Knit/assets/js/main.adf1fc9e.js" as="script">
+<link rel="preload" href="/Knit/assets/js/runtime~main.08c98977.js" as="script">
+<link rel="preload" href="/Knit/assets/js/main.0e3afc6e.js" as="script">
 </head>
 <body class="navigation-with-keyboard">
 <script>!function(){function e(e){document.documentElement.setAttribute("data-theme",e)}var t=function(){var e=null;try{e=localStorage.getItem("theme")}catch(e){}return e}();null!==t?e(t):window.matchMedia("(prefers-color-scheme: dark)").matches?e("dark"):(window.matchMedia("(prefers-color-scheme: light)").matches,e("light"))}()</script><div id="__docusaurus">
@@ -32,7 +32,7 @@
   pulled in via Wally instead of relying on Knit's Util folder, as this
   folder only contains what is necessary for Knit to run in Wally mode.
 </p>
-</div><h2 class="anchor anchorWithStickyNavbar_LWe7" id="functions">Functions<a href="#functions" class="hash-link" aria-label="Direct link to Functions" title="Direct link to Functions">​</a></h2><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="CreateController"><code style="text-decoration:none">CreateController</code><a href="#CreateController" class="hash-link" aria-label="Direct link to CreateController" title="Direct link to CreateController">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Sleitnick/Knit/blob/master/src/KnitClient.lua#L175"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>KnitClient<!-- -->.</code><code class="green_DgR4">CreateController</code><code>(</code><code>controllerDef<!-- -->: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/Knit/api/KnitClient#ControllerDef">ControllerDef</a></code><code>) → </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/Knit/api/KnitClient#Controller">Controller</a></code></div><div>
+</div><h2 class="anchor anchorWithStickyNavbar_LWe7" id="functions">Functions<a href="#functions" class="hash-link" aria-label="Direct link to Functions" title="Direct link to Functions">​</a></h2><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="CreateController"><code style="text-decoration:none">CreateController</code><a href="#CreateController" class="hash-link" aria-label="Direct link to CreateController" title="Direct link to CreateController">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Sleitnick/Knit/blob/master/src/KnitClient.lua#L180"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>KnitClient<!-- -->.</code><code class="green_DgR4">CreateController</code><code>(</code><code>controllerDef<!-- -->: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/Knit/api/KnitClient#ControllerDef">ControllerDef</a></code><code>) → </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/Knit/api/KnitClient#Controller">Controller</a></code></div><div>
 <p>Creates a new controller.</p>
 <div class="admonition admonition-caution alert alert--warning">
   <div class="admonition-heading">
@@ -57,16 +57,16 @@
 	<span class="token function">print</span><span class="token punctuation">(</span><span class="token string">"MyController initialized"</span><span class="token punctuation">)</span>
 <span class="token keyword">end</span>
 </code></pre>
-</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="AddControllers"><code style="text-decoration:none">AddControllers</code><a href="#AddControllers" class="hash-link" aria-label="Direct link to AddControllers" title="Direct link to AddControllers">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Sleitnick/Knit/blob/master/src/KnitClient.lua#L193"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>KnitClient<!-- -->.</code><code class="green_DgR4">AddControllers</code><code>(</code><code>parent<!-- -->: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="https://developer.roblox.com/en-us/api-reference/datatype/Instance" target="_blank" rel="noopener noreferrer">Instance<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound" style="color:gray;vertical-align:middle;margin-left:2px"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></code><code>) → </code><code class="purple_ieR2">{</code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/Knit/api/KnitClient#Controller">Controller</a></code><code class="purple_ieR2">}</code></div><div>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="AddControllers"><code style="text-decoration:none">AddControllers</code><a href="#AddControllers" class="hash-link" aria-label="Direct link to AddControllers" title="Direct link to AddControllers">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Sleitnick/Knit/blob/master/src/KnitClient.lua#L200"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>KnitClient<!-- -->.</code><code class="green_DgR4">AddControllers</code><code>(</code><code>parent<!-- -->: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="https://developer.roblox.com/en-us/api-reference/datatype/Instance" target="_blank" rel="noopener noreferrer">Instance<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound" style="color:gray;vertical-align:middle;margin-left:2px"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></code><code>) → </code><code class="purple_ieR2">{</code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/Knit/api/KnitClient#Controller">Controller</a></code><code class="purple_ieR2">}</code></div><div>
 <p>
   Requires all the modules that are children of the given parent. This is an easy
   way to quickly load all controllers that might be in a folder.
 </p>
 <pre class="language-lua"><code class="language-lua">Knit<span class="token punctuation">.</span><span class="token function">AddControllers</span><span class="token punctuation">(</span>somewhere<span class="token punctuation">.</span>Controllers<span class="token punctuation">)</span>
 </code></pre>
-</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="AddControllersDeep"><code style="text-decoration:none">AddControllersDeep</code><a href="#AddControllersDeep" class="hash-link" aria-label="Direct link to AddControllersDeep" title="Direct link to AddControllersDeep">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Sleitnick/Knit/blob/master/src/KnitClient.lua#L207"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>KnitClient<!-- -->.</code><code class="green_DgR4">AddControllersDeep</code><code>(</code><code>parent<!-- -->: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="https://developer.roblox.com/en-us/api-reference/datatype/Instance" target="_blank" rel="noopener noreferrer">Instance<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound" style="color:gray;vertical-align:middle;margin-left:2px"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></code><code>) → </code><code class="purple_ieR2">{</code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/Knit/api/KnitClient#Controller">Controller</a></code><code class="purple_ieR2">}</code></div><div>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="AddControllersDeep"><code style="text-decoration:none">AddControllersDeep</code><a href="#AddControllersDeep" class="hash-link" aria-label="Direct link to AddControllersDeep" title="Direct link to AddControllersDeep">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Sleitnick/Knit/blob/master/src/KnitClient.lua#L218"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>KnitClient<!-- -->.</code><code class="green_DgR4">AddControllersDeep</code><code>(</code><code>parent<!-- -->: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="https://developer.roblox.com/en-us/api-reference/datatype/Instance" target="_blank" rel="noopener noreferrer">Instance<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound" style="color:gray;vertical-align:middle;margin-left:2px"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></code><code>) → </code><code class="purple_ieR2">{</code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/Knit/api/KnitClient#Controller">Controller</a></code><code class="purple_ieR2">}</code></div><div>
 <p>Requires all the modules that are descendants of the given parent.</p>
-</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="GetService"><code style="text-decoration:none">GetService</code><a href="#GetService" class="hash-link" aria-label="Direct link to GetService" title="Direct link to GetService">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Sleitnick/Knit/blob/master/src/KnitClient.lua#L270"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>KnitClient<!-- -->.</code><code class="green_DgR4">GetService</code><code>(</code><code>serviceName<!-- -->: </code><code class="blue_P4bS">string</code><code>) → </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/Knit/api/KnitServer#Service">Service</a></code></div><h3>Types</h3><h3 class="anchor anchorWithStickyNavbar_LWe7" id="Service"><a href="#Service" class="hash-link" aria-label="Direct link to Service" title="Direct link to Service">​</a></h3><div class="memberString_GwaU"><code class="purple_ieR2">interface</code> <code>Service<!-- --> <!-- -->{</code><div class="inset_uKQm"><div><code>[any]<!-- -->: </code><code class="blue_P4bS">any</code></div></div><code>}</code></div><div></div><div>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="GetService"><code style="text-decoration:none">GetService</code><a href="#GetService" class="hash-link" aria-label="Direct link to GetService" title="Direct link to GetService">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Sleitnick/Knit/blob/master/src/KnitClient.lua#L285"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>KnitClient<!-- -->.</code><code class="green_DgR4">GetService</code><code>(</code><code>serviceName<!-- -->: </code><code class="blue_P4bS">string</code><code>) → </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/Knit/api/KnitServer#Service">Service</a></code></div><h3>Types</h3><h3 class="anchor anchorWithStickyNavbar_LWe7" id="Service"><a href="#Service" class="hash-link" aria-label="Direct link to Service" title="Direct link to Service">​</a></h3><div class="memberString_GwaU"><code class="purple_ieR2">interface</code> <code>Service<!-- --> <!-- -->{</code><div class="inset_uKQm"><div><code>[any]<!-- -->: </code><code class="blue_P4bS">any</code></div></div><code>}</code></div><div></div><div>
 <p>
   Returns a Service object which is a reflection of the remote objects
   within the Client table of the given service. Throws an error if the
@@ -126,14 +126,14 @@ MyService<span class="token punctuation">.</span>MyProperty<span class="token pu
     </p>
   </div>
 </div>
-</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="GetController"><code style="text-decoration:none">GetController</code><a href="#GetController" class="hash-link" aria-label="Direct link to GetController" title="Direct link to GetController">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Sleitnick/Knit/blob/master/src/KnitClient.lua#L284"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>KnitClient<!-- -->.</code><code class="green_DgR4">GetController</code><code>(</code><code>controllerName<!-- -->: </code><code class="blue_P4bS">string</code><code>) → </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/Knit/api/KnitClient#Controller">Controller</a></code></div><div>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="GetController"><code style="text-decoration:none">GetController</code><a href="#GetController" class="hash-link" aria-label="Direct link to GetController" title="Direct link to GetController">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Sleitnick/Knit/blob/master/src/KnitClient.lua#L301"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>KnitClient<!-- -->.</code><code class="green_DgR4">GetController</code><code>(</code><code>controllerName<!-- -->: </code><code class="blue_P4bS">string</code><code>) → </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/Knit/api/KnitClient#Controller">Controller</a></code></div><div>
 <p>
   Gets the controller by name. Throws an error if the controller
   is not found.
 </p>
-</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="GetControllers"><code style="text-decoration:none">GetControllers</code><a href="#GetControllers" class="hash-link" aria-label="Direct link to GetControllers" title="Direct link to GetControllers">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Sleitnick/Knit/blob/master/src/KnitClient.lua#L297"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>KnitClient<!-- -->.</code><code class="green_DgR4">GetControllers</code><code>(</code><code>) → </code><code class="purple_ieR2">{</code><span><code>[</code><code class="blue_P4bS">string</code><code>]</code></span><code>: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/Knit/api/KnitClient#Controller">Controller</a></code><code class="purple_ieR2">}</code></div><div>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="GetControllers"><code style="text-decoration:none">GetControllers</code><a href="#GetControllers" class="hash-link" aria-label="Direct link to GetControllers" title="Direct link to GetControllers">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Sleitnick/Knit/blob/master/src/KnitClient.lua#L315"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>KnitClient<!-- -->.</code><code class="green_DgR4">GetControllers</code><code>(</code><code>) → </code><code class="purple_ieR2">{</code><span><code>[</code><code class="blue_P4bS">string</code><code>]</code></span><code>: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/Knit/api/KnitClient#Controller">Controller</a></code><code class="purple_ieR2">}</code></div><div>
 <p>Gets a table of all controllers.</p>
-</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="Start"><code style="text-decoration:none">Start</code><a href="#Start" class="hash-link" aria-label="Direct link to Start" title="Direct link to Start">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Sleitnick/Knit/blob/master/src/KnitClient.lua#L319"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>KnitClient<!-- -->.</code><code class="green_DgR4">Start</code><code>(</code><code>options<!-- -->: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/Knit/api/KnitServer#KnitOptions">KnitOptions?</a></code><code>) → </code><code class="blue_P4bS">Promise</code></div><div>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="Start"><code style="text-decoration:none">Start</code><a href="#Start" class="hash-link" aria-label="Direct link to Start" title="Direct link to Start">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Sleitnick/Knit/blob/master/src/KnitClient.lua#L338"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>KnitClient<!-- -->.</code><code class="green_DgR4">Start</code><code>(</code><code>options<!-- -->: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/Knit/api/KnitServer#KnitOptions">KnitOptions?</a></code><code>) → </code><code class="blue_P4bS">Promise</code></div><div>
 <p>Starts Knit. Should only be called once per client.</p>
 <pre class="language-lua"><code class="language-lua">Knit<span class="token punctuation">.</span><span class="token function">Start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span><span class="token function">andThen</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 	<span class="token function">print</span><span class="token punctuation">(</span><span class="token string">"Knit started!"</span><span class="token punctuation">)</span>
@@ -147,7 +147,7 @@ MyService<span class="token punctuation">.</span>MyProperty<span class="token pu
 	<span class="token function">print</span><span class="token punctuation">(</span><span class="token string">"Knit started!"</span><span class="token punctuation">)</span>
 <span class="token keyword">end</span><span class="token punctuation">)</span><span class="token punctuation">:</span><span class="token function">catch</span><span class="token punctuation">(</span>warn<span class="token punctuation">)</span>
 </code></pre>
-</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="OnStart"><code style="text-decoration:none">OnStart</code><a href="#OnStart" class="hash-link" aria-label="Direct link to OnStart" title="Direct link to OnStart">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Sleitnick/Knit/blob/master/src/KnitClient.lua#L393"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>KnitClient<!-- -->.</code><code class="green_DgR4">OnStart</code><code>(</code><code>) → </code><code class="blue_P4bS">Promise</code></div><div>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="OnStart"><code style="text-decoration:none">OnStart</code><a href="#OnStart" class="hash-link" aria-label="Direct link to OnStart" title="Direct link to OnStart">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Sleitnick/Knit/blob/master/src/KnitClient.lua#L412"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>KnitClient<!-- -->.</code><code class="green_DgR4">OnStart</code><code>(</code><code>) → </code><code class="blue_P4bS">Promise</code></div><div>
 <p>
   Returns a promise that is resolved once Knit has started. This is useful
   for any code that needs to tie into Knit controllers but is not the script
@@ -178,7 +178,7 @@ MyService<span class="token punctuation">.</span>MyProperty<span class="token pu
             ],
             &quot;function_type&quot;: &quot;static&quot;,
             &quot;source&quot;: {
-                &quot;line&quot;: 175,
+                &quot;line&quot;: 180,
                 &quot;path&quot;: &quot;src/KnitClient.lua&quot;
             }
         },
@@ -200,7 +200,7 @@ MyService<span class="token punctuation">.</span>MyProperty<span class="token pu
             ],
             &quot;function_type&quot;: &quot;static&quot;,
             &quot;source&quot;: {
-                &quot;line&quot;: 193,
+                &quot;line&quot;: 200,
                 &quot;path&quot;: &quot;src/KnitClient.lua&quot;
             }
         },
@@ -222,7 +222,7 @@ MyService<span class="token punctuation">.</span>MyProperty<span class="token pu
             ],
             &quot;function_type&quot;: &quot;static&quot;,
             &quot;source&quot;: {
-                &quot;line&quot;: 207,
+                &quot;line&quot;: 218,
                 &quot;path&quot;: &quot;src/KnitClient.lua&quot;
             }
         },
@@ -244,7 +244,7 @@ MyService<span class="token punctuation">.</span>MyProperty<span class="token pu
             ],
             &quot;function_type&quot;: &quot;static&quot;,
             &quot;source&quot;: {
-                &quot;line&quot;: 270,
+                &quot;line&quot;: 285,
                 &quot;path&quot;: &quot;src/KnitClient.lua&quot;
             }
         },
@@ -266,7 +266,7 @@ MyService<span class="token punctuation">.</span>MyProperty<span class="token pu
             ],
             &quot;function_type&quot;: &quot;static&quot;,
             &quot;source&quot;: {
-                &quot;line&quot;: 284,
+                &quot;line&quot;: 301,
                 &quot;path&quot;: &quot;src/KnitClient.lua&quot;
             }
         },
@@ -282,7 +282,7 @@ MyService<span class="token punctuation">.</span>MyProperty<span class="token pu
             ],
             &quot;function_type&quot;: &quot;static&quot;,
             &quot;source&quot;: {
-                &quot;line&quot;: 297,
+                &quot;line&quot;: 315,
                 &quot;path&quot;: &quot;src/KnitClient.lua&quot;
             }
         },
@@ -304,7 +304,7 @@ MyService<span class="token punctuation">.</span>MyProperty<span class="token pu
             ],
             &quot;function_type&quot;: &quot;static&quot;,
             &quot;source&quot;: {
-                &quot;line&quot;: 319,
+                &quot;line&quot;: 338,
                 &quot;path&quot;: &quot;src/KnitClient.lua&quot;
             }
         },
@@ -320,7 +320,7 @@ MyService<span class="token punctuation">.</span>MyProperty<span class="token pu
             ],
             &quot;function_type&quot;: &quot;static&quot;,
             &quot;source&quot;: {
-                &quot;line&quot;: 393,
+                &quot;line&quot;: 412,
                 &quot;path&quot;: &quot;src/KnitClient.lua&quot;
             }
         }
@@ -486,7 +486,7 @@ MyService<span class="token punctuation">.</span>MyProperty<span class="token pu
         &quot;path&quot;: &quot;src/KnitClient.lua&quot;
     }
 }</pre></details></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#types" class="table-of-contents__link toc-highlight">Types</a><ul><li><a href="#ClientMiddleware" class="table-of-contents__link toc-highlight">ClientMiddleware</a></li><li><a href="#ClientMiddlewareFn" class="table-of-contents__link toc-highlight">ClientMiddlewareFn</a></li><li><a href="#Controller" class="table-of-contents__link toc-highlight">Controller</a></li><li><a href="#ControllerDef" class="table-of-contents__link toc-highlight">ControllerDef</a></li><li><a href="#KnitOptions" class="table-of-contents__link toc-highlight">KnitOptions</a></li><li><a href="#Middleware" class="table-of-contents__link toc-highlight">Middleware</a></li><li><a href="#PerServiceMiddleware" class="table-of-contents__link toc-highlight">PerServiceMiddleware</a></li><li><a href="#Service" class="table-of-contents__link toc-highlight">Service</a></li></ul></li><li><a href="#properties" class="table-of-contents__link toc-highlight">Properties</a><ul><li><a href="#Player" class="table-of-contents__link toc-highlight">Player</a></li><li><a href="#Util" class="table-of-contents__link toc-highlight">Util</a></li></ul></li><li><a href="#functions" class="table-of-contents__link toc-highlight">Functions</a><ul><li><a href="#AddControllers" class="table-of-contents__link toc-highlight">.AddControllers</a></li><li><a href="#AddControllersDeep" class="table-of-contents__link toc-highlight">.AddControllersDeep</a></li><li><a href="#CreateController" class="table-of-contents__link toc-highlight">.CreateController</a></li><li><a href="#GetController" class="table-of-contents__link toc-highlight">.GetController</a></li><li><a href="#GetControllers" class="table-of-contents__link toc-highlight">.GetControllers</a></li><li><a href="#GetService" class="table-of-contents__link toc-highlight">.GetService</a></li><li><a href="#OnStart" class="table-of-contents__link toc-highlight">.OnStart</a></li><li><a href="#Start" class="table-of-contents__link toc-highlight">.Start</a></li></ul></li></ul></div></div></div></div></main></div></div><footer class="footer footer--dark"><div class="container container-fluid"><div class="footer__bottom text--center"><div class="footer__copyright">Copyright © 2024 Sleitnick. Built with Moonwave and Docusaurus.</div></div></div></footer></div>
-<script src="/Knit/assets/js/runtime~main.bff7bd60.js"></script>
-<script src="/Knit/assets/js/main.adf1fc9e.js"></script>
+<script src="/Knit/assets/js/runtime~main.08c98977.js"></script>
+<script src="/Knit/assets/js/main.0e3afc6e.js"></script>
 </body>
 </html>
