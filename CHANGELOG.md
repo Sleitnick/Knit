@@ -4,6 +4,7 @@
 - Freezes `services`/`controllers` tables so that they can be safely returned in the functions listed above.
 - Various code readability adjustments
 - Update GitHub workflow dependencies
+- Add documentation on intellisense
 
 ## 1.6.0
 
