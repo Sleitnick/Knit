@@ -67,7 +67,7 @@ local function AddServicesCustom(parent: Instance)
 		-- Only match on instances that are ModuleScripts and names that end with "Service":
 		if v:IsA("ModuleScript") and v.Name:match("Service$") then
 			local service = require(v) -- Load the service module
-			Knit.AddService(service) -- Add the service into Knit
+			Knit.CreateService(service) -- Add the service into Knit
 		end
 	end
 end
@@ -84,7 +84,7 @@ The [Loader](https://sleitnick.github.io/RbxUtil/api/Loader/) module can be used
 ```lua
 local services = Loader.LoadChildren(parent, Loader.MatchesName("Service$"))
 for _, service in services do
-	Knit.AddService(service)
+	Knit.CreateService(service)
 end
 
 Knit.Start()
@@ -173,28 +173,28 @@ Loader.SpawnAll(controllers, "OnStart")
 Due to this incredibly simple setup, our services are also very simple in structure; they're just tables within ModuleScripts. Nothing fancy. To use one service from another, simply require its ModuleScript. As such, intellisense comes natively baked in.
 
 ```lua
--- ServerScriptService.AddService
-local AddService = {}
+-- ServerScriptService.MathService
+local MathService = {}
 
-function AddService:Add(a: number, b: number): number
+function MathService:Add(a: number, b: number): number
 	return a + b
 end
 
-return AddService
+return MathService
 ```
 
 ```lua
 -- ServerScriptService.CalcService
 
 -- Simply require another service to use it:
-local AddService = require(somewhere.AddService)
+local MathService = require(somewhere.MathService)
 
 local CalcService = {}
 
 function CalcService:OnStart()
 	local n1 = 10
 	local n2 = 20
-	local sum = AddService:Add(n1, n2)
+	local sum = MathService:Add(n1, n2)
 	print(`Sum of {n1} and {n2} is {sum}`)
 end
 
