@@ -33,23 +33,31 @@ type PerServiceMiddleware = { [string]: Middleware }
 --[=[
 	@interface ControllerDef
 	.Name string
+	.LoadOrder number?
 	.[any] any
 	@within KnitClient
 	Used to define a controller when creating it in `CreateController`.
 ]=]
 type ControllerDef = {
 	Name: string,
+	LoadOrder: number?,
 	[any]: any,
 }
 
 --[=[
 	@interface Controller
 	.Name string
+	.LoadOrder number?
+	.KnitInit (() -> ())?
+	.KnitStart (() -> ())?
 	.[any] any
 	@within KnitClient
 ]=]
 type Controller = {
 	Name: string,
+	LoadOrder: number?,
+	KnitInit: (() -> ())?,
+	KnitStart: (() -> ())?,
 	[any]: any,
 }
 
@@ -359,11 +367,19 @@ function KnitClient.Start(options: KnitOptions?)
 		selectedOptions.PerServiceMiddleware = {}
 	end
 
+	local arrayControllers: { Controller } = {}
+	for _, controller in KnitClient.GetControllers() do
+		table.insert(arrayControllers, controller)
+	end
+	table.sort(arrayControllers, function(s1, s2)
+		return (s1.LoadOrder or 0) < (s2.LoadOrder or 0)
+	end)
+
 	return Promise.new(function(resolve)
 		-- Init:
 		local promisesStartControllers = {}
 
-		for _, controller in controllers do
+		for _, controller in arrayControllers do
 			if type(controller.KnitInit) == "function" then
 				table.insert(
 					promisesStartControllers,
@@ -379,7 +395,7 @@ function KnitClient.Start(options: KnitOptions?)
 		resolve(Promise.all(promisesStartControllers))
 	end):andThen(function()
 		-- Start:
-		for _, controller in controllers do
+		for _, controller in arrayControllers do
 			if type(controller.KnitStart) == "function" then
 				task.spawn(function()
 					debug.setmemorycategory(controller.Name)

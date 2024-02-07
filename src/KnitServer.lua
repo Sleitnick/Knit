@@ -29,6 +29,7 @@ type ServerMiddleware = { ServerMiddlewareFn }
 	.Name string
 	.Client table?
 	.Middleware Middleware?
+	.LoadOrder number?
 	.[any] any
 	@within KnitServer
 	Used to define a service when creating it in `CreateService`.
@@ -40,6 +41,7 @@ type ServerMiddleware = { ServerMiddlewareFn }
 type ServiceDef = {
 	Name: string,
 	Client: { [any]: any }?,
+	LoadOrder: number?,
 	Middleware: Middleware?,
 	[any]: any,
 }
@@ -49,6 +51,9 @@ type ServiceDef = {
 	.Name string
 	.Client ServiceClient
 	.KnitComm Comm
+	.LoadOrder number?
+	.KnitInit (() -> ())?
+	.KnitStart (() -> ())?
 	.[any] any
 	@within KnitServer
 ]=]
@@ -56,6 +61,9 @@ type Service = {
 	Name: string,
 	Client: ServiceClient,
 	KnitComm: any,
+	LoadOrder: number?,
+	KnitInit: (() -> ())?,
+	KnitStart: (() -> ())?,
 	[any]: any,
 }
 
@@ -402,6 +410,14 @@ function KnitServer.Start(options: KnitOptions?)
 		end
 	end
 
+	local arrayServices: { Service } = {}
+	for _, service in KnitServer.GetServices() do
+		table.insert(arrayServices, service)
+	end
+	table.sort(arrayServices, function(s1, s2)
+		return (s1.LoadOrder or 0) < (s2.LoadOrder or 0)
+	end)
+
 	return Promise.new(function(resolve)
 		local knitMiddleware = if selectedOptions.Middleware ~= nil then selectedOptions.Middleware else {}
 
@@ -428,7 +444,7 @@ function KnitServer.Start(options: KnitOptions?)
 
 		-- Init:
 		local promisesInitServices = {}
-		for _, service in services do
+		for _, service in arrayServices do
 			if type(service.KnitInit) == "function" then
 				table.insert(
 					promisesInitServices,
@@ -444,7 +460,7 @@ function KnitServer.Start(options: KnitOptions?)
 		resolve(Promise.all(promisesInitServices))
 	end):andThen(function()
 		-- Start:
-		for _, service in services do
+		for _, service in arrayServices do
 			if type(service.KnitStart) == "function" then
 				task.spawn(function()
 					debug.setmemorycategory(service.Name)
