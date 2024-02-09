@@ -367,19 +367,19 @@ function KnitClient.Start(options: KnitOptions?)
 		selectedOptions.PerServiceMiddleware = {}
 	end
 
-	local arrayControllers: { Controller } = {}
+	local sortedControllers: { Controller } = {}
 	for _, controller in KnitClient.GetControllers() do
-		table.insert(arrayControllers, controller)
+		table.insert(sortedControllers, controller)
 	end
-	table.sort(arrayControllers, function(s1, s2)
-		return (s1.LoadOrder or 0) < (s2.LoadOrder or 0)
+	table.sort(sortedControllers, function(c1, c2)
+		return (c1.LoadOrder or 0) < (c2.LoadOrder or 0)
 	end)
 
 	return Promise.new(function(resolve)
 		-- Init:
 		local promisesStartControllers = {}
 
-		for _, controller in arrayControllers do
+		for _, controller in sortedControllers do
 			if type(controller.KnitInit) == "function" then
 				table.insert(
 					promisesStartControllers,
@@ -395,7 +395,7 @@ function KnitClient.Start(options: KnitOptions?)
 		resolve(Promise.all(promisesStartControllers))
 	end):andThen(function()
 		-- Start:
-		for _, controller in arrayControllers do
+		for _, controller in sortedControllers do
 			if type(controller.KnitStart) == "function" then
 				task.spawn(function()
 					debug.setmemorycategory(controller.Name)

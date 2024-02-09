@@ -410,11 +410,11 @@ function KnitServer.Start(options: KnitOptions?)
 		end
 	end
 
-	local arrayServices: { Service } = {}
+	local sortedServices: { Service } = {}
 	for _, service in KnitServer.GetServices() do
-		table.insert(arrayServices, service)
+		table.insert(sortedServices, service)
 	end
-	table.sort(arrayServices, function(s1, s2)
+	table.sort(sortedServices, function(s1, s2)
 		return (s1.LoadOrder or 0) < (s2.LoadOrder or 0)
 	end)
 
@@ -444,7 +444,7 @@ function KnitServer.Start(options: KnitOptions?)
 
 		-- Init:
 		local promisesInitServices = {}
-		for _, service in arrayServices do
+		for _, service in sortedServices do
 			if type(service.KnitInit) == "function" then
 				table.insert(
 					promisesInitServices,
@@ -460,7 +460,7 @@ function KnitServer.Start(options: KnitOptions?)
 		resolve(Promise.all(promisesInitServices))
 	end):andThen(function()
 		-- Start:
-		for _, service in arrayServices do
+		for _, service in sortedServices do
 			if type(service.KnitStart) == "function" then
 				task.spawn(function()
 					debug.setmemorycategory(service.Name)
