@@ -2,7 +2,7 @@
 [![CI](https://github.com/Sleitnick/Knit/actions/workflows/ci.yaml/badge.svg)](https://github.com/Sleitnick/Knit/actions/workflows/ci.yaml)
 [![Docs](https://github.com/Sleitnick/Knit/actions/workflows/docs.yaml/badge.svg)](https://github.com/Sleitnick/Knit/actions/workflows/docs.yaml)
 
-## :warning: Archival :warning:
+## :warning: No Longer Maintained :warning:
 
 Knit has been archived and will no longer receive updates.
 
